@@ -1,4 +1,4 @@
-# Java Backend Academy - Aligarh
+# Java Hub Academy - Aligarh
 # https://javahub.in/
 
 User-agent: *
