@@ -20,8 +20,8 @@ const FAQS = [
     a: "We offer competitive and affordable pricing for all our courses. Contact us at +91 70606 49647 or WhatsApp for current batch fees. We also offer flexible payment options and EMI plans to make quality education accessible."
   },
   {
-    q: "Do you provide job placement after Java training?",
-    a: "Yes! We provide 100% placement support including professional resume building, LinkedIn optimization, mock interviews, company-specific preparation, and referrals to our network. Our Interview Preparation and Job Search courses are specifically designed to help you land offers."
+    q: "Do you help with jobs after Java training?",
+    a: "Our goal is to make you job-ready, not job-dependent. We train you rigorously so you can confidently crack interviews on your own merit. We do provide career guidance, resume reviews, mock interviews, and interview preparation as part of our courses — but the real value is in the skills you'll gain. Our students have gone on to clear interviews at top companies because they were genuinely prepared, not because of any placement guarantee."
   },
   {
     q: "Can a complete beginner join Java course?",

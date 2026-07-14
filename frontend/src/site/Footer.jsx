@@ -116,7 +116,7 @@ export default function Footer() {
         <div className="mt-6 text-[10px] text-white/30 leading-relaxed max-w-3xl" aria-label="SEO keywords">
           Java training Aligarh · Backend development course · System Design classes · AWS certification Aligarh · 
           DSA coaching · Spring Boot training · Software engineering institute Aligarh · Programming classes UP · 
-          IT training center Aligarh · Coding bootcamp · Interview preparation · Job placement support
+          IT training center Aligarh · Coding bootcamp · Interview preparation · Career guidance
         </div>
       </div>
     </footer>
