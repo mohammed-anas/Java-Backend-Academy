@@ -1,13 +1,27 @@
 {
   "files": {
-    "main.css": "/Java-Backend-Academy/static/css/main.230ec26a.css",
-    "main.js": "/Java-Backend-Academy/static/js/main.7a9e38bb.js",
+    "main.css": "/Java-Backend-Academy/static/css/main.6ce180c1.css",
+    "main.js": "/Java-Backend-Academy/static/js/main.f5b397a4.js",
+    "static/js/170.713384c2.chunk.js": "/Java-Backend-Academy/static/js/170.713384c2.chunk.js",
+    "static/js/616.8c53c8f1.chunk.js": "/Java-Backend-Academy/static/js/616.8c53c8f1.chunk.js",
+    "static/js/809.53858596.chunk.js": "/Java-Backend-Academy/static/js/809.53858596.chunk.js",
+    "static/js/483.1850f7cd.chunk.js": "/Java-Backend-Academy/static/js/483.1850f7cd.chunk.js",
+    "static/js/574.ca78caca.chunk.js": "/Java-Backend-Academy/static/js/574.ca78caca.chunk.js",
+    "static/js/177.5f448aae.chunk.js": "/Java-Backend-Academy/static/js/177.5f448aae.chunk.js",
+    "static/js/975.029ec020.chunk.js": "/Java-Backend-Academy/static/js/975.029ec020.chunk.js",
     "index.html": "/Java-Backend-Academy/index.html",
-    "main.230ec26a.css.map": "/Java-Backend-Academy/static/css/main.230ec26a.css.map",
-    "main.7a9e38bb.js.map": "/Java-Backend-Academy/static/js/main.7a9e38bb.js.map"
+    "main.6ce180c1.css.map": "/Java-Backend-Academy/static/css/main.6ce180c1.css.map",
+    "main.f5b397a4.js.map": "/Java-Backend-Academy/static/js/main.f5b397a4.js.map",
+    "170.713384c2.chunk.js.map": "/Java-Backend-Academy/static/js/170.713384c2.chunk.js.map",
+    "616.8c53c8f1.chunk.js.map": "/Java-Backend-Academy/static/js/616.8c53c8f1.chunk.js.map",
+    "809.53858596.chunk.js.map": "/Java-Backend-Academy/static/js/809.53858596.chunk.js.map",
+    "483.1850f7cd.chunk.js.map": "/Java-Backend-Academy/static/js/483.1850f7cd.chunk.js.map",
+    "574.ca78caca.chunk.js.map": "/Java-Backend-Academy/static/js/574.ca78caca.chunk.js.map",
+    "177.5f448aae.chunk.js.map": "/Java-Backend-Academy/static/js/177.5f448aae.chunk.js.map",
+    "975.029ec020.chunk.js.map": "/Java-Backend-Academy/static/js/975.029ec020.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.230ec26a.css",
-    "static/js/main.7a9e38bb.js"
+    "static/css/main.6ce180c1.css",
+    "static/js/main.f5b397a4.js"
   ]
 }
