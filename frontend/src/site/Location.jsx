@@ -12,7 +12,7 @@ export default function Location() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-14 lg:mb-20">
           <div className="lg:col-span-4">
             <div className="font-mono-tech text-[11px] tracking-[0.24em] uppercase text-[color:var(--ink-2)]">
-              /04 — Find us
+              /05 — Find us
             </div>
           </div>
           <div className="lg:col-span-8">

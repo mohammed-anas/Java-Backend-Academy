@@ -6,6 +6,7 @@ import { scrollToId } from "@/site/useLenis";
 
 const LINKS = [
   { id: "courses", label: "Courses" },
+  { id: "batches", label: "Batches" },
   { id: "about", label: "About" },
   { id: "location", label: "Location" },
   { id: "contact", label: "Enquire" },

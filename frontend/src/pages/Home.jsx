@@ -5,6 +5,7 @@ import Preloader from "@/site/Preloader";
 
 const Marquee = lazy(() => import("@/site/Marquee"));
 const Manifesto = lazy(() => import("@/site/Manifesto"));
+const Batches = lazy(() => import("@/site/Batches"));
 const About = lazy(() => import("@/site/About"));
 const Location = lazy(() => import("@/site/Location"));
 const Contact = lazy(() => import("@/site/Contact"));
@@ -25,6 +26,7 @@ export default function Home() {
       <Hero />
       <LazySection><Marquee /></LazySection>
       <LazySection><Manifesto /></LazySection>
+      <LazySection><Batches /></LazySection>
       <LazySection><About /></LazySection>
       <LazySection><Location /></LazySection>
       <LazySection><Contact /></LazySection>

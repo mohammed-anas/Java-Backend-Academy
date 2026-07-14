@@ -37,7 +37,7 @@ export default function Preloader() {
               <span className="inline-block w-2 h-2 bg-[color:var(--accent)] mr-2 align-middle" />
               {BRAND.name}
             </div>
-            <div>Cohort · 10</div>
+            <div>Aligarh · IN</div>
           </div>
 
           <div>

@@ -72,9 +72,8 @@ export default function Hero() {
       >
         <div className="flex items-start justify-between font-mono-tech text-[11px] tracking-[0.24em] uppercase text-[color:var(--ink-2)]">
           <div data-testid="hero-cohort-meta" className="max-w-[220px] leading-relaxed">
-            <div className="text-[color:var(--ink)]">Cohort · 10</div>
-            <div>Enrolments open</div>
-            <div>Next batch · 12 Jan</div>
+            <div className="text-[color:var(--ink)]">10 Students / Batch</div>
+            <div>Senior Mentors</div>
           </div>
           <div className="hidden sm:block text-right leading-relaxed">
             <div className="text-[color:var(--ink)]">Aligarh · IN</div>
@@ -132,7 +131,7 @@ export default function Hero() {
               </span>
               An institute for engineers who want to master the backend stack —
               Java, Databases, System Design, AWS, DSA and CI/CD — and land the
-              offer. Live cohorts. Senior mentors. Written feedback on every
+              offer. Only 10 students per batch. Senior mentors. Written feedback on every
               submission.
             </p>
           </div>

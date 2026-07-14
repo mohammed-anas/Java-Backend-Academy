@@ -12,7 +12,7 @@ export default function About() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
           <div className="lg:col-span-5">
             <div className="font-mono-tech text-[11px] tracking-[0.24em] uppercase text-[color:var(--ink-2)] mb-6">
-              /03 — About the institute
+              /04 — About the institute
             </div>
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
@@ -31,7 +31,7 @@ export default function About() {
               <p>
                 Java Backend Academy is a small, focused institute for engineers
                 who want to master the backend stack. Every course is taught
-                live by senior engineers, capped at a small cohort, and every
+                live by senior engineers, <strong>strictly capped at 10 students per batch</strong>, and every
                 submission comes back with written feedback within 24 hours.
               </p>
               <p>
@@ -44,9 +44,9 @@ export default function About() {
             <dl className="mt-12 grid grid-cols-2 gap-x-6 gap-y-8 max-w-md">
               {[
                 ["9", "Courses on offer"],
-                ["28", "Seats / cohort"],
+                ["10", "Students / batch"],
                 ["24 hr", "Feedback SLA"],
-                ["1:6", "Mentor ratio"],
+                ["1:5", "Mentor ratio"],
               ].map(([n, l]) => (
                 <div key={l} className="border-t border-[color:var(--line)] pt-4">
                   <div className="font-serif-editorial text-3xl leading-none">{n}</div>

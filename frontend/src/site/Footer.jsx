@@ -37,7 +37,7 @@ export default function Footer() {
               Academy
             </div>
             <ul className="space-y-3 text-sm">
-              {["courses", "about", "location", "contact"].map((id) => (
+              {["courses", "batches", "about", "location", "contact"].map((id) => (
                 <li key={id}>
                   <button
                     data-testid={`footer-link-${id}`}
@@ -109,8 +109,7 @@ export default function Footer() {
             © {year} {BRAND.name} · Best Java Training Institute in Aligarh, UP
           </div>
           <div className="flex gap-6">
-            <span>v.24.01</span>
-            <span>Cohort · 10</span>
+            <span>10 Students / Batch</span>
           </div>
         </div>
 
