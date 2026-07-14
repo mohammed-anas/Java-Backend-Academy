@@ -1,6 +1,12 @@
 // craco.config.js
 const path = require("path");
-require("dotenv").config();
+try {
+  // dotenv is a runtime-of-build dependency (loads .env into process.env).
+  // Wrapped in try/catch so a missing dotenv never crashes the deploy build.
+  require("dotenv").config();
+} catch (_) {
+  /* dotenv is optional at build time */
+}
 
 // Check if we're in development/preview mode (not production build)
 // Craco sets NODE_ENV=development for start, NODE_ENV=production for build
