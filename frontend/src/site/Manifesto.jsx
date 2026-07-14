@@ -36,7 +36,7 @@ export default function Manifesto() {
               transition={{ duration: 0.8, ease: [0.2, 0.7, 0.2, 1] }}
               className="font-serif-editorial text-4xl sm:text-5xl lg:text-6xl leading-[1.02] tracking-tight max-w-[16ch]"
             >
-              Eight courses. One curriculum.
+              Nine courses. One curriculum.
               <em className="not-italic italic text-[color:var(--accent)]"> Written by engineers</em>
               <span> who still ship.</span>
             </motion.h2>
@@ -83,6 +83,11 @@ export default function Manifesto() {
                         <Clock size={12} className="text-[color:var(--accent)]" />
                         {c.duration} · {c.mode}
                       </span>
+                      {c.order && (
+                        <span className="font-mono-tech text-[10px] tracking-[0.18em] text-[color:var(--accent)] mt-1">
+                          → {c.order}
+                        </span>
+                      )}
                     </div>
                     <p className="md:col-span-9 text-sm sm:text-base leading-relaxed text-[color:var(--ink)]/80 max-w-[72ch]">
                       {c.body}

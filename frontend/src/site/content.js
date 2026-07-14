@@ -24,78 +24,111 @@ export const BRAND = {
 };
 
 export const COURSES = [
+  // ═══════════════════════════════════════════════════════════════════════════
+  // FOUNDATION TRACK — Start here. These two can be done in parallel.
+  // ═══════════════════════════════════════════════════════════════════════════
   {
     n: "01",
     title: "Core Java",
-    kicker: "Language · JVM · Concurrency",
+    kicker: "Foundation · Start Here",
     duration: "10 weeks",
     mode: "Live · Weekend",
+    track: "foundation",
+    order: "Start here — prerequisite for all other courses",
     body: "OOP from first principles to virtual threads. Collections, generics, streams, memory model, GC tuning and JVM profiling — the way senior engineers actually write Java.",
   },
   {
     n: "02",
-    title: "Databases",
-    kicker: "SQL · NoSQL · Internals",
-    duration: "6 weeks",
-    mode: "Live · Weekend",
-    body: "Schema design, indexing, query plans, transactions, replication. Deep dives into Postgres, MySQL, MongoDB and Redis — picked by problem, not by hype.",
-  },
-  {
-    n: "03",
-    title: "System Design",
-    kicker: "Scale · Trade-offs",
-    duration: "8 weeks",
-    mode: "Live · Weekend",
-    body: "Design real systems — feeds, ledgers, chat, ride-hailing. Every choice defended with numbers: latency, throughput, cost and consistency.",
-  },
-  {
-    n: "04",
-    title: "AWS Cloud",
-    kicker: "Deploy · Operate · Optimise",
-    duration: "6 weeks",
-    mode: "Live · Weekend",
-    body: "VPC, IAM, EC2, ECS, Lambda, RDS, S3, CloudFront. Terraform from day one. Ship, monitor and cost-optimise like an SRE.",
-  },
-  {
-    n: "05",
     title: "Data Structures & Algorithms",
     kicker: "Patterns · Complexity",
     duration: "12 weeks",
     mode: "Live + Assignments",
+    track: "foundation",
+    order: "Take alongside Core Java or after",
     body: "Twelve pattern families. 200+ graded problems with editorial reviews until the intuition becomes muscle memory.",
   },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // BACKEND DEVELOPMENT TRACK — Take these in order after Foundation.
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    n: "03",
+    title: "Databases",
+    kicker: "SQL · NoSQL · Internals",
+    duration: "6 weeks",
+    mode: "Live · Weekend",
+    track: "backend",
+    order: "After Core Java",
+    body: "Schema design, indexing, query plans, transactions, replication. Deep dives into Postgres, MySQL, MongoDB and Redis — picked by problem, not by hype.",
+  },
+  {
+    n: "04",
+    title: "REST API Design",
+    kicker: "Spring Boot · API Development",
+    duration: "4 weeks",
+    mode: "Project-Based Learning",
+    track: "backend",
+    order: "After Core Java + Databases",
+    body: "Design scalable, secure, and maintainable REST APIs using Spring Boot. Work with CRUD operations, JWT authentication, Swagger/OpenAPI, pagination, validation, exception handling, and database integration.",
+  },
+  {
+    n: "05",
+    title: "System Design",
+    kicker: "Scale · Trade-offs",
+    duration: "8 weeks",
+    mode: "Live · Weekend",
+    track: "backend",
+    order: "After Databases + REST APIs",
+    body: "Design real systems — feeds, ledgers, chat, ride-hailing. Every choice defended with numbers: latency, throughput, cost and consistency.",
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // DEVOPS TRACK — Can be taken after Foundation, in any order.
+  // ═══════════════════════════════════════════════════════════════════════════
   {
     n: "06",
+    title: "AWS Cloud",
+    kicker: "Deploy · Operate · Optimise",
+    duration: "6 weeks",
+    mode: "Live · Weekend",
+    track: "devops",
+    order: "After Core Java — can parallel with Backend track",
+    body: "VPC, IAM, EC2, ECS, Lambda, RDS, S3, CloudFront. Terraform from day one. Ship, monitor and cost-optimise like an SRE.",
+  },
+  {
+    n: "07",
     title: "CI / CD",
     kicker: "Ship every day",
     duration: "3 weeks",
     mode: "Workshop",
+    track: "devops",
+    order: "After Core Java — can take anytime",
     body: "GitHub Actions, Docker, container registries, blue-green and canary deploys. Build reliable pipelines you'd trust with a Friday release.",
   },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // CAREER TRACK — Take these last, after completing technical courses.
+  // ═══════════════════════════════════════════════════════════════════════════
   {
-    n: "07",
+    n: "08",
     title: "Interview Preparation",
     kicker: "Structured drills",
     duration: "8 weeks",
     mode: "Cohort · Small group",
+    track: "career",
+    order: "After completing technical courses",
     body: "Behavioural clinic, company-tagged question banks, weekly diagnostics and mocks. Personalised study plans with a mentor accountable to your progress.",
   },
   {
-    n: "08",
+    n: "09",
     title: "Job Search & Resume",
     kicker: "Offers · Not applications",
     duration: "2 weeks",
     mode: "1:1 + Workshop",
+    track: "career",
+    order: "Final step — take when job-ready",
     body: "Resume rewrites, referral playbooks, LinkedIn tuning, salary negotiation. The parts of the job search most institutes never teach.",
   },
-  {
-    n: "09",
-    title: "REST API Design",
-    kicker: "Industry Standard API Development",
-    duration: "2 Weeks",
-    mode: "Project-Based Learning",
-    body: "Design scalable, secure, and maintainable REST APIs using Spring Boot. Work with CRUD operations, JWT authentication, Swagger/OpenAPI, pagination, validation, exception handling, and database integration."
-  }
 ];
 
 export const IMAGES = {

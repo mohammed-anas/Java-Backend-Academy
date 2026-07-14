@@ -43,7 +43,7 @@ export default function About() {
 
             <dl className="mt-12 grid grid-cols-2 gap-x-6 gap-y-8 max-w-md">
               {[
-                ["8", "Courses on offer"],
+                ["9", "Courses on offer"],
                 ["28", "Seats / cohort"],
                 ["24 hr", "Feedback SLA"],
                 ["1:6", "Mentor ratio"],
