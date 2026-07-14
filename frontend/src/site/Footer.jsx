@@ -13,7 +13,7 @@ export default function Footer() {
           <div className="lg:col-span-6">
             <h3 className="font-serif-editorial text-5xl sm:text-6xl lg:text-8xl leading-[0.95] tracking-tight max-w-[16ch]">
               Ship real
-              <em className="not-italic italic text-[color:var(--accent)]"> systems.</em>
+              <em className="not-italic italic text-[color:var(--accent)]"> backends.</em>
               <br />
               Sign real
               <em className="not-italic italic text-[color:var(--accent)]"> offers.</em>
@@ -22,7 +22,11 @@ export default function Footer() {
               data-testid="footer-cta-enrol"
               onClick={() => scrollToId("contact")}
               className="btn-crisp mt-10"
-              style={{ background: "#FAFAFA", color: "#050505", borderColor: "#FAFAFA" }}
+              style={{
+                background: "#FAFAFA",
+                color: "#050505",
+                borderColor: "#FAFAFA",
+              }}
             >
               Start your enquiry →
             </button>
@@ -30,10 +34,10 @@ export default function Footer() {
 
           <div className="lg:col-span-2">
             <div className="font-mono-tech text-[10px] tracking-[0.28em] uppercase text-white/60 mb-4">
-              Institute
+              Academy
             </div>
             <ul className="space-y-3 text-sm">
-              {["courses", "outcomes", "mentors", "reviews", "contact"].map((id) => (
+              {["courses", "about", "location", "contact"].map((id) => (
                 <li key={id}>
                   <button
                     data-testid={`footer-link-${id}`}
@@ -102,11 +106,11 @@ export default function Footer() {
 
         <div className="pt-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 font-mono-tech text-[11px] tracking-[0.24em] uppercase text-white/50">
           <div>
-            © {year} {BRAND.name} · Institute for Serious Engineers
+            © {year} {BRAND.name} · Made in Bengaluru
           </div>
           <div className="flex gap-6">
             <span>v.24.01</span>
-            <span>Made in Bengaluru</span>
+            <span>Cohort · 24</span>
           </div>
         </div>
       </div>

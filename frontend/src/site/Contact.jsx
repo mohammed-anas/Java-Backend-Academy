@@ -1,11 +1,8 @@
 import { useState } from "react";
-import axios from "axios";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { MoveRight } from "lucide-react";
-import { COURSES, BRAND } from "@/site/content";
-
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+import { COURSES, BRAND, buildWhatsAppEnquiry } from "@/site/content";
 
 const emptyForm = {
   name: "",
@@ -17,39 +14,26 @@ const emptyForm = {
 
 export default function Contact() {
   const [form, setForm] = useState(emptyForm);
-  const [loading, setLoading] = useState(false);
 
   const onChange = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
 
-  const submit = async (e) => {
+  const submit = (e) => {
     e.preventDefault();
-    if (loading) return;
 
-    if (!form.name.trim() || !form.email.trim() || !form.message.trim()) {
-      toast.error("Please fill your name, email and a short message.");
+    if (!form.name.trim() || !form.message.trim()) {
+      toast.error("Please add your name and a short message.");
       return;
     }
-    setLoading(true);
-    try {
-      await axios.post(`${API}/leads`, {
-        name: form.name.trim(),
-        email: form.email.trim(),
-        phone: form.phone.trim() || null,
-        course: form.course || null,
-        message: form.message.trim(),
-      });
-      toast.success("Received. A mentor will reach out within 24 hours.");
-      setForm(emptyForm);
-    } catch (err) {
-      const detail = err?.response?.data?.detail;
-      toast.error(
-        typeof detail === "string"
-          ? detail
-          : "Could not send. Please try again or WhatsApp us.",
-      );
-    } finally {
-      setLoading(false);
+    if (!form.phone.trim() && !form.email.trim()) {
+      toast.error("Add a phone number or email so we can reach you.");
+      return;
     }
+
+    const url = buildWhatsAppEnquiry(form);
+    // Open WhatsApp with prefilled enquiry — pure client-side, no backend.
+    window.open(url, "_blank", "noopener,noreferrer");
+    toast.success("Opening WhatsApp with your enquiry…");
+    setForm(emptyForm);
   };
 
   return (
@@ -62,7 +46,7 @@ export default function Contact() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
           <div className="lg:col-span-5">
             <div className="font-mono-tech text-[11px] tracking-[0.24em] uppercase text-[color:var(--ink-2)] mb-6">
-              /07 — Enrol
+              /05 — Enquire
             </div>
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
@@ -71,14 +55,14 @@ export default function Contact() {
               transition={{ duration: 0.8 }}
               className="font-serif-editorial text-4xl sm:text-5xl lg:text-6xl leading-[1.02] tracking-tight"
             >
-              Book a
-              <em className="not-italic italic text-[color:var(--accent)]"> discovery call.</em>
+              Tell us where
+              <em className="not-italic italic text-[color:var(--accent)]"> you are.</em>
             </motion.h2>
 
             <p className="mt-8 text-[color:var(--ink)]/85 leading-relaxed max-w-[46ch]">
-              Tell us where you are, where you want to be, and which chapter
-              feels furthest away. A senior mentor will call you back within
-              twenty-four hours — no sales pitch, just a plan.
+              Fill this in and we&rsquo;ll pick it up on WhatsApp with your details
+              prefilled. A senior mentor will reply within twenty-four hours —
+              no sales pitch, just a plan.
             </p>
 
             <dl className="mt-12 space-y-6 font-mono-tech text-[12px] tracking-[0.2em] uppercase">
@@ -142,7 +126,7 @@ export default function Contact() {
                 />
               </FormField>
 
-              <FormField label="Email" htmlFor="email" span="md:col-span-1">
+              <FormField label="Email (optional)" htmlFor="email" span="md:col-span-1">
                 <input
                   id="email"
                   data-testid="input-email"
@@ -152,11 +136,10 @@ export default function Contact() {
                   value={form.email}
                   onChange={onChange("email")}
                   placeholder="you@work.com"
-                  required
                 />
               </FormField>
 
-              <FormField label="Phone (optional)" htmlFor="phone" span="md:col-span-1">
+              <FormField label="Phone / WhatsApp" htmlFor="phone" span="md:col-span-1">
                 <input
                   id="phone"
                   data-testid="input-phone"
@@ -169,7 +152,7 @@ export default function Contact() {
                 />
               </FormField>
 
-              <FormField label="Chapter of interest" htmlFor="course" span="md:col-span-1">
+              <FormField label="Course of interest" htmlFor="course" span="md:col-span-1">
                 <select
                   id="course"
                   data-testid="input-course"
@@ -177,7 +160,7 @@ export default function Contact() {
                   value={form.course}
                   onChange={onChange("course")}
                 >
-                  <option value="">Select a chapter</option>
+                  <option value="">Select a course</option>
                   {COURSES.map((c) => (
                     <option key={c.n} value={`${c.n} — ${c.title}`}>
                       {c.n} — {c.title}
@@ -187,7 +170,7 @@ export default function Contact() {
                 </select>
               </FormField>
 
-              <FormField label="Tell us where you are" htmlFor="message" span="md:col-span-2">
+              <FormField label="Where are you stuck?" htmlFor="message" span="md:col-span-2">
                 <textarea
                   id="message"
                   data-testid="input-message"
@@ -195,7 +178,7 @@ export default function Contact() {
                   rows={4}
                   value={form.message}
                   onChange={onChange("message")}
-                  placeholder="What have you tried, and what feels stuck?"
+                  placeholder="A short note about your background and goals."
                   required
                 />
               </FormField>
@@ -204,14 +187,13 @@ export default function Contact() {
                 <button
                   type="submit"
                   data-testid="contact-submit-button"
-                  disabled={loading}
-                  className="btn-crisp disabled:opacity-50"
+                  className="btn-crisp"
                 >
-                  {loading ? "Sending…" : "Send enquiry"}
+                  Send via WhatsApp
                   <MoveRight size={16} />
                 </button>
-                <p className="font-mono-tech text-[10px] tracking-[0.24em] uppercase text-[color:var(--ink-2)] max-w-[36ch]">
-                  A mentor will reply within 24 hrs · IST business days.
+                <p className="font-mono-tech text-[10px] tracking-[0.24em] uppercase text-[color:var(--ink-2)] max-w-[42ch]">
+                  Opens WhatsApp with your enquiry prefilled · no data stored on our servers.
                 </p>
               </div>
             </form>

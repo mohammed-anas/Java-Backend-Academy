@@ -1,7 +1,8 @@
 import { motion } from "framer-motion";
-import { COURSES, IMAGES } from "@/site/content";
+import { COURSES } from "@/site/content";
 import { scrollToId } from "@/site/useLenis";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Clock } from "lucide-react";
+import { IMAGES } from "@/site/content";
 
 const FLOATER_IMGS = [
   IMAGES.code,
@@ -25,7 +26,7 @@ export default function Manifesto() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 mb-16 lg:mb-24">
           <div className="lg:col-span-4">
             <div className="font-mono-tech text-[11px] tracking-[0.24em] uppercase text-[color:var(--ink-2)] mb-6">
-              /02 — The manifesto
+              /02 — The syllabus
             </div>
           </div>
           <div className="lg:col-span-8">
@@ -36,7 +37,7 @@ export default function Manifesto() {
               transition={{ duration: 0.8, ease: [0.2, 0.7, 0.2, 1] }}
               className="font-serif-editorial text-4xl sm:text-5xl lg:text-6xl leading-[1.02] tracking-tight max-w-[16ch]"
             >
-              Eight chapters. One curriculum.
+              Eight courses. One curriculum.
               <em className="not-italic italic text-[color:var(--accent)]"> Written by engineers</em>
               <span> who still ship.</span>
             </motion.h2>
@@ -75,9 +76,13 @@ export default function Manifesto() {
                     {c.title}
                   </div>
                   <div className="mt-3 grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8">
-                    <div className="md:col-span-3">
+                    <div className="md:col-span-3 flex flex-col gap-2">
                       <span className="font-mono-tech text-[11px] tracking-[0.24em] uppercase text-[color:var(--ink-2)]">
                         {c.kicker}
+                      </span>
+                      <span className="inline-flex items-center gap-2 font-mono-tech text-[11px] tracking-[0.2em] uppercase text-[color:var(--ink)]">
+                        <Clock size={12} className="text-[color:var(--accent)]" />
+                        {c.duration} · {c.mode}
                       </span>
                     </div>
                     <p className="md:col-span-9 text-sm sm:text-base leading-relaxed text-[color:var(--ink)]/80 max-w-[72ch]">
@@ -86,7 +91,7 @@ export default function Manifesto() {
                   </div>
                 </div>
                 <div className="hidden sm:flex items-center gap-2 font-mono-tech text-[11px] tracking-[0.24em] uppercase text-[color:var(--ink)]">
-                  Enrol
+                  Enquire
                   <ArrowUpRight size={16} />
                 </div>
 

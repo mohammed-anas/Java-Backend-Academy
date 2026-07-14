@@ -4,9 +4,9 @@ import { ArrowDownRight, MoveRight } from "lucide-react";
 import { BRAND, IMAGES } from "@/site/content";
 import { scrollToId } from "@/site/useLenis";
 
-const LINE_1 = ["Engineered", "for engineers"];
-const LINE_2 = ["who refuse"];
-const LINE_3 = ["to be", "average."];
+const LINE_1 = ["Backend", "engineers"];
+const LINE_2 = ["are made,"];
+const LINE_3 = ["not", "born."];
 
 const lineVariants = {
   hidden: { y: "110%" },
@@ -30,7 +30,6 @@ export default function Hero() {
   const imgScale = useTransform(scrollYProgress, [0, 1], [1, 1.08]);
   const textY = useTransform(scrollYProgress, [0, 1], [0, -80]);
 
-  // set body class for grain on mount
   useEffect(() => {
     document.body.classList.add("grain");
     return () => document.body.classList.remove("grain");
@@ -68,10 +67,10 @@ export default function Hero() {
         className="mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-12 relative z-10"
       >
         <div className="flex items-start justify-between font-mono-tech text-[11px] tracking-[0.24em] uppercase text-[color:var(--ink-2)]">
-          <div data-testid="hero-cohort-meta" className="max-w-[180px] leading-relaxed">
+          <div data-testid="hero-cohort-meta" className="max-w-[220px] leading-relaxed">
             <div className="text-[color:var(--ink)]">Cohort · 24</div>
             <div>Enrolments open</div>
-            <div>New batch · 12 Jan</div>
+            <div>Next batch · 12 Jan</div>
           </div>
           <div className="hidden sm:block text-right leading-relaxed">
             <div className="text-[color:var(--ink)]">Bengaluru · IN</div>
@@ -100,7 +99,7 @@ export default function Hero() {
                       animate="show"
                       className="inline-block"
                     >
-                      {word === "engineers" || word === "refuse" ? (
+                      {word === "engineers" || word === "made," ? (
                         <em className="not-italic font-serif-editorial italic text-[color:var(--accent)]">
                           {word}
                         </em>
@@ -127,12 +126,12 @@ export default function Hero() {
           <div className="lg:col-span-6 xl:col-span-5">
             <p className="text-base sm:text-lg leading-relaxed text-[color:var(--ink)]/85 max-w-[52ch]">
               <span className="font-mono-tech text-[11px] tracking-[0.24em] uppercase text-[color:var(--ink-2)] block mb-3">
-                / Since 2016 · Bengaluru
+                / {BRAND.name} · Bengaluru
               </span>
-              {BRAND.name} is a small, obsessive institute where senior engineers
-              teach Java, DSA, System Design, Spring Boot, Databases and AWS
-              through cohort-based apprenticeships — not lectures. We measure
-              ourselves by the offers you sign, not the seats we fill.
+              An institute for engineers who want to master the backend stack —
+              Java, Databases, System Design, AWS, DSA and CI/CD — and land the
+              offer. Live cohorts. Senior mentors. Written feedback on every
+              submission.
             </p>
           </div>
 
@@ -156,7 +155,6 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* Bottom rule + scroll cue */}
         <div className="mt-16 lg:mt-24 flex items-end justify-between border-t border-[color:var(--line)] pt-6">
           <div className="font-mono-tech text-[11px] tracking-[0.24em] uppercase text-[color:var(--ink-2)]">
             /01 — Scroll to enter

@@ -1,16 +1,16 @@
 const WORDS = [
-  "JAVA",
-  "DSA",
-  "SYSTEM DESIGN",
+  "CORE JAVA",
   "SPRING BOOT",
   "POSTGRES",
   "MONGO",
   "REDIS",
   "AWS",
+  "DOCKER",
   "KAFKA",
-  "OBSERVABILITY",
+  "SYSTEM DESIGN",
+  "DSA",
+  "CI/CD",
   "INTERVIEWS",
-  "APPRENTICESHIP",
 ];
 
 export default function Marquee() {

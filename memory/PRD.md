@@ -1,58 +1,56 @@
-# CODECRAFT — Product Requirements
+# Java Backend Academy — PRD
 
-## Original problem statement
-Create a very professional website (mobile + web responsive, user-friendly) for a coding training institute that teaches Java, DSA, System Design, Spring Boot, Databases, AWS Cloud, Interview Preparation & Mock Interviews. Deployable to GitHub Pages. Ambition: Awwwards Site-of-the-Day caliber.
-
-## User choices (verbatim)
-- Business: Training Institute (Java, DSA, System Design, Spring Boot, DB, AWS, Interview Prep, Mock Interviews)
-- Sections: All (Hero, Courses, About, Reviews, Contact, Google Maps, WhatsApp/Call FAB)
-- Design: "Surprise me" → delivered *Editorial Code* (Swiss Brutalist + High Fashion Tech)
-- Stack: React app
-- Details: business type only; realistic placeholders used for phone / address (no email requested)
+## Original problem statement (v2)
+Rebuild from scratch as a purely static SPA (no backend) for **Java Backend Academy** — a training institute in Bengaluru. Subjects: Java, Database, System Design, AWS Cloud, DSA, CI/CD, Interview Preparation, Job Search Guidelines, Resume Building. Must include Google Map location, phone, WhatsApp, timings, courses with durations, and a contact form. Add a `gh-pages` one-command deploy + README. Mobile + desktop responsive.
 
 ## Architecture
-- **Frontend**: React 19 + Tailwind + framer-motion + lenis (smooth scroll) + sonner (toasts) + lucide-react (icons). Playfair Display / Outfit / JetBrains Mono via Google Fonts.
-- **Backend**: FastAPI + Motor (MongoDB). Endpoints under `/api`.
-- **DB**: MongoDB collections `leads`, `status_checks`.
+- **Pure static React SPA** — no client-side routing, no backend calls.
+- Contact form → `wa.me/…?text=…` deep-link with the enquiry prefilled (no server needed).
+- Deployable to GitHub Pages with `yarn deploy`.
+- Stack: React 19 + Tailwind + framer-motion + lenis + sonner + lucide-react.
+- Fonts: Playfair Display / Outfit / JetBrains Mono.
 
-## Implemented (v1 — 14 Dec 2025)
-- Kinetic hero with masked line-by-line reveal, parallax abstract image, mono meta ticker
-- Editorial slow marquee (JAVA // DSA // SYSTEM DESIGN // …)
-- Numbered manifesto — 8 course chapters with hover translate + floating image (desktop)
-- Outcomes section with animated count-up stats (4 metrics)
-- About — editorial bento image grid + 2×2 institute stats
-- Mentors — grayscale spotlight portraits (3)
-- Reviews — animated carousel with prev/next
-- Editorial contact form with bottom-border inputs → POST /api/leads (Mongo persistence)
-- Location — Google Maps iframe + Open-in-Maps deep link
-- Footer (dark) with anchor nav + socials
-- Floating WhatsApp + Click-to-Call FAB
-- Preloader with brand mark + progress
-- Lenis momentum scrolling, framer-motion scroll reveals throughout
-- Full mobile/tablet responsive; hamburger nav panel
-- SEO metadata + Open Graph tags
+## What's implemented (v2 — 14 Dec 2025)
+- Kinetic hero: "Backend engineers are made, not born." with masked line reveal + parallax image
+- Editorial marquee (Core Java // Spring Boot // Postgres // Mongo // …)
+- 8 numbered course chapters with **duration + mode**:
+  - 01 Core Java (10w · Live · Weekend)
+  - 02 Databases (6w · Live · Weekend)
+  - 03 System Design (8w · Live · Weekend)
+  - 04 AWS Cloud (6w · Live · Weekend)
+  - 05 DSA (12w · Live + Assignments)
+  - 06 CI/CD (3w · Workshop)
+  - 07 Interview Preparation (8w · Cohort)
+  - 08 Job Search & Resume (2w · 1:1 + Workshop)
+- About section with mission + editorial image bento
+- Location section: Google Maps embed + phone + WhatsApp + hours + address + "Open in Maps" deep link
+- Contact form — WhatsApp deep-link submission (no backend, no data stored)
+- Dark footer, floating WhatsApp/Call FAB, preloader
+- Full mobile responsive; hamburger menu below 1024px
+- SEO metadata + Open Graph
 
-## Backend endpoints
-- `GET  /api/`                → service ping
-- `POST /api/leads`           → create enquiry (validated: EmailStr, min lengths)
-- `GET  /api/leads`           → list enquiries (recent first)
-- `POST /api/status`, `GET /api/status` (template — retained)
+## Deployment
+- `frontend/package.json` has `"homepage": "."` + `predeploy`/`deploy` scripts using `gh-pages`
+- Production build verified — assets use relative paths, works at any GitHub Pages URL
+- `/app/README.md` documents:
+  - Local dev (`yarn start`)
+  - One-command deploy (`yarn deploy`)
+  - Personalising `src/site/content.js` (phone/whatsapp/address/map/courses)
+  - Optional custom domain via `CNAME`
 
-## Test results (iteration_1.json)
-- Backend: 100% (6/6 pytest cases)
-- Frontend: 100% (Playwright — nav, courses, outcomes, mentors, reviews, form submit, maps, footer, FAB, mobile menu)
-- No horizontal overflow at 390 / 768 px
+## Key files
+- `frontend/src/site/content.js` — single source of truth for brand + courses (users edit only this)
+- `frontend/src/site/Contact.jsx` — form → `buildWhatsAppEnquiry()` → `window.open(wa.me/…)`
+- `frontend/src/site/Location.jsx` — map iframe + address/phone/whatsapp/hours
+- `frontend/src/App.js` — no router, single-page render
+- `README.md` — deploy guide
 
-## Backlog (P1 / P2)
-- P1: Admin view for leads (auth-gated) at `/admin/leads`
-- P1: Email/WhatsApp notification on new lead (Resend / Twilio)
-- P1: `gh-pages` build script + repo instructions in README
-- P2: Course detail pages (`/course/:slug`) with syllabus + sample projects
-- P2: Cohort dates + seat counter widget on hero
-- P2: Newsletter opt-in in footer
-- P2: Blog / editorial articles section
-- P2: Fix transient "-0%" flash in count-up and stray `<span>` in `<option>` dev warning
+## Backend
+Legacy `/api/leads` endpoint exists in `backend/server.py` from v1 but is **no longer used** by the frontend. It can be ignored for the static Pages deploy.
 
-## Next tasks
-- Ship gh-pages deploy config + README
-- Add admin dashboard for leads with basic auth
+## Next tasks / backlog
+- P1: Replace placeholder phone/address in `content.js` with the actual JBA studio details
+- P1: Replace the Google Maps embed URL with the real studio pin (Maps → Share → Embed → copy `src`)
+- P2: Add `CNAME` when a custom domain is purchased
+- P2: Optional Formspree/Web3Forms integration if email submissions become desirable
+- P2: Add a syllabus PDF download per course

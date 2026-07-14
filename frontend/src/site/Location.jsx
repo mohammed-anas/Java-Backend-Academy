@@ -1,18 +1,18 @@
 import { BRAND } from "@/site/content";
-import { MapPin } from "lucide-react";
+import { MapPin, Phone, MessageCircle, Clock } from "lucide-react";
 
 export default function Location() {
   return (
     <section
       id="location"
       data-testid="location-section"
-      className="bg-[color:var(--bg)] border-t border-[color:var(--line)]"
+      className="bg-[color:var(--surface)] border-y border-[color:var(--line)]"
     >
-      <div className="mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-12 py-16 sm:py-20 lg:py-28">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
+      <div className="mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-12 py-24 sm:py-28 lg:py-40">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-14 lg:mb-20">
           <div className="lg:col-span-4">
             <div className="font-mono-tech text-[11px] tracking-[0.24em] uppercase text-[color:var(--ink-2)]">
-              /08 — Find us
+              /04 — Find us
             </div>
           </div>
           <div className="lg:col-span-8">
@@ -22,56 +22,96 @@ export default function Location() {
             </h2>
           </div>
         </div>
-      </div>
 
-      <div className="relative w-full">
-        <div className="mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-12 pb-24 lg:pb-32">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            <div className="lg:col-span-4">
-              <div className="border-t border-[color:var(--line)] pt-6 space-y-6">
-                <div className="flex items-start gap-3">
-                  <MapPin size={16} className="mt-1 text-[color:var(--accent)]" />
-                  <div className="font-mono-tech text-[12px] tracking-[0.2em] uppercase leading-relaxed">
-                    <div className="text-[color:var(--ink-2)]">Studio</div>
-                    <div className="text-[color:var(--ink)] normal-case tracking-normal font-sans text-base leading-snug mt-1 max-w-[30ch]">
-                      {BRAND.address}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="border-t border-[color:var(--line)] pt-6 font-mono-tech text-[12px] tracking-[0.2em] uppercase">
-                  <div className="text-[color:var(--ink-2)]">Hours</div>
-                  <div className="text-[color:var(--ink)] mt-1">{BRAND.hours}</div>
-                </div>
-
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <div className="lg:col-span-4">
+            <ul className="border-t border-[color:var(--line)] divide-y divide-[color:var(--line)]">
+              <InfoRow
+                icon={<MapPin size={16} className="text-[color:var(--accent)]" />}
+                label="Studio"
+                testid="loc-address"
+              >
+                {BRAND.address}
+              </InfoRow>
+              <InfoRow
+                icon={<Clock size={16} className="text-[color:var(--accent)]" />}
+                label="Timings"
+                testid="loc-hours"
+              >
+                {BRAND.hours}
+              </InfoRow>
+              <InfoRow
+                icon={<Phone size={16} className="text-[color:var(--accent)]" />}
+                label="Call"
+                testid="loc-phone"
+              >
                 <a
-                  data-testid="open-in-maps"
-                  href="https://www.google.com/maps/search/?api=1&query=Church+Street+Bengaluru"
+                  data-testid="loc-phone-link"
+                  href={BRAND.phoneHref}
+                  className="link-under"
+                >
+                  {BRAND.phone}
+                </a>
+              </InfoRow>
+              <InfoRow
+                icon={<MessageCircle size={16} className="text-[color:var(--accent)]" />}
+                label="WhatsApp"
+                testid="loc-whatsapp"
+              >
+                <a
+                  data-testid="loc-whatsapp-link"
+                  href={BRAND.whatsappHref}
                   target="_blank"
                   rel="noreferrer"
-                  className="btn-ghost mt-4"
+                  className="link-under"
                 >
-                  Open in Google Maps
+                  {BRAND.whatsapp}
                 </a>
-              </div>
-            </div>
+              </InfoRow>
+            </ul>
 
-            <div className="lg:col-span-8">
-              <div className="relative w-full aspect-[16/10] lg:aspect-[16/9] overflow-hidden border border-[color:var(--line)]">
-                <iframe
-                  title="CODECRAFT — Location"
-                  src={BRAND.mapEmbed}
-                  loading="lazy"
-                  className="absolute inset-0 w-full h-full"
-                  style={{ border: 0, filter: "grayscale(85%) contrast(1.05)" }}
-                  referrerPolicy="no-referrer-when-downgrade"
-                  allowFullScreen
-                />
-              </div>
+            <a
+              data-testid="open-in-maps"
+              href={BRAND.mapLink}
+              target="_blank"
+              rel="noreferrer"
+              className="btn-ghost mt-8"
+            >
+              Open in Google Maps
+            </a>
+          </div>
+
+          <div className="lg:col-span-8">
+            <div className="relative w-full aspect-[16/10] lg:aspect-[16/9] overflow-hidden border border-[color:var(--line)]">
+              <iframe
+                title="Java Backend Academy — Location"
+                src={BRAND.mapEmbed}
+                loading="lazy"
+                className="absolute inset-0 w-full h-full"
+                style={{ border: 0, filter: "grayscale(85%) contrast(1.05)" }}
+                referrerPolicy="no-referrer-when-downgrade"
+                allowFullScreen
+              />
             </div>
           </div>
         </div>
       </div>
     </section>
+  );
+}
+
+function InfoRow({ icon, label, children, testid }) {
+  return (
+    <li className="py-5 flex items-start gap-4" data-testid={testid}>
+      <div className="pt-1 shrink-0">{icon}</div>
+      <div className="flex-1 min-w-0">
+        <div className="font-mono-tech text-[10px] tracking-[0.28em] uppercase text-[color:var(--ink-2)] mb-1">
+          {label}
+        </div>
+        <div className="text-[15px] text-[color:var(--ink)] leading-snug break-words">
+          {children}
+        </div>
+      </div>
+    </li>
   );
 }

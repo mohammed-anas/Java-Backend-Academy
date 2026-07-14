@@ -12,7 +12,7 @@ export default function About() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
           <div className="lg:col-span-5">
             <div className="font-mono-tech text-[11px] tracking-[0.24em] uppercase text-[color:var(--ink-2)] mb-6">
-              /04 — About the institute
+              /03 — About the institute
             </div>
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
@@ -29,22 +29,21 @@ export default function About() {
 
             <div className="mt-10 space-y-6 text-[color:var(--ink)]/85 leading-relaxed max-w-[54ch]">
               <p>
-                We opened in 2016 with a single conviction: engineers grow by
-                writing, breaking and defending real systems — not by watching
-                someone else do it. Every cohort is small (28 seats), every
-                project is graded by a senior mentor, and every mock interview
-                comes back with written feedback.
+                Java Backend Academy is a small, focused institute for engineers
+                who want to master the backend stack. Every course is taught
+                live by senior engineers, capped at a small cohort, and every
+                submission comes back with written feedback within 24 hours.
               </p>
               <p>
-                Half our faculty still ship production code at their day jobs.
-                The other half were interviewers at the companies you&rsquo;re
-                targeting. Either way, they&rsquo;ve been where you&rsquo;re trying to go.
+                We do not sell recorded videos. We do not promise magic. What we
+                promise — and measure — is that you will finish being able to
+                design, build, deploy and defend real backend systems.
               </p>
             </div>
 
             <dl className="mt-12 grid grid-cols-2 gap-x-6 gap-y-8 max-w-md">
               {[
-                ["09 yrs", "Since founding"],
+                ["8", "Courses on offer"],
                 ["28", "Seats / cohort"],
                 ["24 hr", "Feedback SLA"],
                 ["1:6", "Mentor ratio"],

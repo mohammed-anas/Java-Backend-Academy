@@ -6,10 +6,9 @@ import { scrollToId } from "@/site/useLenis";
 
 const LINKS = [
   { id: "courses", label: "Courses" },
-  { id: "outcomes", label: "Outcomes" },
-  { id: "mentors", label: "Mentors" },
-  { id: "reviews", label: "Reviews" },
-  { id: "contact", label: "Enrol" },
+  { id: "about", label: "About" },
+  { id: "location", label: "Location" },
+  { id: "contact", label: "Enquire" },
 ];
 
 export default function Nav() {
@@ -36,18 +35,20 @@ export default function Nav() {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, ease: [0.2, 0.7, 0.2, 1] }}
         className={`fixed top-0 inset-x-0 z-50 transition-colors duration-300 ${
-          scrolled ? "bg-[color:var(--bg)]/85 backdrop-blur-md border-b border-[color:var(--line)]" : "bg-transparent"
+          scrolled
+            ? "bg-[color:var(--bg)]/85 backdrop-blur-md border-b border-[color:var(--line)]"
+            : "bg-transparent"
         }`}
       >
-        <div className="mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-12 py-4 lg:py-5 flex items-center justify-between">
+        <div className="mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-12 py-4 lg:py-5 flex items-center justify-between gap-4">
           <button
             data-testid="brand-mark"
             onClick={() => handleGo("top")}
-            className="font-mono-tech text-[13px] tracking-[0.28em] uppercase text-[color:var(--ink)]"
+            className="font-mono-tech text-[12px] sm:text-[13px] tracking-[0.24em] uppercase text-[color:var(--ink)] text-left leading-snug"
           >
             <span className="mr-2 inline-block w-2 h-2 bg-[color:var(--accent)] align-middle" />
             {BRAND.name}
-            <span className="text-[color:var(--ink-2)]"> // institute</span>
+            <span className="text-[color:var(--ink-2)] hidden sm:inline"> // {BRAND.short}</span>
           </button>
 
           <nav className="hidden lg:flex items-center gap-8">
@@ -61,11 +62,7 @@ export default function Nav() {
                 {l.label}
               </button>
             ))}
-            <a
-              data-testid="nav-call"
-              href={BRAND.phoneHref}
-              className="btn-crisp"
-            >
+            <a data-testid="nav-call" href={BRAND.phoneHref} className="btn-crisp">
               Talk to us
             </a>
           </nav>
@@ -93,7 +90,7 @@ export default function Nav() {
             data-testid="mobile-nav-panel"
           >
             <div className="px-6 py-8 flex flex-col gap-6">
-              {LINKS.map((l) => (
+              {LINKS.map((l, i) => (
                 <button
                   key={l.id}
                   data-testid={`mnav-${l.id}`}
@@ -102,15 +99,11 @@ export default function Nav() {
                 >
                   {l.label}
                   <span className="ml-3 font-mono-tech text-[10px] align-middle text-[color:var(--ink-2)]">
-                    /0{LINKS.indexOf(l) + 1}
+                    /0{i + 1}
                   </span>
                 </button>
               ))}
-              <a
-                data-testid="mnav-call"
-                href={BRAND.phoneHref}
-                className="btn-crisp w-max"
-              >
+              <a data-testid="mnav-call" href={BRAND.phoneHref} className="btn-crisp w-max">
                 Talk to us
               </a>
             </div>
