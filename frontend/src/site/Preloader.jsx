@@ -37,7 +37,6 @@ export default function Preloader() {
               <span className="inline-block w-2 h-2 bg-[color:var(--accent)] mr-2 align-middle" />
               {BRAND.name}
             </div>
-            <div>Aligarh · IN</div>
           </div>
 
           <div>
@@ -68,7 +67,6 @@ export default function Preloader() {
 
           <div className="flex justify-between items-end font-mono-tech text-[11px] tracking-[0.28em] uppercase">
             <div>{String(pct).padStart(3, "0")} /100</div>
-            <div className="text-white/60">Aligarh · IN</div>
           </div>
         </motion.div>
       )}

@@ -108,9 +108,6 @@ export default function Footer() {
           <div>
             © {year} {BRAND.name} · Best Java Training Institute in Aligarh, UP
           </div>
-          <div className="flex gap-6">
-            <span>10 Students / Batch</span>
-          </div>
         </div>
 
         <div className="mt-6 text-[10px] text-white/30 leading-relaxed max-w-3xl" aria-label="SEO keywords">

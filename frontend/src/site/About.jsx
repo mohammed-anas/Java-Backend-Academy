@@ -29,7 +29,7 @@ export default function About() {
 
             <div className="mt-10 space-y-6 text-[color:var(--ink)]/85 leading-relaxed max-w-[54ch]">
               <p>
-                Java Backend Academy is a small, focused institute for engineers
+                Java Hub Academy is a small, focused institute for engineers
                 who want to master the backend stack. Every course is taught
                 live by senior engineers, <strong>strictly capped at 10 students per batch</strong>, and every
                 submission comes back with written feedback within 24 hours.
@@ -71,7 +71,7 @@ export default function About() {
                   src={`${IMAGES.whiteboard}&w=600&q=75`}
                   srcSet={`${IMAGES.whiteboard}&w=400&q=75 400w, ${IMAGES.whiteboard}&w=600&q=80 600w, ${IMAGES.whiteboard}&w=800&q=85 800w`}
                   sizes="(max-width: 768px) 100vw, 50vw"
-                  alt="Whiteboard architecture session at Java Backend Academy Aligarh"
+                  alt="Whiteboard architecture session at Java Hub Academy Aligarh"
                   className="w-full h-full object-cover"
                   style={{ filter: "grayscale(100%) contrast(1.05)" }}
                   loading="lazy"
@@ -115,7 +115,7 @@ export default function About() {
                   src={`${IMAGES.learners}&w=400&q=75`}
                   srcSet={`${IMAGES.learners}&w=300&q=75 300w, ${IMAGES.learners}&w=400&q=80 400w`}
                   sizes="(max-width: 768px) 50vw, 30vw"
-                  alt="Students learning backend development at Java Backend Academy"
+                  alt="Students learning backend development at Java Hub Academy"
                   className="w-full h-full object-cover"
                   style={{ filter: "grayscale(100%) contrast(1.05)" }}
                   loading="lazy"
@@ -134,7 +134,7 @@ export default function About() {
                   src={`${IMAGES.office}&w=500&q=75`}
                   srcSet={`${IMAGES.office}&w=400&q=75 400w, ${IMAGES.office}&w=500&q=80 500w`}
                   sizes="(max-width: 768px) 50vw, 35vw"
-                  alt="Java Backend Academy studio in Aligarh, UP"
+                  alt="Java Hub Academy studio in Aligarh, UP"
                   className="w-full h-full object-cover"
                   style={{ filter: "grayscale(100%) contrast(1.05)" }}
                   loading="lazy"

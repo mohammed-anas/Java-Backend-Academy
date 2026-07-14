@@ -84,7 +84,7 @@ export default function Location() {
           <div className="lg:col-span-8">
             <div className="relative w-full aspect-[16/10] lg:aspect-[16/9] overflow-hidden border border-[color:var(--line)]">
               <iframe
-                title="Java Backend Academy — Location"
+                title="Java Hub Academy — Location"
                 src={BRAND.mapEmbed}
                 loading="lazy"
                 className="absolute inset-0 w-full h-full"

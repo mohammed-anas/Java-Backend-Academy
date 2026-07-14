@@ -1,6 +1,6 @@
 export const BRAND = {
-  name: "Java Backend Academy",
-  short: "JBA",
+  name: "Java Hub Academy",
+  short: "JHA",
   tagline: "The workshop for serious backend engineers.",
   phone: "+91 70606 49647",
   phoneHref: "tel:+917060649647",

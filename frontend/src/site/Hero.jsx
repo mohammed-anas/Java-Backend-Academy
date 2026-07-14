@@ -53,7 +53,7 @@ export default function Hero() {
             src={`${IMAGES.hero}&w=720&q=80`}
             srcSet={`${IMAGES.hero}&w=480&q=75 480w, ${IMAGES.hero}&w=720&q=80 720w, ${IMAGES.hero}&w=1080&q=85 1080w`}
             sizes="(max-width: 768px) 0px, 62vw"
-            alt="Java Backend Academy - Backend engineering training institute in Aligarh"
+            alt="Java Hub Academy - Backend engineering training institute in Aligarh"
             className="w-full h-full object-cover"
             style={{ filter: "grayscale(100%) contrast(1.05)" }}
             fetchpriority="high"
@@ -63,23 +63,6 @@ export default function Hero() {
         </div>
       </motion.div>
 
-      {/* Corner meta */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.2, duration: 0.6 }}
-        className="mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-12 relative z-10"
-      >
-        <div className="flex items-start justify-between font-mono-tech text-[11px] tracking-[0.24em] uppercase text-[color:var(--ink-2)]">
-          <div data-testid="hero-cohort-meta" className="max-w-[220px] leading-relaxed">
-            <div className="text-[color:var(--ink)]">10 Students / Batch</div>
-            <div>Senior Mentors</div>
-          </div>
-          <div className="hidden sm:block text-right leading-relaxed">
-            <div className="text-[color:var(--ink)]">Aligarh · IN</div>
-          </div>
-        </div>
-      </motion.div>
 
       {/* Big kinetic type */}
       <motion.div

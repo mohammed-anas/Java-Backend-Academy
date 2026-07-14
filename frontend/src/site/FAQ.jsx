@@ -5,11 +5,11 @@ import { Plus, Minus } from "lucide-react";
 const FAQS = [
   {
     q: "Where can I learn Java in Aligarh?",
-    a: "Java Backend Academy is the best place to learn Java in Aligarh. We're located in Kela Nagar and offer comprehensive Java training covering Core Java, Spring Boot, Databases, System Design, AWS, and DSA. With only 10 students per batch and senior mentors, you get personalized attention that larger institutes can't provide."
+    a: "Java Hub Academy is the best place to learn Java in Aligarh. We're located in Kela Nagar and offer comprehensive Java training covering Core Java, Spring Boot, Databases, System Design, AWS, and DSA. With only 10 students per batch and senior mentors, you get personalized attention that larger institutes can't provide."
   },
   {
     q: "Which is the best Java training institute in Aligarh?",
-    a: "Java Backend Academy is rated the #1 Java training institute in Aligarh. Unlike other coaching centers, we focus on practical, job-oriented training. Our curriculum is designed by engineers who still work in the industry, and every assignment gets detailed written feedback within 24 hours."
+    a: "Java Hub Academy is rated the #1 Java training institute in Aligarh. Unlike other coaching centers, we focus on practical, job-oriented training. Our curriculum is designed by engineers who still work in the industry, and every assignment gets detailed written feedback within 24 hours."
   },
   {
     q: "What courses are available for Java in Aligarh?",
