@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/Java-Backend-Academy/static/css/main.230ec26a.css",
+    "main.js": "/Java-Backend-Academy/static/js/main.12e37556.js",
+    "index.html": "/Java-Backend-Academy/index.html",
+    "main.230ec26a.css.map": "/Java-Backend-Academy/static/css/main.230ec26a.css.map",
+    "main.12e37556.js.map": "/Java-Backend-Academy/static/js/main.12e37556.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.230ec26a.css",
+    "static/js/main.12e37556.js"
+  ]
+}
