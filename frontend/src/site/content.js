@@ -2,19 +2,19 @@ export const BRAND = {
   name: "Java Backend Academy",
   short: "JBA",
   tagline: "The workshop for serious backend engineers.",
-  phone: "+91 98765 43210",
-  phoneHref: "tel:+919876543210",
-  whatsappNumber: "919876543210", // used to build wa.me links
-  whatsapp: "+91 98765 43210",
+  phone: "+91 70606 49647",
+  phoneHref: "tel:+917060649647",
+  whatsappNumber: "917060649647", // used to build wa.me links
+  whatsapp: "+91 70606 49647",
   whatsappHref:
-    "https://wa.me/919876543210?text=Hi%20Java%20Backend%20Academy%2C%20I'd%20like%20to%20know%20about%20the%20next%20cohort.",
+    "https://wa.me/917060649647?text=Hi%20Java%20Backend%20Academy%2C%20I'd%20like%20to%20know%20about%20the%20next%20cohort.",
   address:
-    "3rd Floor, Ashwath Tower, 27 Church Street, Bengaluru, Karnataka 560001",
-  hours: "Mon–Sat · 09:00 – 21:00 IST",
+    "Near Masjid Aman, Kela Nagar, Aligarh, Uttar Pradesh 202001",
+  hours: "Mon–Sat · 19:00 – 20:00 IST",
   mapEmbed:
-    "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15552.63822!2d77.60469!3d12.97460!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2sChurch%20Street%2C%20Bengaluru!5e0!3m2!1sen!2sin!4v1700000000000",
+    "google.com/maps?gs_lcrp=EgZjaHJvbWUyBggAEEUYOTIJCAEQIRgKGKABMgkIAhAhGAoYoAEyCQgDECEYChigATIHCAQQIRiPAjIHCAUQIRiPAtIBCDcxMjlqMGo3qAIAsAIA&um=1&ie=UTF-8&fb=1&gl=in&sa=X&geocode=Ka-RNvP7pXQ5MWNm1VdMO6Xm&daddr=Masjid+Aaman,+Kela+Nagar,+Aligarh,+Uttar+Pradesh+202001",
   mapLink:
-    "https://www.google.com/maps/search/?api=1&query=Church+Street+Bengaluru",
+    "https://www.google.com/search?q=java+backend+Academy+aligarh&sca_esv=452997896b250f9b&sxsrf=APpeQnuoZOhrpXHyyU8cg-6T_8EiMgRZjA%3A1784043533074&ei=DVhWauuOBPifseMP5MzKiQk&biw=1464&bih=862&ved=0ahUKEwirybWIwNKVAxX4T2wGHWSmMpEQ4dUDCBI&uact=5&oq=java+backend+Academy+aligarh&gs_lp=Egxnd3Mtd2l6LXNlcnAiHGphdmEgYmFja2VuZCBBY2FkZW15IGFsaWdhcmgyCBAAGO8FGLADMggQABjvBRiwAzIIEAAY7wUYsAMyCBAAGO8FGLADMggQABjvBRiwA0j1AVAAWABwAHgAkAEAmAF3oAF3qgEDMC4xuAEDyAEAmAIBoAJ8mAMA4gMFEgExIECIBgGQBgWSBwMwLjGgB4MDsgcDMC4xuAd8wgcDMi0xyAcDgAgB&sclient=gws-wiz-serp",
   socials: [
     { label: "LinkedIn", href: "https://www.linkedin.com/" },
     { label: "YouTube", href: "https://www.youtube.com/" },
