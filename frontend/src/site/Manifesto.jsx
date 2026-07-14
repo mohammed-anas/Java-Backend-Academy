@@ -1,8 +1,7 @@
 import { motion } from "framer-motion";
-import { COURSES } from "@/site/content";
-import { scrollToId } from "@/site/useLenis";
+import { COURSES, IMAGES } from "@/site/content";
+import { scrollToContactWithCourse } from "@/site/useLenis";
 import { ArrowUpRight, Clock } from "lucide-react";
-import { IMAGES } from "@/site/content";
 
 const FLOATER_IMGS = [
   IMAGES.code,
@@ -61,11 +60,11 @@ export default function Manifesto() {
               <div
                 className="chapter-row group"
                 data-testid={`course-row-${c.n}`}
-                onClick={() => scrollToId("contact")}
+                onClick={() => scrollToContactWithCourse(`${c.n} — ${c.title}`)}
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") scrollToId("contact");
+                  if (e.key === "Enter" || e.key === " ") scrollToContactWithCourse(`${c.n} — ${c.title}`);
                 }}
               >
                 <div className="font-mono-tech text-[13px] sm:text-sm tracking-[0.24em] text-[color:var(--ink-2)]">

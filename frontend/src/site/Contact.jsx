@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { MoveRight } from "lucide-react";
@@ -14,6 +14,18 @@ const emptyForm = {
 
 export default function Contact() {
   const [form, setForm] = useState(emptyForm);
+
+  useEffect(() => {
+    const handleCourseSelect = (e) => {
+      const { course } = e.detail;
+      if (course) {
+        setForm((f) => ({ ...f, course }));
+      }
+    };
+
+    window.addEventListener("selectCourse", handleCourseSelect);
+    return () => window.removeEventListener("selectCourse", handleCourseSelect);
+  }, []);
 
   const onChange = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
 

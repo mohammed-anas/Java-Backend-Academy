@@ -43,3 +43,8 @@ export function scrollToId(id) {
     el.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 }
+
+export function scrollToContactWithCourse(course) {
+  window.dispatchEvent(new CustomEvent("selectCourse", { detail: { course } }));
+  scrollToId("contact");
+}

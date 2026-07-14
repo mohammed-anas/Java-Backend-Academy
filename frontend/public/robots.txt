@@ -1,11 +1,11 @@
 # Java Backend Academy - Aligarh
-# https://mohammed-anas.github.io/Java-Backend-Academy/
+# https://javahub.in/
 
 User-agent: *
 Allow: /
 
 # Sitemaps
-Sitemap: https://mohammed-anas.github.io/Java-Backend-Academy/sitemap.xml
+Sitemap: https://javahub.in/sitemap.xml
 
 # Crawl-delay for politeness
 Crawl-delay: 1
@@ -24,4 +24,4 @@ User-agent: Slurp
 Allow: /
 
 # Host
-Host: https://mohammed-anas.github.io/Java-Backend-Academy/
+Host: https://javahub.in/
