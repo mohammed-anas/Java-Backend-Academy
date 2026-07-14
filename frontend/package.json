@@ -2,7 +2,7 @@
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
-  "homepage": ".",
+  "homepage": "https://mohammed-anas.github.io/Java-Backend-Academy",
   "dependencies": {
     "@craco/craco": "7.1.0",
     "@hookform/resolvers": "5.0.1",

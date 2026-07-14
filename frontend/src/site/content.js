@@ -88,6 +88,14 @@ export const COURSES = [
     mode: "1:1 + Workshop",
     body: "Resume rewrites, referral playbooks, LinkedIn tuning, salary negotiation. The parts of the job search most institutes never teach.",
   },
+  {
+    n: "09",
+    title: "REST API Design",
+    kicker: "Industry Standard API Development",
+    duration: "2 Weeks",
+    mode: "Project-Based Learning",
+    body: "Design scalable, secure, and maintainable REST APIs using Spring Boot. Work with CRUD operations, JWT authentication, Swagger/OpenAPI, pagination, validation, exception handling, and database integration."
+  }
 ];
 
 export const IMAGES = {
