@@ -12,9 +12,9 @@ export const BRAND = {
     "Near Masjid Aman, Kela Nagar, Aligarh, Uttar Pradesh 202001",
   hours: "Mon–Sat · 19:00 – 20:00 IST",
   mapEmbed:
-    "google.com/maps?gs_lcrp=EgZjaHJvbWUyBggAEEUYOTIJCAEQIRgKGKABMgkIAhAhGAoYoAEyCQgDECEYChigATIHCAQQIRiPAjIHCAUQIRiPAtIBCDcxMjlqMGo3qAIAsAIA&um=1&ie=UTF-8&fb=1&gl=in&sa=X&geocode=Ka-RNvP7pXQ5MWNm1VdMO6Xm&daddr=Masjid+Aaman,+Kela+Nagar,+Aligarh,+Uttar+Pradesh+202001",
+    "https://www.google.com/maps?q=Java+Backend+Academy,+Masjid+Aaman,+Kela+Nagar,+Aligarh,+Uttar+Pradesh+202001&output=embed",
   mapLink:
-    "https://www.google.com/search?q=java+backend+Academy+aligarh&sca_esv=452997896b250f9b&sxsrf=APpeQnuoZOhrpXHyyU8cg-6T_8EiMgRZjA%3A1784043533074&ei=DVhWauuOBPifseMP5MzKiQk&biw=1464&bih=862&ved=0ahUKEwirybWIwNKVAxX4T2wGHWSmMpEQ4dUDCBI&uact=5&oq=java+backend+Academy+aligarh&gs_lp=Egxnd3Mtd2l6LXNlcnAiHGphdmEgYmFja2VuZCBBY2FkZW15IGFsaWdhcmgyCBAAGO8FGLADMggQABjvBRiwAzIIEAAY7wUYsAMyCBAAGO8FGLADMggQABjvBRiwA0j1AVAAWABwAHgAkAEAmAF3oAF3qgEDMC4xuAEDyAEAmAIBoAJ8mAMA4gMFEgExIECIBgGQBgWSBwMwLjGgB4MDsgcDMC4xuAd8wgcDMi0xyAcDgAgB&sclient=gws-wiz-serp",
+    "https://www.google.com/maps/dir/?api=1&destination=Masjid+Aaman,+Kela+Nagar,+Aligarh,+Uttar+Pradesh+202001",
   socials: [
     { label: "LinkedIn", href: "https://www.linkedin.com/" },
     { label: "YouTube", href: "https://www.youtube.com/" },

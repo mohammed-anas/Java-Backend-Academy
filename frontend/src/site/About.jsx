@@ -68,10 +68,14 @@ export default function About() {
                 className="col-span-4 row-span-4 relative overflow-hidden bg-black"
               >
                 <img
-                  src={IMAGES.whiteboard}
-                  alt="Whiteboard architecture session"
+                  src={`${IMAGES.whiteboard}&w=600&q=75`}
+                  srcSet={`${IMAGES.whiteboard}&w=400&q=75 400w, ${IMAGES.whiteboard}&w=600&q=80 600w, ${IMAGES.whiteboard}&w=800&q=85 800w`}
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  alt="Whiteboard architecture session at Java Backend Academy Aligarh"
                   className="w-full h-full object-cover"
                   style={{ filter: "grayscale(100%) contrast(1.05)" }}
+                  loading="lazy"
+                  decoding="async"
                 />
                 <div className="absolute top-4 left-4 font-mono-tech text-[10px] tracking-[0.24em] uppercase text-white bg-black/50 px-2 py-1">
                   Fig. 01 · Design clinic
@@ -86,10 +90,14 @@ export default function About() {
                 className="col-span-2 row-span-3 col-start-5 relative overflow-hidden bg-black"
               >
                 <img
-                  src={IMAGES.code}
-                  alt="Code review"
+                  src={`${IMAGES.code}&w=400&q=75`}
+                  srcSet={`${IMAGES.code}&w=300&q=75 300w, ${IMAGES.code}&w=400&q=80 400w`}
+                  sizes="(max-width: 768px) 50vw, 25vw"
+                  alt="Code review session - Java training in Aligarh"
                   className="w-full h-full object-cover"
                   style={{ filter: "grayscale(100%) contrast(1.05)" }}
+                  loading="lazy"
+                  decoding="async"
                 />
                 <div className="absolute top-4 left-4 font-mono-tech text-[10px] tracking-[0.24em] uppercase text-white bg-black/50 px-2 py-1">
                   Fig. 02
@@ -104,10 +112,14 @@ export default function About() {
                 className="col-span-3 row-span-2 col-start-1 row-start-5 relative overflow-hidden bg-black"
               >
                 <img
-                  src={IMAGES.learners}
-                  alt="Cohort at work"
+                  src={`${IMAGES.learners}&w=400&q=75`}
+                  srcSet={`${IMAGES.learners}&w=300&q=75 300w, ${IMAGES.learners}&w=400&q=80 400w`}
+                  sizes="(max-width: 768px) 50vw, 30vw"
+                  alt="Students learning backend development at Java Backend Academy"
                   className="w-full h-full object-cover"
                   style={{ filter: "grayscale(100%) contrast(1.05)" }}
+                  loading="lazy"
+                  decoding="async"
                 />
               </motion.div>
 
@@ -119,13 +131,17 @@ export default function About() {
                 className="col-span-3 row-span-3 col-start-4 row-start-4 relative overflow-hidden bg-black"
               >
                 <img
-                  src={IMAGES.office}
-                  alt="The studio"
+                  src={`${IMAGES.office}&w=500&q=75`}
+                  srcSet={`${IMAGES.office}&w=400&q=75 400w, ${IMAGES.office}&w=500&q=80 500w`}
+                  sizes="(max-width: 768px) 50vw, 35vw"
+                  alt="Java Backend Academy studio in Aligarh, UP"
                   className="w-full h-full object-cover"
                   style={{ filter: "grayscale(100%) contrast(1.05)" }}
+                  loading="lazy"
+                  decoding="async"
                 />
                 <div className="absolute bottom-4 left-4 font-mono-tech text-[10px] tracking-[0.24em] uppercase text-white bg-black/50 px-2 py-1">
-                  Fig. 03 · Studio, Bengaluru
+                  Fig. 03 · Studio, Aligarh
                 </div>
               </motion.div>
             </div>

@@ -106,12 +106,18 @@ export default function Footer() {
 
         <div className="pt-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 font-mono-tech text-[11px] tracking-[0.24em] uppercase text-white/50">
           <div>
-            © {year} {BRAND.name} · Made in Bengaluru
+            © {year} {BRAND.name} · Best Java Training Institute in Aligarh, UP
           </div>
           <div className="flex gap-6">
             <span>v.24.01</span>
-            <span>Cohort · 24</span>
+            <span>Cohort · 10</span>
           </div>
+        </div>
+
+        <div className="mt-6 text-[10px] text-white/30 leading-relaxed max-w-3xl" aria-label="SEO keywords">
+          Java training Aligarh · Backend development course · System Design classes · AWS certification Aligarh · 
+          DSA coaching · Spring Boot training · Software engineering institute Aligarh · Programming classes UP · 
+          IT training center Aligarh · Coding bootcamp · Interview preparation · Job placement support
         </div>
       </div>
     </footer>

@@ -50,10 +50,14 @@ export default function Hero() {
       >
         <div className="relative w-full h-full overflow-hidden">
           <img
-            src={IMAGES.hero}
-            alt=""
+            src={`${IMAGES.hero}&w=720&q=80`}
+            srcSet={`${IMAGES.hero}&w=480&q=75 480w, ${IMAGES.hero}&w=720&q=80 720w, ${IMAGES.hero}&w=1080&q=85 1080w`}
+            sizes="(max-width: 768px) 0px, 62vw"
+            alt="Java Backend Academy - Backend engineering training institute in Aligarh"
             className="w-full h-full object-cover"
             style={{ filter: "grayscale(100%) contrast(1.05)" }}
+            fetchpriority="high"
+            decoding="async"
           />
           <div className="absolute inset-0 bg-[color:var(--bg)]/25 mix-blend-lighten" />
         </div>
@@ -68,14 +72,12 @@ export default function Hero() {
       >
         <div className="flex items-start justify-between font-mono-tech text-[11px] tracking-[0.24em] uppercase text-[color:var(--ink-2)]">
           <div data-testid="hero-cohort-meta" className="max-w-[220px] leading-relaxed">
-            <div className="text-[color:var(--ink)]">Cohort · 24</div>
+            <div className="text-[color:var(--ink)]">Cohort · 10</div>
             <div>Enrolments open</div>
             <div>Next batch · 12 Jan</div>
           </div>
           <div className="hidden sm:block text-right leading-relaxed">
-            <div className="text-[color:var(--ink)]">Bengaluru · IN</div>
-            <div>12.9720° N</div>
-            <div>77.5936° E</div>
+            <div className="text-[color:var(--ink)]">Aligarh · IN</div>
           </div>
         </div>
       </motion.div>
@@ -126,7 +128,7 @@ export default function Hero() {
           <div className="lg:col-span-6 xl:col-span-5">
             <p className="text-base sm:text-lg leading-relaxed text-[color:var(--ink)]/85 max-w-[52ch]">
               <span className="font-mono-tech text-[11px] tracking-[0.24em] uppercase text-[color:var(--ink-2)] block mb-3">
-                / {BRAND.name} · Bengaluru
+                / {BRAND.name} · Aligarh
               </span>
               An institute for engineers who want to master the backend stack —
               Java, Databases, System Design, AWS, DSA and CI/CD — and land the
