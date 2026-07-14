@@ -11,13 +11,15 @@ A single-page, fully static React SPA for **Java Backend Academy**, deployable t
 
 ## 1. Run locally
 
+> ⚠️ **You must run `yarn install` inside the `frontend/` folder before anything else.** The build tool (`craco`) is a project dependency and will not be found if you skip this step (that's the `craco: command not found` error).
+
 ```bash
-cd frontend
-yarn install
-yarn start
+cd frontend      # ← IMPORTANT: everything runs from here
+yarn install     # installs React, craco, gh-pages, etc.
+yarn start       # dev server on http://localhost:3000
 ```
 
-The app runs at `http://localhost:3000`.
+If you don't have Yarn, install it once: `npm install -g yarn`.
 
 ## 2. One-command deploy to GitHub Pages
 
@@ -45,13 +47,20 @@ git push -u origin main
 
 ### Deploy
 
-From the `frontend/` folder:
+From the `frontend/` folder (make sure `yarn install` has been run at least once here):
 
 ```bash
+cd frontend
+yarn install    # only needed the first time, or after pulling new deps
 yarn deploy
 ```
 
 That's it. This command runs `yarn build` and then publishes the `build/` folder to the `gh-pages` branch of your repo.
+
+> **Troubleshooting**
+> - **`craco: command not found`** → you didn't run `yarn install` inside `frontend/`, or you ran it in the repo root. Fix: `cd frontend && yarn install && yarn deploy`.
+> - **Blank page after deploy** → your `homepage` field doesn't match your actual Pages URL. Set it to `https://<username>.github.io/<repo>` (with the exact repo name and casing) and re-run `yarn deploy`.
+> - **404 on refresh** → this project uses anchor navigation (no client routes) so refresh works. If you add React Router later, switch to `HashRouter` for GitHub Pages compatibility.
 
 ### Enable Pages in GitHub
 

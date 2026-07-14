@@ -1,0 +1,39 @@
+{
+  "summary": "Verified the deployment/packaging bug fix for `craco: command not found`. Confirmed craco + gh-pages are in dependencies, README updated, fresh `yarn install --frozen-lockfile` produces working build with relative asset paths. However, discovered a REGRESSION under `NODE_ENV=production yarn install`: `dotenv` (required by craco.config.js at load time) is still in devDependencies, so `yarn build` fails with `Cannot find module 'dotenv'`. The hardening fix is incomplete — dotenv must also be moved to dependencies.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {
+        "flow": "yarn build under NODE_ENV=production (fresh clone regression)",
+        "issue": "craco.config.js does `require('dotenv').config()` at top-level, but `dotenv` is in devDependencies. When a user installs with NODE_ENV=production (yarn 1 skips devDeps), craco build fails with `Cannot find module 'dotenv'`. This is the SAME class of bug the main agent just fixed for craco/gh-pages — the fix is incomplete.",
+        "affected_selectors": ["/app/frontend/package.json", "/app/frontend/craco.config.js"]
+      }
+    ],
+    "design_issues": []
+  },
+  "verification_results": {
+    "package.json_check": "PASS — @craco/craco and gh-pages both in dependencies, neither in devDependencies",
+    "readme_check": "PASS — README contains 'yarn install' (5 occurrences) and 'craco: command not found' (2 occurrences)",
+    "fresh_install_default": "PASS — `yarn install --frozen-lockfile` in temp copy installs craco + gh-pages bins; `yarn build` produces build/index.html + static/ with relative asset paths (./static/js/main.*.js, ./static/css/main.*.css) — GitHub Pages-safe",
+    "fresh_install_NODE_ENV_production": "PARTIAL — craco + gh-pages binaries ARE present (fix works for them), BUT `yarn build` FAILS: `Error: Cannot find module 'dotenv'` from /tmp/jba-prod/craco.config.js:3. Regression not fully closed.",
+    "supervisor_status": "PASS — backend + frontend both RUNNING; package.json edits did not break the running dev environment"
+  },
+  "test_report_links": [],
+  "action_items": [
+    "Move `dotenv` from devDependencies to dependencies in /app/frontend/package.json (same rationale as @craco/craco and gh-pages — it is loaded synchronously by craco.config.js at build time, so it must be installed even under NODE_ENV=production).",
+    "Alternatively, wrap the `require('dotenv').config()` call in craco.config.js in a try/catch so a missing dotenv doesn't crash the build (belt-and-suspenders).",
+    "After the fix, rerun: `NODE_ENV=production yarn install --frozen-lockfile && CI=false yarn build` in a clean temp copy to confirm the build succeeds."
+  ],
+  "critical_code_review_comments": [
+    "craco.config.js unconditionally requires `dotenv` at module load. Any build-time config dependency must live in `dependencies`, never `devDependencies`, or the `yarn deploy` flow will break for end users the same way `craco: command not found` did.",
+    "Consider auditing other top-level requires in craco.config.js and any other build-config files for the same issue."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A (not tested — testing_type=backend only but request was packaging/build verification)", "frontend": "N/A"},
+  "seed_data_creation": "None. Cleaned up /tmp/jba-check and /tmp/jba-prod temp dirs.",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "The craco/gh-pages fix is verified working. The remaining bug is `dotenv` in devDependencies. To retest after the fix: `cd /tmp && rm -rf jba && cp -r /app/frontend jba && cd jba && rm -rf node_modules build && NODE_ENV=production yarn install --frozen-lockfile && CI=false yarn build && ls build/`.",
+  "rca of the issue": "Root cause of the residual regression: craco.config.js executes `require('dotenv').config()` at import time. When end users clone the repo and run `yarn install` with NODE_ENV=production (common on CI, on some hosting platforms, or if users have it set in their shell), yarn 1.x skips devDependencies. `dotenv` was left in devDependencies while its consumers (craco/gh-pages) were promoted to dependencies. Result: the build step still fails with MODULE_NOT_FOUND for dotenv even though craco itself is now installed. Mitigation: promote `dotenv` to `dependencies` (preferred), or defensively `try { require('dotenv').config(); } catch {}` inside craco.config.js."
+}
