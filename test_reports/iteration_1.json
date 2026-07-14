@@ -1,0 +1,29 @@
+{
+  "summary": "Full backend + frontend testing of CODECRAFT one-page site completed. All 6 backend pytest tests passed (root, valid lead, invalid email, missing fields, list-leads persistence, legacy status). Full frontend UI verified via Playwright: header, hero, marquee, 8 course rows, outcomes stats, about, 3 mentor cards, reviews carousel (prev/next), location + Google Maps iframe + open-in-maps link, footer, ContactFab (whatsapp+call), mobile menu panel, and contact form submission with successful POST /api/leads returning 201 and form reset. No horizontal overflow at 390px or 768px viewports.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Outcomes counter", "issues": ["During count-up animation, stat-1 (percentage) briefly displays '-0%' as it interpolates upward. Purely a transient visual — final value settles correctly. Consider clamping to non-negative or starting from 0 without a minus sign."]},
+      {"screen": "Console (dev)", "issues": ["React hydration warning: <span> cannot be a child of <option>. Likely coming from a dev-instrumentation wrapper around COURSES option labels in Contact.jsx. Cosmetic in dev builds but should be cleaned up."]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/backend_test.py", "/app/test_reports/pytest/pytest_results.xml"],
+  "action_items": [
+    "(Optional) Prevent transient '-0%' display in Outcomes count-up (Outcomes.jsx / useCountUp).",
+    "(Optional) Investigate span-inside-option hydration warning on the course select in Contact.jsx."
+  ],
+  "critical_code_review_comments": [
+    "server.py is clean, uses UUIDs, excludes Mongo _id, proper 201/validation. Good.",
+    "Frontend: form validation is client-side + server-side (EmailStr, min_length). Behaviour verified: empty submit shows toast/hint and does not reset; valid submit calls /api/leads and resets. Good.",
+    "No hardcoded backend URL in frontend; uses REACT_APP_BACKEND_URL. Good."
+  ],
+  "updated_files": ["/app/backend/tests/backend_test.py"],
+  "success_rate": {"backend": "100%", "frontend": "100%"},
+  "test_credentials": "none required",
+  "seed_data_creation": "Created a couple of TEST_ prefixed leads and status_checks via API during tests.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Site is a single-page anchor-nav app. Preloader dismisses ~1.1s post-load; add a 2s wait after navigation. All interactive elements use data-testid per the spec. Google Maps loads real tiles (network calls to maps.googleapis.com visible). Contact submission verified end-to-end (POST 201, form reset)."
+}
