@@ -25,7 +25,7 @@ export default function Manifesto() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 mb-16 lg:mb-24">
           <div className="lg:col-span-4">
             <div className="font-mono-tech text-[11px] tracking-[0.24em] uppercase text-[color:var(--ink-2)] mb-6">
-              /02 — The syllabus
+              /03 — The syllabus
             </div>
           </div>
           <div className="lg:col-span-8">

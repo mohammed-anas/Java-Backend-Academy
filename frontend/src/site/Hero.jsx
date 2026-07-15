@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowDownRight, MoveRight } from "lucide-react";
-import { BRAND, IMAGES } from "@/site/content";
+import { BRAND, IMAGES, TRUST_CHIPS } from "@/site/content";
 import { scrollToId } from "@/site/useLenis";
 
 const LINE_1 = ["Backend", "engineers"];
@@ -113,10 +113,26 @@ export default function Hero() {
                 / {BRAND.name} · Aligarh
               </span>
               An institute for engineers who want to master the backend stack —
-              Java, Databases, System Design, AWS, DSA and CI/CD — and land the
-              offer. Only 10 students per batch. Senior mentors. Written feedback on every
-              submission.
+              Java, Databases, System Design, AWS, DSA and CI/CD — and walk into
+              interviews prepared. Only 10 students per batch. Senior mentors.
+              Written feedback on every submission.
             </p>
+
+            <ul
+              data-testid="hero-trust-chips"
+              className="mt-6 flex flex-wrap gap-2"
+            >
+              {TRUST_CHIPS.map((chip, i) => (
+                <li
+                  key={chip}
+                  data-testid={`hero-trust-chip-${i}`}
+                  className="inline-flex items-center gap-2 border border-[color:var(--line)] bg-[color:var(--surface)] px-3 py-1.5 font-mono-tech text-[10px] tracking-[0.2em] uppercase text-[color:var(--ink)]"
+                >
+                  <span className="w-1.5 h-1.5 bg-[color:var(--accent)]" />
+                  {chip}
+                </li>
+              ))}
+            </ul>
           </div>
 
           <div className="lg:col-span-6 xl:col-span-7 flex flex-wrap gap-4 lg:justify-end">

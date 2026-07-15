@@ -126,7 +126,7 @@ export default function Reviews() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-14 lg:mb-16">
           <div className="lg:col-span-4">
             <div className="font-mono-tech text-[11px] tracking-[0.24em] uppercase text-[color:var(--ink-2)]">
-              /05 — On the record
+              /08 — On the record
             </div>
           </div>
           <div className="lg:col-span-8 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">

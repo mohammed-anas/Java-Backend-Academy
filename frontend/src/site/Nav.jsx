@@ -6,10 +6,10 @@ import { scrollToId } from "@/site/useLenis";
 
 const LINKS = [
   { id: "courses", label: "Courses" },
+  { id: "projects", label: "Projects" },
   { id: "batches", label: "Batches" },
-  { id: "about", label: "About" },
   { id: "reviews", label: "Reviews" },
-  { id: "location", label: "Location" },
+  { id: "free-resources", label: "Free PDFs" },
   { id: "contact", label: "Enquire" },
 ];
 

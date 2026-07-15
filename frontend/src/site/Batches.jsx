@@ -676,7 +676,7 @@ export default function Batches() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 mb-12 lg:mb-16">
           <div className="lg:col-span-4">
             <div className="font-mono-tech text-[11px] tracking-[0.24em] uppercase text-[color:var(--ink-2)] mb-6">
-              /03 — Upcoming batches
+              /05 — Upcoming batches
             </div>
             <p className="hidden lg:flex items-center gap-2 text-[11px] font-mono-tech tracking-[0.2em] uppercase text-[color:var(--ink-2)]">
               <Lock size={11} /> Owner-managed schedule
@@ -783,6 +783,21 @@ export default function Batches() {
               WhatsApp us →
             </a>
           </p>
+          <ul
+            data-testid="fee-clarity-chips"
+            className="flex flex-wrap items-center gap-2"
+          >
+            {["EMI available", "No-cost EMI on select cards", "Merit scholarship", "Limited seats"].map((t, i) => (
+              <li
+                key={t}
+                data-testid={`fee-chip-${i}`}
+                className="inline-flex items-center gap-1.5 border border-[color:var(--line)] bg-white px-2.5 py-1 font-mono-tech text-[10px] tracking-[0.18em] uppercase text-[color:var(--ink)]"
+              >
+                <span className="w-1 h-1 bg-[color:var(--accent)]" />
+                {t}
+              </li>
+            ))}
+          </ul>
           {source === "seed" && (
             <p className="text-[10px] font-mono-tech tracking-[0.2em] uppercase text-[color:var(--ink-2)]/70 flex items-center gap-1.5">
               <MapPin size={10} /> Preview schedule · owner sheet not yet linked

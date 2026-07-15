@@ -58,7 +58,7 @@ export default function Contact() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
           <div className="lg:col-span-5">
             <div className="font-mono-tech text-[11px] tracking-[0.24em] uppercase text-[color:var(--ink-2)] mb-6">
-              /09 — Enquire
+              /12 — Enquire
             </div>
             <motion.h2
               initial={{ opacity: 0, y: 20 }}

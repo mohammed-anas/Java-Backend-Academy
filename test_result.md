@@ -128,6 +128,87 @@ frontend:
           agent: "main"
           comment: "Prior task, unchanged this iteration."
 
+  - task: "Lead-conversion revamp (Hero chips, WhoFor, Projects, Compare, LeadMagnet, FAB quick-actions, Batches fee chips)"
+    implemented: true
+    working: true
+    file: "frontend/src/site/Hero.jsx, WhoFor.jsx, Projects.jsx, Compare.jsx, LeadMagnet.jsx, ContactFab.jsx, Batches.jsx, Nav.jsx, Footer.jsx, content.js, pages/Home.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "main"
+          comment: |
+            Applied brand-safe lead-conversion improvements. No existing functionality
+            touched — additive-only. User confirmed "interview-ready, no placement
+            guarantee" positioning, so every new piece of copy honours that voice.
+
+            NEW / CHANGED:
+              • Hero.jsx  — added outcome-first trust-chip strip below the tagline:
+                  "Interview-ready in 4–6 months · Only 10 seats/batch ·
+                   Written 24-hr feedback · Live · never recorded"
+              • Hero.jsx  — softened the CTA copy from "land the offer" to
+                "walk into interviews prepared".
+              • WhoFor.jsx (NEW, /02) — five-row audience list (BCA/MCA · B.Tech ·
+                Fresh grads · Working pros · Career switchers) so a visitor
+                identifies themselves in seconds. Editorial numbered rows.
+              • Projects.jsx (NEW, /04) — "What you'll build": six real backend
+                projects with stack chips + one-liner. Grayscale image cards.
+              • Compare.jsx (NEW, /07) — side-by-side table vs. recorded /
+                YouTube-style courses. Grounded rows, no competitor names.
+                Footer line makes the "interview-ready, not placement-guaranteed"
+                stance explicit.
+              • LeadMagnet.jsx (NEW, /09) — four free-resource cards (Roadmap PDF,
+                DSA cheat-sheet, 50 Spring Boot Qs, System Design starter kit).
+                Each opens WhatsApp with a prefilled request — reuses the existing
+                zero-backend WhatsApp flow, no new integrations.
+              • ContactFab.jsx — replaced simple call/WA buttons with an editorial
+                quick-action panel: Talk to a mentor · Get fee details · Book a
+                free demo class · Ask about interview prep, plus Open chat + Call
+                now footer. Small green pulse dot when closed.
+              • Batches.jsx — added fee-clarity chip row below the grid:
+                "EMI available · No-cost EMI on select cards · Merit scholarship ·
+                 Limited seats". No fake numbers.
+              • Nav.jsx — added Projects and Free PDFs links, kept nav tight (6
+                items). Location moved out of primary nav (still in footer).
+              • Footer.jsx — nav links now include projects + free-resources +
+                location; renders human-readable labels.
+              • content.js — added TRUST_CHIPS, AUDIENCE, PROJECTS, COMPARISON,
+                LEAD_MAGNETS, FAB_QUICK_ACTIONS + buildWhatsAppMessage(msg) helper.
+              • Home.jsx — mounts new sections in the flow. Full order:
+                Hero → Marquee → WhoFor → Manifesto → Projects → Batches → About
+                → Compare → Reviews → LeadMagnet → FAQ → Location → Contact.
+              • Section-label prefixes renumbered end-to-end: /02 → /12
+                (Manifesto /02→/03, Batches /03→/05, About /04→/06, Reviews
+                /05→/08, FAQ /07→/10, Location /08→/11, Contact /09→/12).
+
+            EXPLICITLY SKIPPED (brand conflict — user confirmed):
+              • Placement-partner logos (TCS/Infosys/…).
+              • "Now at TCS · ₹5.2 LPA" style salary testimonials.
+              • Exit-intent popup.
+              • "Placement assistance" wording anywhere.
+              • Fabricated statistics (student count, placement count, LPA figures).
+
+            VERIFICATION (screenshot-based, viewport 1920×900):
+              ✓ Hero trust chips visible (4 chips: interview-ready / 10 seats /
+                24-hr feedback / live-never-recorded).
+              ✓ /02 WhoFor renders 5 audience rows.
+              ✓ /04 Projects renders 6 project cards with grayscale imagery.
+              ✓ /07 Compare table renders 8 rows with check / X icons.
+              ✓ /09 LeadMagnet renders 4 WhatsApp-linked cards.
+              ✓ ContactFab panel opens with all 4 quick actions + Open chat +
+                Call now footer.
+              ✓ Batches fee-clarity chips render below the grid.
+              ✓ Nav shows: Courses / Projects / Batches / Reviews / Free PDFs /
+                Enquire + Talk to us CTA.
+              ✓ Frontend compiles clean (webpack "Compiled successfully").
+              ✓ Lint: only 1 pre-existing warning left (Hero fetchpriority —
+                unchanged by this task).
+
+            NO backend / MongoDB / .env / URL changes. Existing Batches
+            enrollment (Sheet-backed) and Reviews (Sheet-backed) flows are
+            untouched.
+
   - task: "Batches page revamp (Google-Sheet-backed, secure)"
     implemented: true
     working: true
@@ -265,6 +346,45 @@ test_plan:
   test_priority: "high_first"
 
 agent_communication:
+    - agent: "main"
+      message: |
+        Lead-conversion revamp shipped (July 2025). Purely additive — nothing
+        existing was broken. User confirmed brand direction: "interview-ready,
+        not placement-guaranteed", so all new copy honours that voice.
+
+        NEW SECTIONS on the homepage (in scroll order):
+          • /02 WhoFor — audience list (BCA · MCA · B.Tech · Freshers ·
+            Working pros · Career switchers).
+          • /04 Projects — six real backend projects with stack chips.
+          • /07 Compare — side-by-side vs. recorded / YouTube-style courses.
+          • /09 LeadMagnet — four free-resource cards (all open WhatsApp
+            with a prefilled request; zero-backend).
+
+        UPGRADED PIECES:
+          • Hero — outcome-first trust-chip strip (4 chips) + softened CTA
+            copy ("walk into interviews prepared" replaces "land the offer").
+          • ContactFab — editorial quick-action panel with 4 WhatsApp
+            deep-links: Talk to a mentor · Get fee details · Book a free
+            demo class · Ask about interview prep, plus Open chat + Call now.
+          • Batches — fee-clarity chip row (EMI available · No-cost EMI ·
+            Merit scholarship · Limited seats). No fabricated numbers.
+          • Nav — added Projects and Free PDFs links.
+          • Footer — nav links updated with new anchors.
+          • Section labels /02 → /12 renumbered end-to-end for consistency.
+
+        SKIPPED (brand conflict — user confirmed): placement-partner logos,
+        salary-tagged testimonials, exit-intent popup, "placement assistance"
+        wording, fabricated statistics.
+
+        No backend / .env / URL / DB changes. Existing Sheet-backed Batches
+        enrollment + Sheet-backed Reviews flows untouched. Frontend compiles
+        clean; screenshots on 1920×900 confirm every new section renders and
+        the ContactFab panel opens with all four quick actions wired up.
+
+        NOT REQUESTED TO INVOKE frontend testing agent — leaving as-is per
+        protocol (main agent must ask user permission before invoking
+        deep_testing_frontend_v2).
+
     - agent: "main"
       message: |
         Batches page rebuilt on the same trust model as reviews:

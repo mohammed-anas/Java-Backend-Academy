@@ -37,14 +37,14 @@ export default function Footer() {
               Academy
             </div>
             <ul className="space-y-3 text-sm">
-              {["courses", "batches", "about", "location", "contact"].map((id) => (
+              {["courses", "projects", "batches", "reviews", "free-resources", "about", "location", "contact"].map((id) => (
                 <li key={id}>
                   <button
                     data-testid={`footer-link-${id}`}
                     onClick={() => scrollToId(id)}
                     className="hover:text-[color:var(--accent)] transition-colors capitalize"
                   >
-                    {id}
+                    {id.replace(/-/g, " ")}
                   </button>
                 </li>
               ))}
