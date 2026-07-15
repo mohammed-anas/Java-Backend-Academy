@@ -13,31 +13,58 @@
  *        submitted_at | name | rating | batch | from | to | grade | comment | approved | ip
  *   3. Copy the Sheet ID from its URL (the long string between /d/ and /edit).
  *   4. Go to https://script.google.com/  →  New Project.
- *   5. Delete the boilerplate, paste this entire file. Update SHEET_ID below.
- *   6. Deploy →  New deployment  →  Type: Web app.
+ *   5. Delete the boilerplate, paste this entire file. Save.
+ *   6. Set the Sheet ID as a Script Property (NEVER commit it to git):
+ *        Project Settings (gear) → Script properties → Add script property
+ *          Property: SHEET_ID
+ *          Value:    <your spreadsheet id>
+ *      Or run once in the editor: setSheetId('YOUR_SHEET_ID_HERE')
+ *   7. Deploy →  New deployment  →  Type: Web app.
  *        • Execute as:      Me (your Google account)
  *        • Who has access:  Anyone   ← must be Anyone for the website to reach it
- *   7. Copy the resulting Web App URL.
- *   8. In your website repo, set REACT_APP_REVIEWS_API=<that URL> in frontend/.env
- *      (or paste the URL directly into REVIEWS_API_URL in src/site/content.js).
- *   9. Approve a review by opening the Sheet and setting `approved` to TRUE.
+ *   8. Copy the resulting Web App URL.
+ *   9. In your website repo, set REACT_APP_REVIEWS_API=<that URL> in frontend/.env
+ *      (never hardcode the URL in a public repo).
+ *  10. Approve a review by opening the Sheet and setting `approved` to TRUE.
  *
  * SECURITY NOTES
- *   • The Sheet ID is stored ONLY inside this script — never in the website bundle.
+ *   • The Sheet ID is stored ONLY in Apps Script Script Properties — never in git.
  *   • GET returns ONLY rows where approved=TRUE. Unapproved rows are never exposed.
  *   • POST always writes with approved=FALSE. Nothing appears until you approve.
  *   • Basic per-IP throttling and payload size limits keep casual spam out.
  *   • If the URL is ever leaked/abused, redeploy for a new URL and update the site.
  */
 
-var SHEET_ID   = '1X3l1ABOGSOQz0ZzgXZ8r96ehvEqseZDG-aXiRv_2Iww';
 var SHEET_NAME = 'reviews';
 var MAX_COMMENT_LEN = 1200;
 var MAX_FIELD_LEN   = 160;
 var MIN_COMMENT_LEN = 12;
 
+/**
+ * Sheet ID lives in Script Properties — not in this repo.
+ * Set via Project Settings → Script properties, or run setSheetId(...).
+ */
+function _sheetId() {
+  var id = PropertiesService.getScriptProperties().getProperty('SHEET_ID');
+  if (!id) {
+    throw new Error(
+      'SHEET_ID is not set. Project Settings → Script properties, ' +
+      "or run setSheetId('your-spreadsheet-id')."
+    );
+  }
+  return id;
+}
+
+/** One-time helper: run from the Apps Script editor to store the Sheet ID. */
+function setSheetId(id) {
+  id = String(id || '').trim();
+  if (!id) throw new Error('Pass your spreadsheet id, e.g. setSheetId("1abc...")');
+  PropertiesService.getScriptProperties().setProperty('SHEET_ID', id);
+  return { ok: true, sheet_id_set: true };
+}
+
 function _sheet() {
-  return SpreadsheetApp.openById(SHEET_ID).getSheetByName(SHEET_NAME);
+  return SpreadsheetApp.openById(_sheetId()).getSheetByName(SHEET_NAME);
 }
 
 function _headers(sheet) {

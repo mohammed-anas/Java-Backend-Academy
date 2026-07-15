@@ -108,17 +108,20 @@ The **Reviews** section on the site is powered by a Google Sheet you own, via a 
    submitted_at | name | rating | batch | from | to | grade | comment | approved | ip
    ```
 2. **Grab the Sheet ID.** From the sheet URL: `docs.google.com/spreadsheets/d/{SHEET_ID}/edit`.
-3. **Create the Apps Script.** Go to <https://script.google.com/> → **New Project** → delete the boilerplate → paste the contents of `docs/reviews-apps-script.gs` from this repo → replace `PASTE_YOUR_SHEET_ID_HERE` with your Sheet ID → save.
-4. **Deploy as a Web App.** In the Apps Script editor: **Deploy → New deployment → Type: Web app**.
+3. **Create the Apps Script.** Go to <https://script.google.com/> → **New Project** → delete the boilerplate → paste the contents of `docs/reviews-apps-script.gs` from this repo → **Save**.
+4. **Store the Sheet ID (not in git).** In the Apps Script editor: **Project Settings** (gear) → **Script properties** → Add property `SHEET_ID` = your spreadsheet id.  
+   Or run once: `setSheetId('YOUR_SHEET_ID_HERE')`.
+5. **Deploy as a Web App.** In the Apps Script editor: **Deploy → New deployment → Type: Web app**.
    - **Execute as:** *Me*
    - **Who has access:** *Anyone*
    - Click **Deploy** → copy the **Web app URL**.
-5. **Wire the site to it.** In `frontend/`, create a file called `.env` (same folder as `package.json`) with:
+6. **Wire the site to it.** In `frontend/`, copy `.env.example` to `.env` and set:
    ```
-   REACT_APP_REVIEWS_API=https://script.google.com/macros/s/AKfy…/exec
+   REACT_APP_REVIEWS_API=https://script.google.com/macros/s/…/exec
+   REACT_APP_BATCHES_API=https://script.google.com/macros/s/…/exec
    ```
-   Alternatively, paste the URL directly into `REVIEWS_API_URL` in `frontend/src/site/content.js`.
-6. **Redeploy the site:** `yarn deploy`.
+   Do **not** commit `.env` or hardcode these URLs in `content.js`.
+7. **Redeploy the site:** `yarn deploy`.
 
 ### Approving a review
 
@@ -131,14 +134,13 @@ The **Reviews** section on the site is powered by a Google Sheet you own, via a 
 
 | Data | Where it lives | Exposed to visitors? |
 |---|---|---|
-| Sheet URL / Sheet ID | Inside the Apps Script (server-side, Google's cloud) | ❌ Never |
-| Apps Script Web App URL | In your site bundle (build-time env var) | ✅ Yes (visible in Network tab — unavoidable for any static-site + API pattern) |
+| Sheet URL / Sheet ID | Apps Script **Script Properties** only (never in git) | ❌ Never |
+| Apps Script Web App URL | Build-time env (`REACT_APP_*` in `.env` / CI secrets) | ✅ Yes (Network tab — unavoidable for static sites) |
 | Unapproved review rows | Only in your Sheet | ❌ Never returned by GET |
 | Approved review rows | Site + your Sheet | ✅ Yes (that's the point) |
 | Submitter IP | Sheet column `ip` (for your rate-limiting / abuse checks) | ❌ Not returned by GET |
 
 The Apps Script includes basic per-IP rate limiting (one submission / 60 s) so a stranger with the URL can't spam your sheet. If the URL ever gets abused, redeploy the Apps Script for a fresh URL and update `.env`.
-
 ## 6. Custom domain (optional)
 
 - In your repo, add a file `frontend/public/CNAME` containing your domain (e.g. `www.mybusiness.com`).

@@ -16,10 +16,9 @@
  *   Then open the Web App URL in a browser. You MUST see:
  *     "api_version": "2026-07-16-v5"
  *   If that field is missing, the site is still hitting the OLD script.
- *   Copy the URL from Manage deployments and put it in:
+ *   Copy the URL from Manage deployments and put it ONLY in:
  *     frontend/.env  →  REACT_APP_BATCHES_API=<url>
- *     OR frontend/src/site/content.js → BATCHES_API_URL
- *
+ *   (never hardcode the Web App URL in a public repo) *
  * WORKFLOW
  *   ENROL  → append enrollments row with approved=TRUE, claim a seat now
  *            (self-service). Contact = email OR normalised phone (either
@@ -36,10 +35,16 @@
  *
  * ONE-TIME SETUP
  *   1. Sheet tabs "batches" + "enrollments" (see headers below).
- *   2. Paste this file into a standalone Apps Script project. Set SHEET_ID.
- *   3. Deploy as Web app — Execute as: Me — Who has access: Anyone.
- *   4. Wire the Web App URL into the website (env or content.js).
- *   5. Run reconcileAllSeatCounts() once from the editor after first deploy.
+ *   2. Paste this file into a standalone Apps Script project.
+ *   3. Set the Sheet ID as a Script Property (NEVER commit it to git):
+ *        Project Settings (gear) → Script properties → Add script property
+ *          Property: SHEET_ID
+ *          Value:    <your spreadsheet id from the Sheet URL>
+ *      Or run once in the editor:
+ *          setSheetId('YOUR_SHEET_ID_HERE')
+ *   4. Deploy as Web app — Execute as: Me — Who has access: Anyone.
+ *   5. Wire the Web App URL into frontend/.env as REACT_APP_BATCHES_API.
+ *   6. Run reconcileAllSeatCounts() once from the editor after first deploy.
  *
  * batches header:
  *   id | course_n | course_title | start_date | end_date | time |
@@ -51,7 +56,6 @@
  *   phone | message | approved | ip
  */
 
-var SHEET_ID          = '17IzcAxPpq0uvj36lmqEdcfWNPUFujX2x_8WDst4vCOo';
 var BATCHES_TAB       = 'batches';
 var ENROLLMENTS_TAB   = 'enrollments';
 var API_VERSION       = '2026-07-16-v5';
@@ -66,8 +70,31 @@ var LOCK_WAIT_MS    = 15000;
 
 /* -------- helpers ------------------------------------------------------- */
 
+/**
+ * Sheet ID lives in Script Properties — not in this repo.
+ * Set via Project Settings → Script properties, or run setSheetId(...).
+ */
+function _sheetId() {
+  var id = PropertiesService.getScriptProperties().getProperty('SHEET_ID');
+  if (!id) {
+    throw new Error(
+      'SHEET_ID is not set. Project Settings → Script properties, ' +
+      "or run setSheetId('your-spreadsheet-id')."
+    );
+  }
+  return id;
+}
+
+/** One-time helper: run from the Apps Script editor to store the Sheet ID. */
+function setSheetId(id) {
+  id = String(id || '').trim();
+  if (!id) throw new Error('Pass your spreadsheet id, e.g. setSheetId("1abc...")');
+  PropertiesService.getScriptProperties().setProperty('SHEET_ID', id);
+  return { ok: true, sheet_id_set: true };
+}
+
 function _sheet(name) {
-  return SpreadsheetApp.openById(SHEET_ID).getSheetByName(name);
+  return SpreadsheetApp.openById(_sheetId()).getSheetByName(name);
 }
 
 function _headers(sheet) {
