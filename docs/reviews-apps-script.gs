@@ -30,7 +30,7 @@
  *   • If the URL is ever leaked/abused, redeploy for a new URL and update the site.
  */
 
-var SHEET_ID   = 'PASTE_YOUR_SHEET_ID_HERE';
+var SHEET_ID   = '1X3l1ABOGSOQz0ZzgXZ8r96ehvEqseZDG-aXiRv_2Iww';
 var SHEET_NAME = 'reviews';
 var MAX_COMMENT_LEN = 1200;
 var MAX_FIELD_LEN   = 160;

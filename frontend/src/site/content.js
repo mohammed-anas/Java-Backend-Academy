@@ -32,7 +32,7 @@ export const BRAND = {
  */
 export const REVIEWS_API_URL =
   process.env.REACT_APP_REVIEWS_API ||
-  ""; // ← paste your Apps Script Web App URL here, or set REACT_APP_REVIEWS_API in .env
+  "https://script.google.com/macros/s/AKfycbyOZdQhuk3ov6Eq2u0vbK_vN3o4GmDnOQsMOgJXzlzljuk2kwCKuDhikjUfQXxQdsEoYQ/exec"; // ← paste your Apps Script Web App URL here, or set REACT_APP_REVIEWS_API in .env
 
 export const COURSES = [
   // ═══════════════════════════════════════════════════════════════════════════
