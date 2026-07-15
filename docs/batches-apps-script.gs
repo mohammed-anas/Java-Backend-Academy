@@ -14,7 +14,7 @@
  *       → Version: New version → Deploy
  *
  *   Then open the Web App URL in a browser. You MUST see:
- *     "api_version": "2026-07-16-v3"
+ *     "api_version": "2026-07-16-v5"
  *   If that field is missing, the site is still hitting the OLD script.
  *   Copy the URL from Manage deployments and put it in:
  *     frontend/.env  →  REACT_APP_BATCHES_API=<url>
@@ -22,8 +22,13 @@
  *
  * WORKFLOW
  *   ENROL  → append enrollments row with approved=TRUE, claim a seat now
- *            (self-service). Same email OR normalised phone cannot re-enrol
- *            until they OPT_OUT.
+ *            (self-service). Contact = email OR normalised phone (either
+ *            is enough). Same contact cannot:
+ *              • re-enrol in the same batch until they OPT_OUT
+ *              • enrol in any other batch of the SAME course while still
+ *                enrolled in that course
+ *              • enrol in another course whose start/end dates overlap an
+ *                active enrolment
  *   OPT_OUT → frees the seat for that contact.
  *   seats_left is always derived from the enrollments tab (not only the
  *   seats_taken cell), so a browser refresh shows the truth even if the
@@ -49,7 +54,7 @@
 var SHEET_ID          = '17IzcAxPpq0uvj36lmqEdcfWNPUFujX2x_8WDst4vCOo';
 var BATCHES_TAB       = 'batches';
 var ENROLLMENTS_TAB   = 'enrollments';
-var API_VERSION       = '2026-07-16-v3';
+var API_VERSION       = '2026-07-16-v5';
 
 var ALLOWED_COURSES = ['01', '02', '03', '04', '05', '06', '07', '08', '09'];
 var ALLOWED_INTENTS = ['ENROL', 'OPT_OUT', 'TAKING', 'INTERESTED'];
@@ -329,7 +334,9 @@ function doPost(e) {
     try {
       var parsed = JSON.parse(result.getContent());
       if (parsed && (parsed.ok || parsed.error === 'already_enrolled' ||
-          parsed.error === 'batch_full' || parsed.error === 'not_enrolled')) {
+          parsed.error === 'already_in_course' ||
+          parsed.error === 'batch_full' || parsed.error === 'not_enrolled' ||
+          parsed.error === 'schedule_overlap')) {
         for (var j = 0; j < rlKeys.length; j++) cache.put(rlKeys[j], '1', 60);
       }
     } catch (_) {}
@@ -370,6 +377,38 @@ function _handleEnrol(p) {
         seats_total: found.total
       });
     }
+
+    /* Same contact cannot hold two seats in the same course (any batch). */
+    var sameCourse = _findActiveSameCourse(p.email, p.phone, p.courseN, p.batchId);
+    if (sameCourse) {
+      return _json({
+        ok: false,
+        error: 'already_in_course',
+        conflict_batch_id: sameCourse.id,
+        conflict_course_n: sameCourse.course_n,
+        conflict_course_title: sameCourse.course_title,
+        seats_left: Math.max(found.total - state.count, 0),
+        seats_total: found.total
+      });
+    }
+
+    /* Same email OR phone cannot hold seats in two batches whose date
+     * ranges overlap (across any course). Non-overlapping schedules are OK. */
+    var overlap = _findScheduleOverlap(p.email, p.phone, p.batchId, found.startD, found.endD);
+    if (overlap) {
+      return _json({
+        ok: false,
+        error: 'schedule_overlap',
+        conflict_batch_id: overlap.id,
+        conflict_course_n: overlap.course_n,
+        conflict_course_title: overlap.course_title,
+        conflict_start: _isoDay(overlap.startD),
+        conflict_end: _isoDay(overlap.endD),
+        seats_left: Math.max(found.total - state.count, 0),
+        seats_total: found.total
+      });
+    }
+
     if (found.total <= 0 || state.count >= found.total) {
       return _json({
         ok: false,
@@ -463,10 +502,18 @@ function _findBatchRow(batchId, courseN) {
     var rowCourseN = _normCourseN(brows[r][bi['course_n']]);
     if (rowId === batchId && rowCourseN === wantCourse) {
       var rowVals = brows[r];
+      var startD = bi['start_date'] != null ? _toDate(rowVals[bi['start_date']]) : null;
+      var endD   = bi['end_date'] != null ? _toDate(rowVals[bi['end_date']]) : null;
       return {
         sheet: bsheet,
         bi: bi,
         matchRow: r + 2,
+        id: rowId,
+        course_n: rowCourseN,
+        course_title: bi['course_title'] != null
+          ? _clean(rowVals[bi['course_title']], MAX_FIELD_LEN) : '',
+        startD: startD,
+        endD: endD || startD,
         total: _toInt(rowVals[bi['seats_total']], 0),
         taken: _toInt(rowVals[bi['seats_taken']], 0),
         openOk: bi['enrollment_open'] != null
@@ -477,6 +524,133 @@ function _findBatchRow(batchId, courseN) {
     }
   }
   return null;
+}
+
+function _datesOverlap(aStart, aEnd, bStart, bEnd) {
+  if (!aStart || !bStart) return false;
+  var aE = aEnd || aStart;
+  var bE = bEnd || bStart;
+  return aStart.getTime() <= bE.getTime() && bStart.getTime() <= aE.getTime();
+}
+
+/**
+ * Batch ids where this email OR phone currently holds an active ENROL
+ * (no later OPT_OUT for that same batch by the same contact).
+ */
+function _activeBatchIdsForContact(email, phone) {
+  var wantEmail = _normalizeEmail(email);
+  var wantPhone = _normalizePhone(phone);
+  if (!wantEmail && !wantPhone) return [];
+
+  var active = {}; // batchId -> true
+  var esheet = _sheet(ENROLLMENTS_TAB);
+  if (!esheet) return [];
+  var elast = esheet.getLastRow();
+  if (elast < 2) return [];
+
+  var eh = _headers(esheet);
+  var ei = _indexMap(eh);
+  if (ei['batch_id'] == null || ei['intent'] == null) return [];
+
+  var evals = esheet.getRange(2, 1, elast - 1, eh.length).getValues();
+  for (var i = 0; i < evals.length; i++) {
+    var row = evals[i];
+    var batchId = _clean(row[ei['batch_id']], 64);
+    if (!batchId) continue;
+    var rowIntent = String(row[ei['intent']] || '').toUpperCase().trim();
+    if (rowIntent !== 'ENROL' && rowIntent !== 'OPT_OUT') continue;
+
+    var rowEmail = ei['email'] != null ? row[ei['email']] : '';
+    var rowPhone = ei['phone'] != null ? row[ei['phone']] : '';
+    var re = _normalizeEmail(rowEmail);
+    var rp = _normalizePhone(rowPhone);
+    var match =
+      (wantEmail && re && wantEmail === re) ||
+      (wantPhone && rp && wantPhone === rp);
+    if (!match) continue;
+
+    if (rowIntent === 'ENROL') active[batchId] = true;
+    else if (rowIntent === 'OPT_OUT') delete active[batchId];
+  }
+
+  var ids = [];
+  for (var id in active) {
+    if (active.hasOwnProperty(id) && active[id]) ids.push(id);
+  }
+  return ids;
+}
+
+/**
+ * If the contact already has an active seat in another batch of the same
+ * course_n, return that batch's meta; else null.
+ */
+function _findActiveSameCourse(email, phone, courseN, excludeBatchId) {
+  var wantCourse = _normCourseN(courseN);
+  if (!wantCourse) return null;
+
+  var activeIds = _activeBatchIdsForContact(email, phone);
+  if (!activeIds.length) return null;
+
+  var metaById = _batchMetaById();
+  for (var i = 0; i < activeIds.length; i++) {
+    var otherId = activeIds[i];
+    if (otherId === excludeBatchId) continue;
+    var other = metaById[otherId];
+    if (!other) continue;
+    if (other.course_n === wantCourse) return other;
+  }
+  return null;
+}
+
+/**
+ * If the contact already has an active seat in another batch whose dates
+ * overlap the target batch, return that batch's meta; else null.
+ */
+function _findScheduleOverlap(email, phone, targetBatchId, targetStart, targetEnd) {
+  var activeIds = _activeBatchIdsForContact(email, phone);
+  if (!activeIds.length) return null;
+
+  var byId = _batchMetaById();
+  for (var i = 0; i < activeIds.length; i++) {
+    var otherId = activeIds[i];
+    if (otherId === targetBatchId) continue;
+    var other = byId[otherId];
+    if (!other) continue;
+    if (_datesOverlap(targetStart, targetEnd, other.startD, other.endD)) {
+      return other;
+    }
+  }
+  return null;
+}
+
+/** Map of batch id → { id, course_n, course_title, startD, endD }. */
+function _batchMetaById() {
+  var out = {};
+  var bsheet = _sheet(BATCHES_TAB);
+  if (!bsheet) return out;
+  var blast = bsheet.getLastRow();
+  if (blast < 2) return out;
+
+  var bh = _headers(bsheet);
+  var bi = _indexMap(bh);
+  if (bi['id'] == null) return out;
+
+  var brows = bsheet.getRange(2, 1, blast - 1, bh.length).getValues();
+  for (var r = 0; r < brows.length; r++) {
+    var id = _clean(brows[r][bi['id']], 64);
+    if (!id) continue;
+    var startD = bi['start_date'] != null ? _toDate(brows[r][bi['start_date']]) : null;
+    var endD   = bi['end_date'] != null ? _toDate(brows[r][bi['end_date']]) : null;
+    out[id] = {
+      id: id,
+      course_n: _normCourseN(brows[r][bi['course_n']]),
+      course_title: bi['course_title'] != null
+        ? _clean(brows[r][bi['course_title']], MAX_FIELD_LEN) : '',
+      startD: startD,
+      endD: endD || startD
+    };
+  }
+  return out;
 }
 
 /**

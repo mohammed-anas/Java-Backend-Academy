@@ -400,6 +400,13 @@ function EnrollDialog({ open, onOpenChange, initial, batches, onSuccess }) {
           typeof json?.seats_total === "number" && json.seats_total > 0
             ? json.seats_total
             : null;
+        const conflictTitle = String(json?.conflict_course_title || "").trim();
+        const conflictCourse = String(json?.conflict_course_n || "").trim();
+        const conflictLabel = conflictTitle
+          ? (conflictCourse ? `${conflictCourse} — ${conflictTitle}` : conflictTitle)
+          : conflictCourse
+          ? `course ${conflictCourse}`
+          : "another batch";
         const errMap = {
           batch_full: [
             "This batch is full.",
@@ -408,6 +415,16 @@ function EnrollDialog({ open, onOpenChange, initial, batches, onSuccess }) {
               : "All seats are taken. Choose another batch or ping us on WhatsApp for the next cohort.",
           ],
           already_enrolled:  ["You're already enrolled.", "Our records show this email / phone already holds a seat in this batch."],
+          already_in_course: [
+            "Already in this course.",
+            conflictLabel !== "another batch"
+              ? `This email / phone is already enrolled in ${conflictLabel}. Opt out of that batch first before joining another.`
+              : "This email / phone is already enrolled in this course. Opt out of the other batch first before joining another.",
+          ],
+          schedule_overlap: [
+            "Schedule clash.",
+            `This email / phone is already enrolled in ${conflictLabel}, and those dates overlap this batch. Opt out of the other batch first, or pick a non-overlapping cohort.`,
+          ],
           not_enrolled:      ["No enrolment on file.", "We couldn't find a prior enrolment for this email / phone in this batch."],
           enrollment_closed: ["Enrolment closed.", "This batch is no longer accepting new students."],
           unknown_batch:     ["Batch not found.", "Please refresh and pick a batch from the list."],
