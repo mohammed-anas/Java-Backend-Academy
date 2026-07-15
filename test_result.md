@@ -103,8 +103,17 @@
 #====================================================================================================
 
 user_problem_statement: |
-  Java Backend Academy main branch: show student reviews course-wise (not mixed).
-  Pulled origin/main and worked on top of it.
+  Java Backend Academy main branch: revamp the BATCHES page.
+  - Students can only view batches & enrol (not create).
+  - Batches are owner-managed via a Google Sheet (mirrors reviews-apps-script.gs).
+  - Show only upcoming batches, per-course; flag same-course date overlaps.
+  - All content (dates/time/days/mode/instructor/price/notes/seats) is configurable in sheet.
+  - Track slots-left per batch server-side (seats_total − seats_taken).
+  - Handle 4 enrolment intents: ENROL / OPT_OUT / TAKING / INTERESTED (undecided).
+  - Security: sheet ID lives only inside Apps Script, GET is read-only + hides
+    past/closed batches, POST is append-only to a separate "enrollments" tab with
+    approved=FALSE, IP rate-limited, allow-listed intents, batch_id validated
+    against sheet before accepting ENROL/OPT_OUT.
 
 frontend:
   - task: "Course-wise reviews filter"
@@ -112,35 +121,79 @@ frontend:
     working: true
     file: "frontend/src/site/Reviews.jsx, frontend/src/pages/Home.jsx"
     stuck_count: 0
+    priority: "low"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "main"
+          comment: "Prior task, unchanged this iteration."
+
+  - task: "Batches page revamp (Google-Sheet-backed, secure)"
+    implemented: true
+    working: true
+    file: "frontend/src/site/Batches.jsx, frontend/src/site/content.js, frontend/.env, docs/batches-apps-script.gs"
+    stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
         - working: true
           agent: "main"
           comment: |
-            - Added <CourseFilter/> with chips (All courses + one per COURSES entry)
-              at the top of the Reviews section. Each chip shows a per-course count
-              of reviews. Clicking a chip filters the carousel to that course only.
-            - Filtering keyed on the leading NN of `batch` (e.g. "01 — Core Java" -> "01").
-            - Empty course shows an inline "No reviews yet · Be the first" CTA.
-            - Prev/Next & counter now operate on the filtered slice and are disabled
-              when fewer than 2 items are visible.
-            - Also fixed a latent gap: Reviews section was defined but never rendered
-              on the Home page. Added `<Reviews />` between About and FAQ.
-            - Verified via headless browser: chip counts (All 03, 01 CoreJava 01,
-              03 Databases 01, 05 SystemDesign 01, others 00), carousel narrows
-              correctly per course, empty state shows for 04, counter returns to
-              "01 / 03" on All.
+            - Wrote /docs/batches-apps-script.gs (mirrors reviews Apps Script model):
+              • Owner-only sheet with tabs `batches` and `enrollments`.
+              • Sheet ID lives ONLY inside the script — never in the website bundle.
+              • doGet returns only rows where enrollment_open=TRUE AND hidden!=TRUE AND
+                start_date >= today, drops rows whose course_n isn't in ALLOWED_COURSES,
+                computes seats_left server-side, and flags in-course date overlaps.
+              • doPost is append-only to `enrollments`, always writes approved=FALSE,
+                validates intent against ALLOWED_INTENTS, cross-checks batch_id+course_n
+                against the batches sheet for ENROL/OPT_OUT, IP throttles 1/60s.
+              • Nothing here ever mutates the batches sheet.
+            - Added REACT_APP_BATCHES_API to frontend/.env (empty by default — safe
+              seed fallback until owner deploys the script). Exposed BATCHES_API_URL
+              and BATCH_INTENTS in content.js.
+            - Rewrote frontend/src/site/Batches.jsx end-to-end:
+              • Fetches from BATCHES_API_URL, normalises payload, renders skeleton
+                while loading, falls back to seed with a subtle banner on error.
+              • Course chips (All + one per course with data) filter the grid.
+              • Batch card shows dates, time, days, mode, instructor, price, notes,
+                slots pill (green/amber/red/sold-out) and an "Overlaps in-course"
+                warning ribbon when the Apps Script marks overlap:true.
+              • Enrolment modal with 4 intents (ENROL / OPT_OUT / TAKING / INTERESTED),
+                course + batch dropdowns auto-populated from the clicked card;
+                client-side length caps; POST uses text/plain to avoid CORS preflight.
+              • Empty-state "Notify me" CTA that opens the modal in INTERESTED mode
+                pre-filled with the current filter.
+            - Verified in headless browser: chips (All 03, 01/03/05 each 01),
+              filter to Course 03 shows only Databases card, Enrol click opens the
+              modal with the right course+batch preselected, seed banner visible
+              because REACT_APP_BATCHES_API is unset.
+
+backend:
+  - task: "No backend changes required for batches"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "low"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "main"
+          comment: |
+            Batches feature is intentionally NOT backed by FastAPI. Owner-only mutation
+            comes from a Google Sheet fronted by /docs/batches-apps-script.gs — the
+            same immutability model as reviews. Nothing on FastAPI touched.
 
 metadata:
   created_by: "main_agent"
-  version: "1.0"
+  version: "1.1"
   test_sequence: 0
   run_ui: false
 
 test_plan:
   current_focus:
-    - "Course-wise reviews filter"
+    - "Batches page revamp (Google-Sheet-backed, secure)"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
@@ -148,6 +201,14 @@ test_plan:
 agent_communication:
     - agent: "main"
       message: |
-        Frontend-only change. No backend routes touched. Verified interactively in
-        browser; ready for user review. If user wants deeper Playwright coverage,
-        I can hand off to the frontend testing agent next.
+        Batches page rebuilt on the same trust model as reviews:
+          • The Google Sheet ID lives inside the Apps Script only.
+          • Public site sees a Web App URL that is strictly read-only for
+            batches and append-only (approved=FALSE) for enrollments.
+          • Slots-left is computed server-side; the site cannot inflate seats.
+          • Overlap detection runs in Apps Script; owner sees a warning ribbon.
+        Until the owner deploys /docs/batches-apps-script.gs and sets
+        REACT_APP_BATCHES_API in frontend/.env, the page renders a small seed
+        so nothing breaks. Once the env var is set, the sheet is the single
+        source of truth. No FastAPI routes touched.
+

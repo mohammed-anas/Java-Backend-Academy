@@ -34,6 +34,48 @@ export const REVIEWS_API_URL =
   process.env.REACT_APP_REVIEWS_API ||
   "https://script.google.com/macros/s/AKfycbyOZdQhuk3ov6Eq2u0vbK_vN3o4GmDnOQsMOgJXzlzljuk2kwCKuDhikjUfQXxQdsEoYQ/exec"; // ← paste your Apps Script Web App URL here, or set REACT_APP_REVIEWS_API in .env
 
+/**
+ * Batches endpoint — set to the Google Apps Script Web App URL that owns the
+ * batches sheet (see /docs/batches-apps-script.gs). The sheet ID lives inside
+ * that script; the website only ever knows this public Web App URL. Leave
+ * empty and the site will render seed batches so nothing breaks during setup.
+ *
+ * Preferred: set REACT_APP_BATCHES_API in `frontend/.env` (or via CI secret).
+ */
+export const BATCHES_API_URL =
+  process.env.REACT_APP_BATCHES_API || "";
+
+/**
+ * Allow-listed enrollment intents. Keep in lock-step with ALLOWED_INTENTS in
+ * batches-apps-script.gs — anything else is rejected server-side.
+ */
+export const BATCH_INTENTS = [
+  {
+    key: "ENROL",
+    label: "Enrol in this batch",
+    hint: "Reserve a seat. We'll confirm on WhatsApp within a day.",
+    needsBatch: true,
+  },
+  {
+    key: "OPT_OUT",
+    label: "Opt out of a batch I enrolled in",
+    hint: "Already enrolled and can't continue? Let us know so we free the slot.",
+    needsBatch: true,
+  },
+  {
+    key: "TAKING",
+    label: "I'm already taking this course",
+    hint: "You're mid-course elsewhere and want to talk to us — no batch needed.",
+    needsBatch: false,
+  },
+  {
+    key: "INTERESTED",
+    label: "Interested but undecided",
+    hint: "Not sure which batch or even which course? We'll help you pick.",
+    needsBatch: false,
+  },
+];
+
 export const COURSES = [
   // ═══════════════════════════════════════════════════════════════════════════
   // FOUNDATION TRACK — Start here. These two can be done in parallel.
