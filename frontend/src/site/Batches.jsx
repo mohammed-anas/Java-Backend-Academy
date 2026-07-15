@@ -21,7 +21,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { COURSES, BATCHES_API_URL, BATCH_INTENTS } from "@/site/content";
+import { BRAND, COURSES, BATCHES_API_URL, BATCH_INTENTS } from "@/site/content";
 
 /* ═════════════════════════════════════════════════════════════════════════
    SEED FALLBACK — only rendered when BATCHES_API_URL is empty (i.e. the
@@ -723,21 +723,17 @@ export default function Batches() {
                     No upcoming batches for this course yet.
                   </p>
                   <p className="text-[color:var(--ink-2)] text-[13px] mb-5">
-                    Get on the notification list — we&apos;ll message you the moment a slot opens.
+                    Message us on WhatsApp — we&apos;ll tell you the moment a slot opens.
                   </p>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      openDialog({
-                        intent: "INTERESTED",
-                        course_n: filter === "all" ? "" : filter,
-                      })
-                    }
-                    className="btn-crisp text-[11px] py-2 px-4"
+                  <a
+                    href={BRAND.whatsappHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-crisp text-[11px] py-2 px-4 inline-flex items-center gap-2"
                   >
-                    Notify me
+                    WhatsApp us
                     <ArrowRight size={14} />
-                  </button>
+                  </a>
                 </div>
               </div>
             ) : (
@@ -761,13 +757,14 @@ export default function Batches() {
         <div className="mt-10 flex flex-col sm:flex-row items-start sm:items-center gap-3 justify-between">
           <p className="font-mono-tech text-[11px] tracking-[0.2em] uppercase text-[color:var(--ink-2)]">
             Can&apos;t find a suitable time?{" "}
-            <button
-              type="button"
-              onClick={() => openDialog({ intent: "INTERESTED" })}
+            <a
+              href={BRAND.whatsappHref}
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-[color:var(--accent)] hover:underline"
             >
-              Tell us what you need →
-            </button>
+              WhatsApp us →
+            </a>
           </p>
           {source === "seed" && (
             <p className="text-[10px] font-mono-tech tracking-[0.2em] uppercase text-[color:var(--ink-2)]/70 flex items-center gap-1.5">

@@ -62,18 +62,6 @@ export const BATCH_INTENTS = [
     hint: "Already enrolled and can't continue? Let us know so we free the slot.",
     needsBatch: true,
   },
-  {
-    key: "TAKING",
-    label: "I'm already taking this course",
-    hint: "You're mid-course elsewhere and want to talk to us — no batch needed.",
-    needsBatch: false,
-  },
-  {
-    key: "INTERESTED",
-    label: "Interested but undecided",
-    hint: "Not sure which batch or even which course? We'll help you pick.",
-    needsBatch: false,
-  },
 ];
 
 export const COURSES = [
