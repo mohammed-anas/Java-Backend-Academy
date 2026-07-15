@@ -43,7 +43,7 @@ export const REVIEWS_API_URL =
  * Preferred: set REACT_APP_BATCHES_API in `frontend/.env` (or via CI secret).
  */
 export const BATCHES_API_URL =
-  process.env.REACT_APP_BATCHES_API || "";
+  process.env.REACT_APP_BATCHES_API || "https://script.google.com/macros/s/AKfycbwrkLB2sJc52um3vHd_q8Qq1GqW_EKNQCaDlg5_VUHU9dsOv7b_DDTGcOSdhG5MKYUD/exec";
 
 /**
  * Allow-listed enrollment intents. Keep in lock-step with ALLOWED_INTENTS in
