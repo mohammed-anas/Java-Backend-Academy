@@ -101,3 +101,53 @@
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
+
+user_problem_statement: |
+  Java Backend Academy main branch: show student reviews course-wise (not mixed).
+  Pulled origin/main and worked on top of it.
+
+frontend:
+  - task: "Course-wise reviews filter"
+    implemented: true
+    working: true
+    file: "frontend/src/site/Reviews.jsx, frontend/src/pages/Home.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "main"
+          comment: |
+            - Added <CourseFilter/> with chips (All courses + one per COURSES entry)
+              at the top of the Reviews section. Each chip shows a per-course count
+              of reviews. Clicking a chip filters the carousel to that course only.
+            - Filtering keyed on the leading NN of `batch` (e.g. "01 — Core Java" -> "01").
+            - Empty course shows an inline "No reviews yet · Be the first" CTA.
+            - Prev/Next & counter now operate on the filtered slice and are disabled
+              when fewer than 2 items are visible.
+            - Also fixed a latent gap: Reviews section was defined but never rendered
+              on the Home page. Added `<Reviews />` between About and FAQ.
+            - Verified via headless browser: chip counts (All 03, 01 CoreJava 01,
+              03 Databases 01, 05 SystemDesign 01, others 00), carousel narrows
+              correctly per course, empty state shows for 04, counter returns to
+              "01 / 03" on All.
+
+metadata:
+  created_by: "main_agent"
+  version: "1.0"
+  test_sequence: 0
+  run_ui: false
+
+test_plan:
+  current_focus:
+    - "Course-wise reviews filter"
+  stuck_tasks: []
+  test_all: false
+  test_priority: "high_first"
+
+agent_communication:
+    - agent: "main"
+      message: |
+        Frontend-only change. No backend routes touched. Verified interactively in
+        browser; ready for user review. If user wants deeper Playwright coverage,
+        I can hand off to the frontend testing agent next.

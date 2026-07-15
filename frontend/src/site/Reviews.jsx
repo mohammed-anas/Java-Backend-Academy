@@ -70,10 +70,21 @@ function formatMonth(iso) {
   return d.toLocaleString("en-US", { month: "short", year: "numeric" });
 }
 
+/* Normalise a batch string to a stable course key ("01 — Core Java" → "01").
+   Falls back to "other" when the batch doesn't match a known course number. */
+function courseKeyFromBatch(batch) {
+  const m = /^\s*(\d{2})/.exec(String(batch || ""));
+  if (!m) return "other";
+  return m[1];
+}
+
+const ALL_KEY = "all";
+
 export default function Reviews() {
   const [reviews, setReviews] = useState(SEED_REVIEWS);
   const [idx, setIdx] = useState(0);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [activeCourse, setActiveCourse] = useState(ALL_KEY);
 
   useEffect(() => {
     if (!REVIEWS_API_URL) return;
@@ -102,16 +113,38 @@ export default function Reviews() {
     };
   }, []);
 
+  /* Build course-wise counts + filtered list based on the active course. */
+  const countsByCourse = reviews.reduce((acc, r) => {
+    const k = courseKeyFromBatch(r.batch);
+    acc[k] = (acc[k] || 0) + 1;
+    return acc;
+  }, {});
+
+  const filtered =
+    activeCourse === ALL_KEY
+      ? reviews
+      : reviews.filter((r) => courseKeyFromBatch(r.batch) === activeCourse);
+
+  /* Reset the carousel position whenever the filter changes or the list shrinks. */
+  useEffect(() => {
+    setIdx(0);
+  }, [activeCourse, filtered.length]);
+
+  const safeIdx = filtered.length ? idx % filtered.length : 0;
+
   const next = useCallback(
-    () => setIdx((v) => (v + 1) % reviews.length),
-    [reviews.length],
+    () => setIdx((v) => (filtered.length ? (v + 1) % filtered.length : 0)),
+    [filtered.length],
   );
   const prev = useCallback(
-    () => setIdx((v) => (v - 1 + reviews.length) % reviews.length),
-    [reviews.length],
+    () =>
+      setIdx((v) =>
+        filtered.length ? (v - 1 + filtered.length) % filtered.length : 0,
+      ),
+    [filtered.length],
   );
 
-  const current = reviews[idx];
+  const current = filtered[safeIdx];
 
   return (
     <section
@@ -149,6 +182,14 @@ export default function Reviews() {
           </div>
         </div>
 
+        <CourseFilter
+          courses={COURSES}
+          counts={countsByCourse}
+          total={reviews.length}
+          active={activeCourse}
+          onChange={setActiveCourse}
+        />
+
         <div
           className="border-t border-b border-[color:var(--line)] py-10 lg:py-16 relative min-h-[320px] sm:min-h-[280px]"
           data-testid="review-viewer"
@@ -158,9 +199,9 @@ export default function Reviews() {
           </div>
 
           <AnimatePresence mode="wait">
-            {current && (
+            {current ? (
               <motion.figure
-                key={`${idx}-${current.name}`}
+                key={`${activeCourse}-${safeIdx}-${current.name}`}
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -16 }}
@@ -192,6 +233,34 @@ export default function Reviews() {
                   </div>
                 </figcaption>
               </motion.figure>
+            ) : (
+              <motion.div
+                key={`empty-${activeCourse}`}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -16 }}
+                transition={{ duration: 0.4 }}
+                data-testid="review-empty"
+                className="relative z-10 max-w-[52ch]"
+              >
+                <div className="font-mono-tech text-[11px] tracking-[0.24em] uppercase text-[color:var(--ink-2)] mb-4">
+                  No reviews yet
+                </div>
+                <p className="font-serif-editorial text-2xl sm:text-3xl leading-snug tracking-tight text-[color:var(--ink)]">
+                  This course doesn&apos;t have any reviews yet.
+                  <em className="not-italic italic text-[color:var(--accent)]">
+                    {" "}Be the first to share your story.
+                  </em>
+                </p>
+                <button
+                  data-testid="review-empty-cta"
+                  onClick={() => setDialogOpen(true)}
+                  className="btn-crisp mt-8"
+                >
+                  <PenSquare size={14} />
+                  Write a review
+                </button>
+              </motion.div>
             )}
           </AnimatePresence>
         </div>
@@ -201,14 +270,17 @@ export default function Reviews() {
             data-testid="review-counter"
             className="font-mono-tech text-[11px] tracking-[0.24em] uppercase text-[color:var(--ink-2)]"
           >
-            {String(idx + 1).padStart(2, "0")} / {String(reviews.length).padStart(2, "0")}
+            {filtered.length
+              ? `${String(safeIdx + 1).padStart(2, "0")} / ${String(filtered.length).padStart(2, "0")}`
+              : "00 / 00"}
           </div>
           <div className="flex gap-3">
             <button
               data-testid="review-prev"
               onClick={prev}
               aria-label="Previous review"
-              className="w-11 h-11 border border-[color:var(--ink)] hover:bg-[color:var(--ink)] hover:text-[color:var(--bg)] transition-colors inline-flex items-center justify-center"
+              disabled={filtered.length < 2}
+              className="w-11 h-11 border border-[color:var(--ink)] hover:bg-[color:var(--ink)] hover:text-[color:var(--bg)] transition-colors inline-flex items-center justify-center disabled:opacity-40 disabled:pointer-events-none"
             >
               <ArrowLeft size={16} />
             </button>
@@ -216,7 +288,8 @@ export default function Reviews() {
               data-testid="review-next"
               onClick={next}
               aria-label="Next review"
-              className="w-11 h-11 border border-[color:var(--ink)] hover:bg-[color:var(--accent)] hover:border-[color:var(--accent)] hover:text-white transition-colors inline-flex items-center justify-center"
+              disabled={filtered.length < 2}
+              className="w-11 h-11 border border-[color:var(--ink)] hover:bg-[color:var(--accent)] hover:border-[color:var(--accent)] hover:text-white transition-colors inline-flex items-center justify-center disabled:opacity-40 disabled:pointer-events-none"
             >
               <ArrowRight size={16} />
             </button>
@@ -446,5 +519,77 @@ function Field({ label, htmlFor, span, children }) {
       </label>
       {children}
     </div>
+  );
+}
+
+
+/* ------------------------------------------------------------------ */
+/* Course filter — chips that let readers view reviews course-wise      */
+/* ------------------------------------------------------------------ */
+
+function CourseFilter({ courses, counts, total, active, onChange }) {
+  return (
+    <div
+      data-testid="review-course-filter"
+      className="mb-8 lg:mb-12 border-t border-[color:var(--line)] pt-6"
+    >
+      <div className="font-mono-tech text-[10px] tracking-[0.28em] uppercase text-[color:var(--ink-2)] mb-4">
+        Filter by course
+      </div>
+      <div className="flex flex-wrap gap-2">
+        <FilterChip
+          testId="review-filter-all"
+          label="All courses"
+          count={total}
+          active={active === ALL_KEY}
+          onClick={() => onChange(ALL_KEY)}
+        />
+        {courses.map((c) => {
+          const count = counts[c.n] || 0;
+          const isActive = active === c.n;
+          return (
+            <FilterChip
+              key={c.n}
+              testId={`review-filter-${c.n}`}
+              label={`${c.n} — ${c.title}`}
+              count={count}
+              active={isActive}
+              muted={count === 0}
+              onClick={() => onChange(c.n)}
+            />
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function FilterChip({ testId, label, count, active, muted, onClick }) {
+  return (
+    <button
+      type="button"
+      data-testid={testId}
+      onClick={onClick}
+      aria-pressed={active}
+      className={[
+        "group inline-flex items-center gap-2 border px-3 py-2 text-[11px] font-mono-tech tracking-[0.18em] uppercase transition-colors",
+        active
+          ? "bg-[color:var(--ink)] text-[color:var(--bg)] border-[color:var(--ink)]"
+          : "bg-transparent text-[color:var(--ink)] border-[color:var(--line)] hover:border-[color:var(--ink)]",
+        muted && !active ? "opacity-50" : "",
+      ].join(" ")}
+    >
+      <span>{label}</span>
+      <span
+        className={[
+          "inline-flex items-center justify-center min-w-[1.5rem] h-5 px-1 text-[10px] tracking-normal border",
+          active
+            ? "border-[color:var(--bg)]/40 text-[color:var(--bg)]"
+            : "border-[color:var(--line)] text-[color:var(--ink-2)] group-hover:border-[color:var(--ink)]",
+        ].join(" ")}
+      >
+        {String(count).padStart(2, "0")}
+      </span>
+    </button>
   );
 }

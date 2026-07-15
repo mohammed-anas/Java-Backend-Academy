@@ -7,6 +7,7 @@ const Marquee = lazy(() => import("@/site/Marquee"));
 const Manifesto = lazy(() => import("@/site/Manifesto"));
 const Batches = lazy(() => import("@/site/Batches"));
 const About = lazy(() => import("@/site/About"));
+const Reviews = lazy(() => import("@/site/Reviews"));
 const FAQ = lazy(() => import("@/site/FAQ"));
 const Location = lazy(() => import("@/site/Location"));
 const Contact = lazy(() => import("@/site/Contact"));
@@ -29,6 +30,7 @@ export default function Home() {
       <LazySection><Manifesto /></LazySection>
       <LazySection><Batches /></LazySection>
       <LazySection><About /></LazySection>
+      <LazySection><Reviews /></LazySection>
       <LazySection><FAQ /></LazySection>
       <LazySection><Location /></LazySection>
       <LazySection><Contact /></LazySection>
