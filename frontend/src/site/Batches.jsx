@@ -396,8 +396,17 @@ function EnrollDialog({ open, onOpenChange, initial, batches, onSuccess }) {
 
         /* Map known server errors to human-friendly messages. */
         const errCode = String(json?.error || "");
+        const seatsTotal =
+          typeof json?.seats_total === "number" && json.seats_total > 0
+            ? json.seats_total
+            : null;
         const errMap = {
-          batch_full:        ["This batch is full.", "All 10 seats are taken. Choose another batch or ping us on WhatsApp for the next cohort."],
+          batch_full: [
+            "This batch is full.",
+            seatsTotal
+              ? `All ${seatsTotal} seats are taken. Choose another batch or ping us on WhatsApp for the next cohort.`
+              : "All seats are taken. Choose another batch or ping us on WhatsApp for the next cohort.",
+          ],
           already_enrolled:  ["You're already enrolled.", "Our records show this email / phone already holds a seat in this batch."],
           not_enrolled:      ["No enrolment on file.", "We couldn't find a prior enrolment for this email / phone in this batch."],
           enrollment_closed: ["Enrolment closed.", "This batch is no longer accepting new students."],
