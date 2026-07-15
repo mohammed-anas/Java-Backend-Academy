@@ -13,36 +13,6 @@ import { StarsDisplay, StarsInput } from "@/site/Stars";
 import { COURSES, REVIEWS_API_URL } from "@/site/content";
 
 const SEED_REVIEWS = [
-  {
-    name: "Ishaan R.",
-    rating: 5,
-    batch: "03 — System Design",
-    grade: "SDE-2 · Payments",
-    from: "2025-02",
-    to: "2025-05",
-    comment:
-      "The system-design track rewired how I think. Twelve weeks in, I was defending trade-offs with numbers, not vibes. Offer from a top payments firm within a month of finishing.",
-  },
-  {
-    name: "Meera K.",
-    rating: 5,
-    batch: "05 — DSA",
-    grade: "Backend Engineer · Fintech",
-    from: "2024-11",
-    to: "2025-02",
-    comment:
-      "The pattern-by-pattern approach and written feedback on every mock finally made DSA click. It felt like an apprenticeship, not a course.",
-  },
-  {
-    name: "Karthik S.",
-    rating: 5,
-    batch: "01 — Core Java",
-    grade: "SDE · Cloud Infra",
-    from: "2024-08",
-    to: "2024-11",
-    comment:
-      "Mentors don't sell dreams. They sit with your code, tear it apart, then teach you how a senior would have written it.",
-  },
 ];
 
 function normaliseReview(r) {
