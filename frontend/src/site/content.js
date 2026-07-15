@@ -23,6 +23,17 @@ export const BRAND = {
   ],
 };
 
+/**
+ * Reviews endpoint — set to your Google Apps Script Web App URL (see /docs/reviews-apps-script.gs).
+ * Never store the raw Google Sheet URL here — the Apps Script owns the sheet reference server-side.
+ *
+ * Preferred: set REACT_APP_REVIEWS_API in `frontend/.env` (or via CI secret) so this URL isn't
+ * hard-committed to your repo. Falls back to the constant below only if the env var is missing.
+ */
+export const REVIEWS_API_URL =
+  process.env.REACT_APP_REVIEWS_API ||
+  ""; // ← paste your Apps Script Web App URL here, or set REACT_APP_REVIEWS_API in .env
+
 export const COURSES = [
   // ═══════════════════════════════════════════════════════════════════════════
   // FOUNDATION TRACK — Start here. These two can be done in parallel.

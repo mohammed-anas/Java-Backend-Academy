@@ -8,6 +8,7 @@ const LINKS = [
   { id: "courses", label: "Courses" },
   { id: "batches", label: "Batches" },
   { id: "about", label: "About" },
+  { id: "reviews", label: "Reviews" },
   { id: "location", label: "Location" },
   { id: "contact", label: "Enquire" },
 ];
