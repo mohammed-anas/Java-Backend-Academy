@@ -2,90 +2,56 @@
  * Java Backend Academy — Batches backend (Google Apps Script)
  * ----------------------------------------------------------------
  * PURPOSE
- *   Serve read-only UPCOMING & OPEN batches to the public website AND accept
- *   enrollment-intent submissions from students (enrol / opt-out /
- *   taking-elsewhere / interested-but-undecided).
+ *   Serve open upcoming batches + accept enrol / opt-out / interested /
+ *   taking submissions. Sheet ID stays ONLY in this script.
  *
- *   The Google Sheet ID never leaves this script — the website only ever
- *   knows the deployed Web App URL of this script. This is the same
- *   ownership model used by reviews-apps-script.gs and is the ONLY thing that
- *   keeps batch content immutable for the public.
+ * CRITICAL: Redeploy correctly
+ *   Editing this file in Cursor does NOTHING for the live site.
+ *   After pasting into script.google.com you MUST update the EXISTING
+ *   deployment (not create a brand-new one, or the site keeps the old URL):
+ *
+ *     Deploy → Manage deployments → pencil (Edit) on the current Web App
+ *       → Version: New version → Deploy
+ *
+ *   Then open the Web App URL in a browser. You MUST see:
+ *     "api_version": "2026-07-16-v3"
+ *   If that field is missing, the site is still hitting the OLD script.
+ *   Copy the URL from Manage deployments and put it in:
+ *     frontend/.env  →  REACT_APP_BATCHES_API=<url>
+ *     OR frontend/src/site/content.js → BATCHES_API_URL
+ *
+ * WORKFLOW
+ *   ENROL  → append enrollments row with approved=TRUE, claim a seat now
+ *            (self-service). Same email OR normalised phone cannot re-enrol
+ *            until they OPT_OUT.
+ *   OPT_OUT → frees the seat for that contact.
+ *   seats_left is always derived from the enrollments tab (not only the
+ *   seats_taken cell), so a browser refresh shows the truth even if the
+ *   counter cell was edited by hand.
  *
  * ONE-TIME SETUP
- *   1. Create a new Google Sheet with TWO tabs:
- *        • Tab 1 — rename to "batches"
- *          Paste this header row (row 1, columns A–O):
- *            id | course_n | course_title | start_date | end_date | time |
- *            days | mode | instructor | seats_total | seats_taken | price |
- *            notes | enrollment_open | hidden
+ *   1. Sheet tabs "batches" + "enrollments" (see headers below).
+ *   2. Paste this file into a standalone Apps Script project. Set SHEET_ID.
+ *   3. Deploy as Web app — Execute as: Me — Who has access: Anyone.
+ *   4. Wire the Web App URL into the website (env or content.js).
+ *   5. Run reconcileAllSeatCounts() once from the editor after first deploy.
  *
- *          Rules (owner-only, never validated on the client):
- *            • id           — free-form short string, must be unique.
- *            • course_n     — MUST match the course number on the site
- *                             (e.g. "01", "02" … "09"). Anything else is dropped.
- *            • start_date / end_date — real Google Sheets DATE cells (best) OR
- *                             ISO strings "YYYY-MM-DD".
- *            • seats_total  — total capacity (integer, e.g. 10).
- *            • seats_taken  — how many unique people currently hold a seat.
- *                             Kept in sync from the enrollments tab after
- *                             every ENROL / OPT_OUT (ScriptLock + recount).
- *                             Owner may still edit manually; the next
- *                             mutation will re-sync from enrollments.
- *            • enrollment_open — TRUE / FALSE. FALSE hides the batch from GET.
- *            • hidden       — TRUE / FALSE. TRUE hides the batch from GET.
+ * batches header:
+ *   id | course_n | course_title | start_date | end_date | time |
+ *   days | mode | instructor | seats_total | seats_taken | price |
+ *   notes | enrollment_open | hidden
  *
- *        • Tab 2 — rename to "enrollments"
- *          Paste this header row (row 1, columns A–J):
- *            submitted_at | batch_id | course_n | intent | name | email |
- *            phone | message | approved | ip
- *
- *   2. Copy the Sheet ID from its URL (long string between /d/ and /edit).
- *   3. Go to https://script.google.com/  →  New Project (standalone is fine).
- *   4. Delete the boilerplate, paste this entire file. Update SHEET_ID below.
- *   5. Deploy →  New deployment  →  Type: Web app.
- *        • Execute as:      Me (your Google account)
- *        • Who has access:  Anyone   ← must be Anyone for the website to reach it
- *   6. Copy the resulting Web App URL.
- *   7. In your website repo, set REACT_APP_BATCHES_API=<that URL>
- *      in frontend/.env (or paste it into BATCHES_API_URL in src/site/content.js).
- *   8. After editing this file later: Deploy → Manage deployments → pencil →
- *      New version → Deploy (same URL keeps working).
- *
- * SECURITY / CONCURRENCY POSTURE
- *   • The Sheet ID lives ONLY inside this script — never in the website bundle.
- *   • GET is strictly read-only:
- *       — returns rows where enrollment_open=TRUE AND hidden!=TRUE.
- *       — drops rows whose start_date has already passed (past batches are hidden).
- *       — drops rows whose course_n is not in the ALLOWED_COURSES allow-list.
- *       — computes seats_left server-side so the client can't inflate capacity.
- *       — flags in-course overlaps ({start_date, end_date} intersect) so the
- *         owner sees a warning; the site can render it or ignore it.
- *   • POST appends to the "enrollments" tab AND updates seats_taken:
- *       — ENROL:    validates batch exists + not full + this email/phone
- *                   hasn't already enrolled in the same batch. On success,
- *                   appends then sets seats_taken = unique active recount
- *                   (ScriptLock — works for standalone Web Apps).
- *       — OPT_OUT:  must reference a batch the same email OR phone previously
- *                   enrolled in (and hasn't already opted out of).
- *                   Appends then re-syncs seats_taken from active enrolments.
- *       — INTERESTED / TAKING: append-only, no seat effect.
- *       — Contact matching normalises phones (IN country code / leading 0)
- *         and treats overlapping email OR phone as the same person.
- *       — Rate limit: 1 submission / 60s per contact fingerprint (and IP if present).
- *   • If the URL leaks or is abused, redeploy for a new URL and update the site.
- *   • Only ENROL / OPT_OUT mutate the batches sheet, and only the seats_taken
- *     cell of the matched row. Everything else stays owner-owned.
+ * enrollments header:
+ *   submitted_at | batch_id | course_n | intent | name | email |
+ *   phone | message | approved | ip
  */
 
 var SHEET_ID          = '17IzcAxPpq0uvj36lmqEdcfWNPUFujX2x_8WDst4vCOo';
 var BATCHES_TAB       = 'batches';
 var ENROLLMENTS_TAB   = 'enrollments';
+var API_VERSION       = '2026-07-16-v3';
 
-/* Allow-list of course numbers. If you add a course on the website, add its
- * number here too. Everything else is dropped from GET output. */
 var ALLOWED_COURSES = ['01', '02', '03', '04', '05', '06', '07', '08', '09'];
-
-/* Allowed enrollment intents. Anything else is rejected on POST. */
 var ALLOWED_INTENTS = ['ENROL', 'OPT_OUT', 'TAKING', 'INTERESTED'];
 
 var MAX_FIELD_LEN   = 160;
@@ -110,6 +76,8 @@ function _indexMap(headers) {
 }
 
 function _json(obj) {
+  if (!obj) obj = {};
+  obj.api_version = API_VERSION;
   return ContentService
     .createTextOutput(JSON.stringify(obj))
     .setMimeType(ContentService.MimeType.JSON);
@@ -117,6 +85,15 @@ function _json(obj) {
 
 function _clean(v, n) {
   return String(v == null ? '' : v).replace(/\s+/g, ' ').trim().slice(0, n || MAX_FIELD_LEN);
+}
+
+function _normCourseN(v) {
+  var s = _clean(v, 4);
+  /* Sheets often stores course_n as the number 1 instead of "01". */
+  if (/^\d{1,2}$/.test(s)) {
+    s = ('0' + s).slice(-2);
+  }
+  return s;
 }
 
 function _toBool(v) {
@@ -131,7 +108,6 @@ function _toInt(v, dflt) {
 function _toDate(v) {
   if (!v) return null;
   if (v instanceof Date) return v;
-  // Accept "YYYY-MM-DD" or "YYYY-MM"
   var m = /^(\d{4})-(\d{2})(?:-(\d{2}))?/.exec(String(v));
   if (!m) return null;
   var d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3] || 1));
@@ -151,10 +127,6 @@ function _startOfToday() {
   return new Date(t.getFullYear(), t.getMonth(), t.getDate());
 }
 
-/**
- * Standalone Web Apps must use ScriptLock — DocumentLock returns null when
- * the project is not bound to a spreadsheet.
- */
 function _acquireScriptLock() {
   var lock = LockService.getScriptLock();
   try {
@@ -175,8 +147,8 @@ function _normalizeEmail(email) {
 }
 
 /**
- * Normalise phone for IN-style numbers so "+91 98765…", "098765…",
- * and "98765…" all compare equal.
+ * Normalise phone so "+91 98765…", "098765…", "98765…" compare equal.
+ * Also handles numeric cells from Sheets.
  */
 function _normalizePhone(phone) {
   var d = String(phone == null ? '' : phone).replace(/[^0-9]/g, '');
@@ -187,16 +159,15 @@ function _normalizePhone(phone) {
   return d;
 }
 
-function _contactThrottleKey(email, phone, ip) {
+function _contactThrottleKey(email, phone) {
   var e = _normalizeEmail(email);
   var p = _normalizePhone(phone);
   if (e) return 'rl_e_' + e;
   if (p) return 'rl_p_' + p;
-  if (ip) return 'rl_ip_' + ip;
   return '';
 }
 
-/* -------- GET: return open, upcoming batches ---------------------------- */
+/* -------- GET ------------------------------------------------------------ */
 function doGet() {
   try {
     var sheet = _sheet(BATCHES_TAB);
@@ -210,45 +181,65 @@ function doGet() {
     var rows = sheet.getRange(2, 1, last - 1, headers.length).getValues();
     var today = _startOfToday();
 
-    var raw = rows.map(function (r) {
-      var courseN = _clean(r[idx['course_n']], 4);
-      var startD  = _toDate(r[idx['start_date']]);
-      var endD    = _toDate(r[idx['end_date']]) || startD;
-      var total   = _toInt(r[idx['seats_total']], 0);
-      var taken   = _toInt(r[idx['seats_taken']], 0);
-      var left    = Math.max(total - taken, 0);
-      return {
-        id:              _clean(r[idx['id']], 64),
+    /* Soft-sync seats_taken from enrollments so the Sheet column stays honest
+     * after manual edits / legacy rows. Non-blocking if lock is busy. */
+    var syncLock = LockService.getScriptLock();
+    var canSync = false;
+    try { canSync = syncLock.tryLock(2000); } catch (_) { canSync = false; }
+
+    var raw = [];
+    for (var r = 0; r < rows.length; r++) {
+      var row = rows[r];
+      var courseN = _normCourseN(row[idx['course_n']]);
+      var startD  = _toDate(row[idx['start_date']]);
+      var endD    = _toDate(row[idx['end_date']]) || startD;
+      var total   = _toInt(row[idx['seats_total']], 0);
+      var batchId = _clean(row[idx['id']], 64);
+
+      /* Live occupancy from enrollments — not the (possibly stale) cell. */
+      var liveTaken = batchId ? _getBatchSeatState(batchId).count : 0;
+      if (canSync && batchId && idx['seats_taken'] != null &&
+          _toInt(row[idx['seats_taken']], 0) !== liveTaken) {
+        sheet.getRange(r + 2, idx['seats_taken'] + 1).setValue(liveTaken);
+      }
+
+      var left = Math.max(total - liveTaken, 0);
+      raw.push({
+        id:              batchId,
         course_n:        courseN,
-        course_title:    _clean(r[idx['course_title']], MAX_FIELD_LEN),
+        course_title:    _clean(row[idx['course_title']], MAX_FIELD_LEN),
         start_date:      _isoDay(startD),
         end_date:        _isoDay(endD),
         _start:          startD,
         _end:            endD,
-        time:            _clean(r[idx['time']], MAX_FIELD_LEN),
-        days:            _clean(r[idx['days']], MAX_FIELD_LEN),
-        mode:            _clean(r[idx['mode']], MAX_FIELD_LEN),
-        instructor:      _clean(r[idx['instructor']], MAX_FIELD_LEN),
+        time:            _clean(row[idx['time']], MAX_FIELD_LEN),
+        days:            _clean(row[idx['days']], MAX_FIELD_LEN),
+        mode:            _clean(row[idx['mode']], MAX_FIELD_LEN),
+        instructor:      _clean(row[idx['instructor']], MAX_FIELD_LEN),
         seats_total:     total,
         seats_left:      left,
-        price:           _clean(r[idx['price']], MAX_FIELD_LEN),
-        notes:           _clean(r[idx['notes']], MAX_MESSAGE_LEN),
-        enrollment_open: _toBool(r[idx['enrollment_open']]),
-        hidden:          _toBool(r[idx['hidden']])
-      };
-    })
-    .filter(function (b) {
+        price:           _clean(row[idx['price']], MAX_FIELD_LEN),
+        notes:           _clean(row[idx['notes']], MAX_MESSAGE_LEN),
+        enrollment_open: _toBool(row[idx['enrollment_open']]),
+        hidden:          _toBool(row[idx['hidden']])
+      });
+    }
+
+    if (canSync) {
+      try { SpreadsheetApp.flush(); } catch (_) {}
+      _releaseLock(syncLock);
+    }
+
+    raw = raw.filter(function (b) {
       if (!b.id) return false;
       if (!b._start) return false;
       if (b.hidden) return false;
       if (!b.enrollment_open) return false;
-      if (b._start < today) return false;                   // past batch — hide
+      if (b._start < today) return false;
       if (ALLOWED_COURSES.indexOf(b.course_n) === -1) return false;
       return true;
     });
 
-    /* Overlap flag per batch — two batches for the SAME course whose date
-     * ranges intersect. Owner-facing signal; site can render subtly. */
     for (var i = 0; i < raw.length; i++) {
       raw[i].overlap = false;
       for (var j = 0; j < raw.length; j++) {
@@ -269,22 +260,11 @@ function doGet() {
 
     return _json({ ok: true, batches: out, generated_at: new Date().toISOString() });
   } catch (err) {
-    return _json({ ok: false, error: 'server_error', batches: [] });
+    return _json({ ok: false, error: 'server_error', batches: [], detail: String(err) });
   }
 }
 
-/* -------- POST: enrol / opt-out / interested / taking ------------------- */
-/*
- * Concurrency: ENROL / OPT_OUT use ScriptLock so two simultaneous requests
- * cannot over-book (or under-book on opt-out) the same batch.
- *
- * Source of truth for occupancy: unique active contacts derived from the
- * enrollments tab (ENROL adds / merges, OPT_OUT removes). seats_taken on the
- * batches tab is rewritten from that recount after every mutation.
- *
- * Duplicate protection: same person = overlapping email OR normalised phone
- * with an active seat in that batch.
- */
+/* -------- POST ----------------------------------------------------------- */
 function doPost(e) {
   try {
     var body = {};
@@ -299,7 +279,7 @@ function doPost(e) {
     var email   = _clean(body.email,   160);
     var phone   = _clean(body.phone,   32);
     var message = _clean(body.message, MAX_MESSAGE_LEN);
-    var courseN = _clean(body.course_n, 4);
+    var courseN = _normCourseN(body.course_n);
     var batchId = _clean(body.batch_id, 64);
 
     if (!name || name.length < MIN_NAME_LEN) {
@@ -312,50 +292,55 @@ function doPost(e) {
       return _json({ ok: false, error: 'invalid_email' });
     }
 
-    /* Rate limit: 1 submission / 60s per contact (and IP when present). */
     var ip = (e.parameter && e.parameter.userIp) || '';
     var cache = CacheService.getScriptCache();
     var rlKeys = [];
-    var contactKey = _contactThrottleKey(email, phone, '');
+    var contactKey = _contactThrottleKey(email, phone);
     if (contactKey) rlKeys.push(contactKey);
     if (ip) rlKeys.push('rl_ip_' + ip);
     for (var k = 0; k < rlKeys.length; k++) {
       if (cache.get(rlKeys[k])) return _json({ ok: false, error: 'rate_limited' });
     }
-    for (var j = 0; j < rlKeys.length; j++) {
-      cache.put(rlKeys[j], '1', 60);
-    }
 
-    /* Route by intent. ENROL / OPT_OUT mutate the batches sheet under lock. */
+    var result;
     if (intent === 'ENROL') {
-      return _handleEnrol({
+      result = _handleEnrol({
         name: name, email: email, phone: phone, message: message,
         courseN: courseN, batchId: batchId, ip: ip
       });
-    }
-    if (intent === 'OPT_OUT') {
-      return _handleOptOut({
+    } else if (intent === 'OPT_OUT') {
+      result = _handleOptOut({
         name: name, email: email, phone: phone, message: message,
         courseN: courseN, batchId: batchId, ip: ip
       });
+    } else {
+      if (courseN && ALLOWED_COURSES.indexOf(courseN) === -1) {
+        return _json({ ok: false, error: 'invalid_course' });
+      }
+      _appendEnrollment({
+        batchId: '', courseN: courseN, intent: intent,
+        name: name, email: email, phone: phone,
+        message: message, approved: false, ip: ip
+      });
+      result = _json({ ok: true });
     }
 
-    /* INTERESTED / TAKING — plain append, no batch mutation. */
-    if (courseN && ALLOWED_COURSES.indexOf(courseN) === -1) {
-      return _json({ ok: false, error: 'invalid_course' });
-    }
-    _appendEnrollment({
-      batchId: '', courseN: courseN, intent: intent,
-      name: name, email: email, phone: phone,
-      message: message, approved: false, ip: ip
-    });
-    return _json({ ok: true });
+    /* Only throttle successful (or definitive) submissions so flakes can retry. */
+    try {
+      var parsed = JSON.parse(result.getContent());
+      if (parsed && (parsed.ok || parsed.error === 'already_enrolled' ||
+          parsed.error === 'batch_full' || parsed.error === 'not_enrolled')) {
+        for (var j = 0; j < rlKeys.length; j++) cache.put(rlKeys[j], '1', 60);
+      }
+    } catch (_) {}
+
+    return result;
   } catch (err) {
-    return _json({ ok: false, error: 'server_error' });
+    return _json({ ok: false, error: 'server_error', detail: String(err) });
   }
 }
 
-/* -------- ENROL handler ------------------------------------------------- */
+/* -------- ENROL ---------------------------------------------------------- */
 function _handleEnrol(p) {
   if (!p.batchId || !p.courseN) {
     return _json({ ok: false, error: 'unknown_batch' });
@@ -372,29 +357,31 @@ function _handleEnrol(p) {
     if (!found) return _json({ ok: false, error: 'unknown_batch' });
     if (found.error) return _json({ ok: false, error: found.error });
 
-    var total  = found.total;
-    var openOk = found.openOk;
-    var hidden = found.hidden;
-
-    if (!openOk || hidden) {
+    if (!found.openOk || found.hidden) {
       return _json({ ok: false, error: 'enrollment_closed' });
     }
 
     var state = _getBatchSeatState(p.batchId);
     if (state.hasContact(p.email, p.phone)) {
-      return _json({ ok: false, error: 'already_enrolled' });
+      return _json({
+        ok: false,
+        error: 'already_enrolled',
+        seats_left: Math.max(found.total - state.count, 0),
+        seats_total: found.total
+      });
     }
-    if (total <= 0 || state.count >= total) {
+    if (found.total <= 0 || state.count >= found.total) {
       return _json({
         ok: false,
         error: 'batch_full',
         seats_left: 0,
-        seats_total: total
+        seats_total: found.total
       });
     }
 
-    /* Append first, then recount + write seats_taken so the counter cannot
-     * drift from the audit log if a later write fails. */
+    /* Self-service: approved=TRUE claims the seat immediately.
+     * If you still see FALSE in the sheet after submit, the OLD Web App URL
+     * is still live — check api_version on GET. */
     _appendEnrollment({
       batchId: p.batchId, courseN: p.courseN, intent: 'ENROL',
       name: p.name, email: p.email, phone: p.phone,
@@ -407,15 +394,15 @@ function _handleEnrol(p) {
 
     return _json({
       ok: true,
-      seats_left: Math.max(total - newTaken, 0),
-      seats_total: total
+      seats_left: Math.max(found.total - newTaken, 0),
+      seats_total: found.total
     });
   } finally {
     _releaseLock(lock);
   }
 }
 
-/* -------- OPT_OUT handler ----------------------------------------------- */
+/* -------- OPT_OUT -------------------------------------------------------- */
 function _handleOptOut(p) {
   if (!p.batchId || !p.courseN) {
     return _json({ ok: false, error: 'unknown_batch' });
@@ -440,22 +427,21 @@ function _handleOptOut(p) {
       message: p.message, approved: true, ip: p.ip
     });
 
-    var total = found.total;
     var newTaken = _getBatchSeatState(p.batchId).count;
     found.sheet.getRange(found.matchRow, found.bi['seats_taken'] + 1).setValue(newTaken);
     SpreadsheetApp.flush();
 
     return _json({
       ok: true,
-      seats_left: Math.max(total - newTaken, 0),
-      seats_total: total
+      seats_left: Math.max(found.total - newTaken, 0),
+      seats_total: found.total
     });
   } finally {
     _releaseLock(lock);
   }
 }
 
-/* -------- shared helpers ------------------------------------------------- */
+/* -------- shared --------------------------------------------------------- */
 
 function _findBatchRow(batchId, courseN) {
   var bsheet = _sheet(BATCHES_TAB);
@@ -470,11 +456,12 @@ function _findBatchRow(batchId, courseN) {
     return { error: 'batches_schema_bad' };
   }
 
+  var wantCourse = _normCourseN(courseN);
   var brows = bsheet.getRange(2, 1, blast - 1, bh.length).getValues();
   for (var r = 0; r < brows.length; r++) {
     var rowId      = _clean(brows[r][bi['id']], 64);
-    var rowCourseN = _clean(brows[r][bi['course_n']], 4);
-    if (rowId === batchId && rowCourseN === courseN) {
+    var rowCourseN = _normCourseN(brows[r][bi['course_n']]);
+    if (rowId === batchId && rowCourseN === wantCourse) {
       var rowVals = brows[r];
       return {
         sheet: bsheet,
@@ -493,12 +480,15 @@ function _findBatchRow(batchId, courseN) {
 }
 
 /**
- * Rebuild unique active seats for a batch from the enrollments audit log.
- * Identities merge when email OR normalised phone overlaps, so
- * email-only then phone-only (same number) cannot take two seats.
+ * Unique active seats for a batch from the enrollments audit log.
+ * ENROL adds/merges an identity; OPT_OUT removes it.
+ * Same person = email match OR normalised phone match.
+ *
+ * Legacy rows with approved=FALSE still count as active seats (they were
+ * written by the old append-only script). New ENROLs are approved=TRUE.
  */
 function _getBatchSeatState(batchId) {
-  var actives = []; // [{ emails: {e:1}, phones: {p:1} }, ...]
+  var actives = [];
 
   function findIndex(email, phone) {
     var wantEmail = _normalizeEmail(email);
@@ -566,7 +556,7 @@ function _getBatchSeatState(batchId) {
 
 function _appendEnrollment(p) {
   var esheet = _sheet(ENROLLMENTS_TAB);
-  if (!esheet) return;
+  if (!esheet) throw new Error('enrollments_tab_missing');
   esheet.appendRow([
     new Date(),
     p.batchId || '',
@@ -582,31 +572,37 @@ function _appendEnrollment(p) {
 }
 
 /**
- * Owner helper (run manually from the Apps Script editor):
- * Recompute seats_taken for every batch from the enrollments tab.
- * Use this once after deploying if the counter has drifted.
+ * Run once from the Apps Script editor after deploying:
+ *   Select reconcileAllSeatCounts → Run
+ * Rewrites seats_taken for every batch from unique active ENROLs.
  */
 function reconcileAllSeatCounts() {
-  var bsheet = _sheet(BATCHES_TAB);
-  if (!bsheet) throw new Error('batches tab missing');
-  var blast = bsheet.getLastRow();
-  if (blast < 2) return { updated: 0 };
+  var lock = _acquireScriptLock();
+  if (!lock) throw new Error('busy_try_again');
+  try {
+    var bsheet = _sheet(BATCHES_TAB);
+    if (!bsheet) throw new Error('batches tab missing');
+    var blast = bsheet.getLastRow();
+    if (blast < 2) return { updated: 0, api_version: API_VERSION };
 
-  var bh = _headers(bsheet);
-  var bi = _indexMap(bh);
-  if (bi['id'] == null || bi['seats_taken'] == null) {
-    throw new Error('batches schema bad');
-  }
+    var bh = _headers(bsheet);
+    var bi = _indexMap(bh);
+    if (bi['id'] == null || bi['seats_taken'] == null) {
+      throw new Error('batches schema bad');
+    }
 
-  var brows = bsheet.getRange(2, 1, blast - 1, bh.length).getValues();
-  var updated = 0;
-  for (var r = 0; r < brows.length; r++) {
-    var batchId = _clean(brows[r][bi['id']], 64);
-    if (!batchId) continue;
-    var count = _getBatchSeatState(batchId).count;
-    bsheet.getRange(r + 2, bi['seats_taken'] + 1).setValue(count);
-    updated++;
+    var brows = bsheet.getRange(2, 1, blast - 1, bh.length).getValues();
+    var updated = 0;
+    for (var r = 0; r < brows.length; r++) {
+      var batchId = _clean(brows[r][bi['id']], 64);
+      if (!batchId) continue;
+      var count = _getBatchSeatState(batchId).count;
+      bsheet.getRange(r + 2, bi['seats_taken'] + 1).setValue(count);
+      updated++;
+    }
+    SpreadsheetApp.flush();
+    return { updated: updated, api_version: API_VERSION };
+  } finally {
+    _releaseLock(lock);
   }
-  SpreadsheetApp.flush();
-  return { updated: updated };
 }
