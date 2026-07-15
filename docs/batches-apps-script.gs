@@ -28,7 +28,10 @@
  *            • seats_total  — total capacity (integer, e.g. 10).
  *            • seats_taken  — how many are already confirmed (integer). The
  *                             site shows seats_left = max(total − taken, 0).
- *                             KEEP THIS OWNER-EDITED. Do not wire it to POST.
+ *                             The script increments this automatically on
+ *                             every accepted ENROL and decrements it on every
+ *                             accepted OPT_OUT (concurrency-safe via
+ *                             LockService). Owner may still edit manually.
  *            • enrollment_open — TRUE / FALSE. FALSE hides the batch from GET.
  *            • hidden       — TRUE / FALSE. TRUE hides the batch from GET.
  *
@@ -56,16 +59,20 @@
  *       — computes seats_left server-side so the client can't inflate capacity.
  *       — flags in-course overlaps ({start_date, end_date} intersect) so the
  *         owner sees a warning; the site can render it or ignore it.
- *   • POST is strictly append-only to the "enrollments" tab:
- *       — always writes approved=FALSE. Enrollments never affect seats_taken.
+ *   • POST appends to the "enrollments" tab AND updates seats_taken:
+ *       — ENROL:    validates batch exists + not full + this email/phone
+ *                   hasn't already enrolled in the same batch. On success,
+ *                   seats_taken is bumped by +1 atomically (LockService).
+ *                   Row is written with approved=TRUE (self-service).
+ *       — OPT_OUT:  must reference a batch the same email OR phone previously
+ *                   enrolled in (and hasn't already opted out of).
+ *                   Decrements seats_taken by 1 (never below 0) atomically.
+ *       — INTERESTED / TAKING: append-only, no seat effect.
  *       — payload is trimmed & length-capped; intent must be in a fixed set.
- *       — batch_id + course_n are cross-checked against the batches sheet;
- *         unknown pairs are rejected.
  *       — 1 submission / 60s per IP throttle.
- *       — an enrollment is NEVER visible on the public site unless the owner
- *         both approves it (approved=TRUE) AND bumps seats_taken manually.
  *   • If the URL leaks or is abused, redeploy for a new URL and update the site.
- *   • Nothing here mutates the batches sheet. Ever.
+ *   • Only ENROL / OPT_OUT mutate the batches sheet, and only the seats_taken
+ *     cell of the matched row. Everything else stays owner-owned.
  */
 
 var SHEET_ID          = '17IzcAxPpq0uvj36lmqEdcfWNPUFujX2x_8WDst4vCOo';
@@ -218,7 +225,17 @@ function doGet() {
   }
 }
 
-/* -------- POST: append a pending enrollment intent ---------------------- */
+/* -------- POST: enrol / opt-out / interested / taking ------------------- */
+/*
+ * Concurrency: everything that mutates the batches sheet is wrapped in a
+ * document-wide LockService lock, so two simultaneous enrollments cannot
+ * over-book (or under-book on opt-out) the same batch.
+ *
+ * Duplicate protection: an ENROL is rejected if the SAME email or phone
+ * already has an ENROL row for that batch WITHOUT a matching OPT_OUT after
+ * it. An OPT_OUT only counts if there is a prior "active" ENROL by the same
+ * email/phone for the same batch — otherwise it's rejected as not_enrolled.
+ */
 function doPost(e) {
   try {
     var body = {};
@@ -246,54 +263,238 @@ function doPost(e) {
       return _json({ ok: false, error: 'invalid_email' });
     }
 
-    /* For ENROL / OPT_OUT — batch_id + course_n must exist in batches sheet. */
-    if (intent === 'ENROL' || intent === 'OPT_OUT') {
-      var bsheet = _sheet(BATCHES_TAB);
-      if (!bsheet) return _json({ ok: false, error: 'batches_tab_missing' });
-      var blast = bsheet.getLastRow();
-      if (blast < 2) return _json({ ok: false, error: 'no_batches' });
-      var bh = _headers(bsheet);
-      var bi = _indexMap(bh);
-      var brows = bsheet.getRange(2, 1, blast - 1, bh.length).getValues();
-      var matched = brows.some(function (r) {
-        return _clean(r[bi['id']], 64) === batchId &&
-               _clean(r[bi['course_n']], 4) === courseN;
-      });
-      if (!matched) return _json({ ok: false, error: 'unknown_batch' });
-    } else {
-      /* For INTERESTED / TAKING, batch_id is optional; course_n must be in allow-list */
-      if (courseN && ALLOWED_COURSES.indexOf(courseN) === -1) {
-        return _json({ ok: false, error: 'invalid_course' });
-      }
-      batchId = batchId || '';
-    }
-
-    /* 1 submission / 60s per IP. */
+    /* Rate limit: 1 submission / 60s per IP. */
     var ip = (e.parameter && e.parameter.userIp) || '';
     var cache = CacheService.getScriptCache();
     if (ip) {
-      var key = 'rl_batch_' + ip;
-      if (cache.get(key)) return _json({ ok: false, error: 'rate_limited' });
-      cache.put(key, '1', 60);
+      var rlKey = 'rl_batch_' + ip;
+      if (cache.get(rlKey)) return _json({ ok: false, error: 'rate_limited' });
+      cache.put(rlKey, '1', 60);
     }
 
-    var esheet = _sheet(ENROLLMENTS_TAB);
-    if (!esheet) return _json({ ok: false, error: 'enrollments_tab_missing' });
-    esheet.appendRow([
-      new Date(),
-      batchId,
-      courseN,
-      intent,
-      name,
-      email,
-      phone,
-      message,
-      false, // approved — owner flips to TRUE when validated
-      ip
-    ]);
+    /* Route by intent. ENROL / OPT_OUT mutate the batches sheet under lock. */
+    if (intent === 'ENROL') {
+      return _handleEnrol({
+        name: name, email: email, phone: phone, message: message,
+        courseN: courseN, batchId: batchId, ip: ip
+      });
+    }
+    if (intent === 'OPT_OUT') {
+      return _handleOptOut({
+        name: name, email: email, phone: phone, message: message,
+        courseN: courseN, batchId: batchId, ip: ip
+      });
+    }
 
+    /* INTERESTED / TAKING — plain append, no batch mutation. */
+    if (courseN && ALLOWED_COURSES.indexOf(courseN) === -1) {
+      return _json({ ok: false, error: 'invalid_course' });
+    }
+    _appendEnrollment({
+      batchId: '', courseN: courseN, intent: intent,
+      name: name, email: email, phone: phone,
+      message: message, approved: false, ip: ip
+    });
     return _json({ ok: true });
   } catch (err) {
     return _json({ ok: false, error: 'server_error' });
   }
+}
+
+/* -------- ENROL handler (increments seats_taken) ------------------------ */
+function _handleEnrol(p) {
+  var lock = LockService.getDocumentLock();
+  try { lock.waitLock(15000); } catch (_) {
+    return _json({ ok: false, error: 'busy_try_again' });
+  }
+  try {
+    var bsheet = _sheet(BATCHES_TAB);
+    if (!bsheet) return _json({ ok: false, error: 'batches_tab_missing' });
+    var blast = bsheet.getLastRow();
+    if (blast < 2) return _json({ ok: false, error: 'no_batches' });
+
+    var bh = _headers(bsheet);
+    var bi = _indexMap(bh);
+    // Sanity: sheet must expose the columns we need.
+    if (bi['id'] == null || bi['course_n'] == null ||
+        bi['seats_total'] == null || bi['seats_taken'] == null) {
+      return _json({ ok: false, error: 'batches_schema_bad' });
+    }
+
+    var brows = bsheet.getRange(2, 1, blast - 1, bh.length).getValues();
+    var matchRow = -1; // sheet row index (1-based, header is row 1)
+    for (var r = 0; r < brows.length; r++) {
+      var rowId       = _clean(brows[r][bi['id']], 64);
+      var rowCourseN  = _clean(brows[r][bi['course_n']], 4);
+      if (rowId === p.batchId && rowCourseN === p.courseN) {
+        matchRow = r + 2; // +2 because array is 0-based & row 1 is header
+        break;
+      }
+    }
+    if (matchRow === -1) return _json({ ok: false, error: 'unknown_batch' });
+
+    var rowVals = bsheet.getRange(matchRow, 1, 1, bh.length).getValues()[0];
+    var total   = _toInt(rowVals[bi['seats_total']], 0);
+    var taken   = _toInt(rowVals[bi['seats_taken']], 0);
+    var openOk  = bi['enrollment_open'] != null
+      ? _toBool(rowVals[bi['enrollment_open']]) : true;
+    var hidden  = bi['hidden'] != null
+      ? _toBool(rowVals[bi['hidden']]) : false;
+
+    if (!openOk || hidden) {
+      return _json({ ok: false, error: 'enrollment_closed' });
+    }
+    if (taken >= total) {
+      return _json({ ok: false, error: 'batch_full', seats_left: 0 });
+    }
+
+    /* Duplicate check — does this email/phone already hold an active seat
+     * in this batch? An enrollment is "active" if the person has an ENROL
+     * row for this batch not followed by an OPT_OUT row for the same batch
+     * (matched by email OR phone). */
+    var active = _activeEnrollmentsFor(p.batchId, p.email, p.phone);
+    if (active > 0) {
+      return _json({ ok: false, error: 'already_enrolled' });
+    }
+
+    /* Commit — bump seats_taken, then append the audit row. */
+    var newTaken = taken + 1;
+    bsheet.getRange(matchRow, bi['seats_taken'] + 1).setValue(newTaken);
+    SpreadsheetApp.flush();
+
+    _appendEnrollment({
+      batchId: p.batchId, courseN: p.courseN, intent: 'ENROL',
+      name: p.name, email: p.email, phone: p.phone,
+      message: p.message, approved: true, ip: p.ip
+    });
+
+    return _json({
+      ok: true,
+      seats_left: Math.max(total - newTaken, 0),
+      seats_total: total
+    });
+  } finally {
+    try { lock.releaseLock(); } catch (_) {}
+  }
+}
+
+/* -------- OPT_OUT handler (decrements seats_taken) ---------------------- */
+function _handleOptOut(p) {
+  var lock = LockService.getDocumentLock();
+  try { lock.waitLock(15000); } catch (_) {
+    return _json({ ok: false, error: 'busy_try_again' });
+  }
+  try {
+    var bsheet = _sheet(BATCHES_TAB);
+    if (!bsheet) return _json({ ok: false, error: 'batches_tab_missing' });
+    var blast = bsheet.getLastRow();
+    if (blast < 2) return _json({ ok: false, error: 'no_batches' });
+
+    var bh = _headers(bsheet);
+    var bi = _indexMap(bh);
+    if (bi['id'] == null || bi['course_n'] == null ||
+        bi['seats_total'] == null || bi['seats_taken'] == null) {
+      return _json({ ok: false, error: 'batches_schema_bad' });
+    }
+
+    var brows = bsheet.getRange(2, 1, blast - 1, bh.length).getValues();
+    var matchRow = -1;
+    for (var r = 0; r < brows.length; r++) {
+      var rowId       = _clean(brows[r][bi['id']], 64);
+      var rowCourseN  = _clean(brows[r][bi['course_n']], 4);
+      if (rowId === p.batchId && rowCourseN === p.courseN) {
+        matchRow = r + 2;
+        break;
+      }
+    }
+    if (matchRow === -1) return _json({ ok: false, error: 'unknown_batch' });
+
+    /* Must have an active prior ENROL by this email/phone in this batch. */
+    var active = _activeEnrollmentsFor(p.batchId, p.email, p.phone);
+    if (active <= 0) {
+      return _json({ ok: false, error: 'not_enrolled' });
+    }
+
+    var rowVals = bsheet.getRange(matchRow, 1, 1, bh.length).getValues()[0];
+    var total   = _toInt(rowVals[bi['seats_total']], 0);
+    var taken   = _toInt(rowVals[bi['seats_taken']], 0);
+    var newTaken = Math.max(taken - 1, 0);
+    bsheet.getRange(matchRow, bi['seats_taken'] + 1).setValue(newTaken);
+    SpreadsheetApp.flush();
+
+    _appendEnrollment({
+      batchId: p.batchId, courseN: p.courseN, intent: 'OPT_OUT',
+      name: p.name, email: p.email, phone: p.phone,
+      message: p.message, approved: true, ip: p.ip
+    });
+
+    return _json({
+      ok: true,
+      seats_left: Math.max(total - newTaken, 0),
+      seats_total: total
+    });
+  } finally {
+    try { lock.releaseLock(); } catch (_) {}
+  }
+}
+
+/* -------- shared helpers ------------------------------------------------- */
+
+/*
+ * Counts how many "active" enrolments the given contact has in the given
+ * batch. Walks the enrollments sheet top-to-bottom, matching on email OR
+ * phone. Each ENROL adds 1; each OPT_OUT for the same batch by the same
+ * contact subtracts 1 (floored at 0). Returns 0 or 1 in practice.
+ */
+function _activeEnrollmentsFor(batchId, email, phone) {
+  var esheet = _sheet(ENROLLMENTS_TAB);
+  if (!esheet) return 0;
+  var elast = esheet.getLastRow();
+  if (elast < 2) return 0;
+
+  var eh = _headers(esheet);
+  var ei = _indexMap(eh);
+  if (ei['batch_id'] == null || ei['intent'] == null) return 0;
+
+  var evals = esheet.getRange(2, 1, elast - 1, eh.length).getValues();
+  var count = 0;
+  var wantEmail = (email || '').toLowerCase();
+  var wantPhone = _digits(phone);
+  for (var i = 0; i < evals.length; i++) {
+    var row = evals[i];
+    if (_clean(row[ei['batch_id']], 64) !== batchId) continue;
+    var rowEmail = ei['email'] != null
+      ? String(row[ei['email']] || '').toLowerCase().trim() : '';
+    var rowPhone = ei['phone'] != null
+      ? _digits(row[ei['phone']]) : '';
+    var contactMatch =
+      (wantEmail && rowEmail && wantEmail === rowEmail) ||
+      (wantPhone && rowPhone && wantPhone === rowPhone);
+    if (!contactMatch) continue;
+    var rowIntent = String(row[ei['intent']] || '').toUpperCase().trim();
+    if (rowIntent === 'ENROL') count += 1;
+    else if (rowIntent === 'OPT_OUT') count = Math.max(count - 1, 0);
+  }
+  return count;
+}
+
+function _digits(v) {
+  return String(v == null ? '' : v).replace(/[^0-9]/g, '');
+}
+
+function _appendEnrollment(p) {
+  var esheet = _sheet(ENROLLMENTS_TAB);
+  if (!esheet) return;
+  esheet.appendRow([
+    new Date(),
+    p.batchId || '',
+    p.courseN || '',
+    p.intent,
+    p.name,
+    p.email,
+    p.phone,
+    p.message,
+    !!p.approved,
+    p.ip || ''
+  ]);
 }

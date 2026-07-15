@@ -299,7 +299,7 @@ function SkeletonCard() {
 
 /* ---------- Enrollment modal ------------------------------------------- */
 
-function EnrollDialog({ open, onOpenChange, initial, batches }) {
+function EnrollDialog({ open, onOpenChange, initial, batches, onSuccess }) {
   const [intent, setIntent]     = useState(initial?.intent || "ENROL");
   const [courseN, setCourseN]   = useState(initial?.course_n || "");
   const [batchId, setBatchId]   = useState(initial?.batch_id || "");
@@ -362,18 +362,57 @@ function EnrollDialog({ open, onOpenChange, initial, batches }) {
       }
 
       try {
-        await fetch(BATCHES_API_URL, {
+        const res = await fetch(BATCHES_API_URL, {
           method: "POST",
           headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify(payload),
         });
-        toast.success("We've got your request.", {
-          description:
+        let json = {};
+        try { json = await res.json(); } catch (_p) { json = {}; }
+
+        if (json && json.ok) {
+          const successMsg =
             activeIntent.key === "ENROL"
-              ? "We'll confirm your seat on WhatsApp within a day."
-              : "We'll be in touch shortly. Thanks for the note.",
-        });
-        onOpenChange(false);
+              ? "Seat reserved."
+              : activeIntent.key === "OPT_OUT"
+              ? "Your seat has been released."
+              : "We've got your request.";
+          const successDesc =
+            activeIntent.key === "ENROL"
+              ? typeof json.seats_left === "number"
+                ? `We'll confirm on WhatsApp shortly. ${json.seats_left} seat${json.seats_left === 1 ? "" : "s"} left in this batch.`
+                : "We'll confirm your seat on WhatsApp within a day."
+              : activeIntent.key === "OPT_OUT"
+              ? "Sorry to see you go — the seat is back in the pool."
+              : "We'll be in touch shortly. Thanks for the note.";
+          toast.success(successMsg, { description: successDesc });
+          if (typeof onSuccess === "function") {
+            // Refresh batch list so the seat counter updates on screen.
+            try { onSuccess(); } catch (_r) { /* ignore refresh errors */ }
+          }
+          onOpenChange(false);
+          return;
+        }
+
+        /* Map known server errors to human-friendly messages. */
+        const errCode = String(json?.error || "");
+        const errMap = {
+          batch_full:        ["This batch is full.", "All 10 seats are taken. Choose another batch or ping us on WhatsApp for the next cohort."],
+          already_enrolled:  ["You're already enrolled.", "Our records show this email / phone already holds a seat in this batch."],
+          not_enrolled:      ["No enrolment on file.", "We couldn't find a prior enrolment for this email / phone in this batch."],
+          enrollment_closed: ["Enrolment closed.", "This batch is no longer accepting new students."],
+          unknown_batch:     ["Batch not found.", "Please refresh and pick a batch from the list."],
+          rate_limited:      ["Slow down a moment.", "You just submitted a request. Please retry in ~1 minute."],
+          invalid_name:      ["Name looks off.", "Please enter your full name (at least 2 characters)."],
+          invalid_email:     ["Email looks off.", "Please enter a valid email address."],
+          contact_required:  ["Add a contact.", "We need at least an email or a phone number to reach you."],
+          busy_try_again:    ["Sheet was busy.", "Please try again in a moment."],
+        };
+        const [title, desc] = errMap[errCode] || [
+          "Couldn't send your request.",
+          "Please try again in a moment, or WhatsApp us directly.",
+        ];
+        toast.error(title, { description: desc });
       } catch (_err) {
         toast.error("Couldn't send your request.", {
           description: "Please try again in a moment, or WhatsApp us directly.",
@@ -382,7 +421,7 @@ function EnrollDialog({ open, onOpenChange, initial, batches }) {
         setSubmitting(false);
       }
     },
-    [activeIntent, batchId, canSubmit, courseN, email, message, name, onOpenChange, phone]
+    [activeIntent, batchId, canSubmit, courseN, email, message, name, onOpenChange, onSuccess, phone]
   );
 
   return (
@@ -739,6 +778,7 @@ export default function Batches() {
         onOpenChange={setDialogOpen}
         initial={dialogInitial}
         batches={batches || []}
+        onSuccess={fetchBatches}
       />
     </section>
   );

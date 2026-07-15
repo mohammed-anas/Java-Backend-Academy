@@ -152,22 +152,87 @@ frontend:
             - Added REACT_APP_BATCHES_API to frontend/.env (empty by default — safe
               seed fallback until owner deploys the script). Exposed BATCHES_API_URL
               and BATCH_INTENTS in content.js.
-            - Rewrote frontend/src/site/Batches.jsx end-to-end:
-              • Fetches from BATCHES_API_URL, normalises payload, renders skeleton
-                while loading, falls back to seed with a subtle banner on error.
-              • Course chips (All + one per course with data) filter the grid.
-              • Batch card shows dates, time, days, mode, instructor, price, notes,
-                slots pill (green/amber/red/sold-out) and an "Overlaps in-course"
-                warning ribbon when the Apps Script marks overlap:true.
-              • Enrolment modal with 4 intents (ENROL / OPT_OUT / TAKING / INTERESTED),
-                course + batch dropdowns auto-populated from the clicked card;
-                client-side length caps; POST uses text/plain to avoid CORS preflight.
-              • Empty-state "Notify me" CTA that opens the modal in INTERESTED mode
-                pre-filled with the current filter.
-            - Verified in headless browser: chips (All 03, 01/03/05 each 01),
-              filter to Course 03 shows only Databases card, Enrol click opens the
-              modal with the right course+batch preselected, seed banner visible
-              because REACT_APP_BATCHES_API is unset.
+            - Rewrote frontend/src/site/Batches.jsx end-to-end (see prior notes).
+        - working: "NA"
+          agent: "main"
+          comment: |
+            User reported: after a successful ENROL the "seats left" counter did not
+            change, and a follow-up OPT_OUT did not restore the seat either. Root
+            cause: original Apps Script POST was append-only by design and never
+            touched seats_taken — the site depended on the owner bumping that
+            column manually.
+
+            Fix (docs/batches-apps-script.gs, doPost rewrite):
+              • ENROL now, under a LockService document lock:
+                  - matches the row by (id + course_n),
+                  - refuses if enrollment_open=FALSE / hidden=TRUE,
+                  - refuses with error=batch_full when seats_taken >= seats_total,
+                  - refuses with error=already_enrolled if the same email OR phone
+                    already has an unmatched ENROL for this batch,
+                  - increments seats_taken by 1,
+                  - appends the audit row with approved=TRUE.
+              • OPT_OUT now, under the same lock:
+                  - refuses with error=not_enrolled if there's no active prior
+                    ENROL for the same batch by this email/phone,
+                  - decrements seats_taken by 1 (floored at 0),
+                  - appends the audit row.
+              • INTERESTED / TAKING unchanged (append-only, no seat mutation).
+              • _activeEnrollmentsFor walks the enrollments sheet netting
+                ENROL − OPT_OUT rows by contact, so a re-enrol after opt-out works.
+              • Response now includes seats_left / seats_total so the UI can show
+                the new count immediately.
+
+            Frontend (frontend/src/site/Batches.jsx):
+              • EnrollDialog now parses the JSON response, calls fetchBatches on
+                success so the card's seat pill re-renders, and maps the new
+                server errors (batch_full / already_enrolled / not_enrolled /
+                enrollment_closed / rate_limited / busy_try_again / …) to clear
+                user-facing toasts.
+              • Passed onSuccess={fetchBatches} into <EnrollDialog />.
+
+            IMPORTANT — deployment step (owner action required):
+              The Apps Script file in the repo has changed. The user must open
+              https://script.google.com, paste the new /app/docs/batches-apps-script.gs
+              contents, and re-deploy the SAME Web App deployment (Manage
+              deployments → pencil → New version) so the existing URL keeps
+              working. Until they redeploy, the LIVE endpoint still runs the
+              old append-only code and the seat counter will keep looking stuck.
+        - working: true
+          agent: "testing"
+          comment: |
+            VERIFIED via mocked UI testing (live Apps Script URL not yet redeployed by owner).
+            
+            UI Testing Results (all 9 steps PASSED):
+            ✓ Step 1: Batch card loads with initial state (8/10 seats)
+            ✓ Step 2: Enrol dialog opens with course="01" and batch="JH-01" pre-selected
+            ✓ Step 3: ENROL success - toast displays "7 seats left in this batch"
+            ✓ Step 4: Batch card updates to 7/10 seats (fetchBatches called, UI re-rendered)
+            ✓ Step 5: already_enrolled error - toast shows "You're already enrolled"
+            ✓ Step 6: batch_full error - toast shows "This batch is full"
+            ✓ Step 7: OPT_OUT success - toast shows "Your seat has been released"
+            ✓ Step 8: Batch card updates back to 8/10 seats (fetchBatches called, UI re-rendered)
+            ✓ Step 9: not_enrolled error - toast shows "No enrolment on file"
+            
+            Key Findings:
+            • POST responses correctly include seats_left and seats_total
+            • Frontend calls fetchBatches() after successful ENROL/OPT_OUT
+            • Batch card SlotsPill component re-renders with updated seat count
+            • All error codes (batch_full, already_enrolled, not_enrolled) map to user-friendly toasts
+            • Dialog closes after success, stays open on error
+            
+            Apps Script Static Review (docs/batches-apps-script.gs):
+            ✓ doPost routing: ENROL → _handleEnrol (line 276-280), OPT_OUT → _handleOptOut (line 282-286)
+            ✓ LockService: Both handlers acquire LockService.getDocumentLock() with 15s timeout (lines 306-309, 383-386)
+            ✓ LockService: Both handlers release lock in finally block (lines 376-378, 436-438)
+            ✓ _handleEnrol: Rejects with batch_full when taken >= total (lines 347-349)
+            ✓ _handleEnrol: Rejects with already_enrolled when _activeEnrollmentsFor > 0 (lines 355-358)
+            ✓ _handleOptOut: Rejects with not_enrolled when _activeEnrollmentsFor <= 0 (lines 413-416)
+            ✓ seats_taken mutation: bsheet.getRange(matchRow, bi['seats_taken']+1).setValue(newTaken) (lines 362, 422)
+            ✓ _appendEnrollment: Writes to enrollments tab with correct column order (lines 488-499)
+            ✓ doGet: Unchanged behaviourally - filters by enrollment_open, hidden, start_date, ALLOWED_COURSES (lines 152-226)
+            ✓ _activeEnrollmentsFor: Correctly nets ENROL - OPT_OUT by email OR phone (lines 449-479)
+            
+            No deviations found. Code matches specification exactly.
 
 backend:
   - task: "No backend changes required for batches"
@@ -194,6 +259,7 @@ metadata:
 test_plan:
   current_focus:
     - "Batches page revamp (Google-Sheet-backed, secure)"
+    - "Seat counter mutation on ENROL / OPT_OUT (Apps Script + frontend)"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
@@ -211,4 +277,71 @@ agent_communication:
         REACT_APP_BATCHES_API in frontend/.env, the page renders a small seed
         so nothing breaks. Once the env var is set, the sheet is the single
         source of truth. No FastAPI routes touched.
+
+    - agent: "main"
+      message: |
+        Bug fix — seats_left counter did not move on ENROL / OPT_OUT.
+        Rewrote doPost in docs/batches-apps-script.gs so ENROL and OPT_OUT
+        now mutate seats_taken atomically (LockService), with duplicate
+        detection and batch-full rejection, and return the new seats_left.
+        Frontend Batches.jsx now refreshes the batch list on success and
+        surfaces the new server errors (batch_full / already_enrolled /
+        not_enrolled) as toasts.
+
+        NOTE FOR TESTING AGENT: The Apps Script fix will only take effect
+        once the OWNER redeploys /app/docs/batches-apps-script.gs to the
+        SAME Google Apps Script Web App URL currently configured in
+        frontend/.env (REACT_APP_BATCHES_API). Until that redeploy happens,
+        hitting the live URL still runs the old append-only code.
+
+        For this pass please:
+          1. Verify the FRONTEND behaviour of Batches.jsx via UI — the
+             enrol modal opens, submits, and handles the new success/error
+             shapes without crashing (mocking the response by intercepting
+             the fetch is acceptable if the live URL isn't yet redeployed).
+          2. Sanity-check the new Apps Script logic by static review — the
+             file is at /app/docs/batches-apps-script.gs; confirm the
+             ENROL / OPT_OUT / seats_taken / LockService / dedupe branches
+             look correct and no existing GET behaviour was broken.
+          3. Report back whether the frontend refreshes seats after a mocked
+             ok:true response and whether the error toasts fire for the new
+             error codes.
+    
+    - agent: "testing"
+      message: |
+        ✅ VERIFICATION COMPLETE — Bug fix confirmed working.
+        
+        Tested the Batches page enrollment flow with mocked API responses (live
+        Apps Script URL not yet redeployed by owner). All 9 test scenarios PASSED:
+        
+        1. ✓ Batch card loads with initial seat count (8/10)
+        2. ✓ Enrol dialog opens with pre-selected course and batch
+        3. ✓ ENROL success: toast mentions "7 seats left", dialog closes
+        4. ✓ Batch card updates to 7/10 seats (fetchBatches called, UI re-rendered)
+        5. ✓ already_enrolled error: toast shows "You're already enrolled"
+        6. ✓ batch_full error: toast shows "This batch is full"
+        7. ✓ OPT_OUT success: toast shows "Your seat has been released"
+        8. ✓ Batch card updates back to 8/10 seats (fetchBatches called, UI re-rendered)
+        9. ✓ not_enrolled error: toast shows "No enrolment on file"
+        
+        Frontend integration verified:
+        • POST responses include seats_left and seats_total ✓
+        • onSuccess={fetchBatches} triggers after successful ENROL/OPT_OUT ✓
+        • SlotsPill component re-renders with updated seat count ✓
+        • All error codes map to user-friendly toasts ✓
+        
+        Apps Script static review (docs/batches-apps-script.gs):
+        • doPost routing to _handleEnrol and _handleOptOut ✓
+        • LockService acquisition and release in finally blocks ✓
+        • batch_full rejection when taken >= total ✓
+        • already_enrolled rejection via _activeEnrollmentsFor ✓
+        • not_enrolled rejection via _activeEnrollmentsFor ✓
+        • seats_taken mutation via bsheet.getRange().setValue() ✓
+        • _appendEnrollment writes correct column order ✓
+        • doGet unchanged (filters, overlap detection intact) ✓
+        
+        No deviations found. Code matches specification exactly.
+        
+        NEXT STEP: Owner must redeploy the Apps Script to the live URL for the
+        fix to take effect in production.
 
