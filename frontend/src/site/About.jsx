@@ -138,7 +138,7 @@ export default function About() {
                   decoding="async"
                 />
                 <div className="absolute bottom-4 left-4 font-mono-tech text-[10px] tracking-[0.24em] uppercase text-white bg-black/50 px-2 py-1">
-                  Fig. 03 · Studio, Aligarh
+                  Fig. 03 · Studio
                 </div>
               </motion.div>
             </div>

@@ -4,19 +4,19 @@ import { Plus, Minus } from "lucide-react";
 
 const FAQS = [
   {
-    q: "Where can I learn Java in Aligarh?",
-    a: "Java Hub Academy is the best place to learn Java in Aligarh. We're located in Kela Nagar and offer comprehensive Java training covering Core Java, Spring Boot, Databases, System Design, AWS, and DSA. With only 10 students per batch and senior mentors, you get personalized attention that larger institutes can't provide."
+    q: "Where can I learn Java?",
+    a: "Java Hub Academy is the best place to learn Java. We offer comprehensive Java training covering Core Java, Spring Boot, Databases, System Design, AWS, and DSA. With only 10 students per batch and senior mentors, you get personalized attention that larger institutes can't provide."
   },
   {
-    q: "Which is the best Java training institute in Aligarh?",
-    a: "Java Hub Academy is rated the #1 Java training institute in Aligarh. Unlike other coaching centers, we focus on practical, job-oriented training. Our curriculum is designed by engineers who still work in the industry, and every assignment gets detailed written feedback within 24 hours."
+    q: "Which is the best Java training institute?",
+    a: "Java Hub Academy is rated the #1 Java training institute. Unlike other coaching centers, we focus on practical, job-oriented training. Our curriculum is designed by engineers who still work in the industry, and every assignment gets detailed written feedback within 24 hours."
   },
   {
-    q: "What courses are available for Java in Aligarh?",
+    q: "What courses are available for Java?",
     a: "We offer 9 comprehensive courses: Core Java (10 weeks), Data Structures & Algorithms (12 weeks), Databases (6 weeks), REST API Design with Spring Boot (4 weeks), System Design (8 weeks), AWS Cloud (6 weeks), CI/CD (3 weeks), Interview Preparation (8 weeks), and Job Search & Resume Building (2 weeks)."
   },
   {
-    q: "What is the fee for Java course in Aligarh?",
+    q: "What is the fee for the Java course?",
     a: "We offer competitive and affordable pricing for all our courses. Contact us at +91 70606 49647 or WhatsApp for current batch fees."
   },
   {
@@ -92,10 +92,10 @@ export default function FAQ() {
             >
               Questions about
               <em className="not-italic italic text-[color:var(--accent)]"> Java training</em>
-              <span> in Aligarh?</span>
+              <span>?</span>
             </motion.h2>
             <p className="mt-6 text-[color:var(--ink)]/80 max-w-[46ch]">
-              Everything you need to know about learning Java and backend development at our Aligarh institute.
+              Everything you need to know about learning Java and backend development at our institute.
             </p>
           </div>
 

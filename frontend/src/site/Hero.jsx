@@ -123,7 +123,7 @@ export default function Hero() {
           <div className="lg:col-span-6 xl:col-span-5">
             <p className="text-base sm:text-lg leading-relaxed text-[color:var(--ink)]/85 max-w-[52ch]">
               <span className="font-mono-tech text-[11px] tracking-[0.24em] uppercase text-[color:var(--ink-2)] block mb-3">
-                / {BRAND.name} · Aligarh
+                / {BRAND.name}
               </span>
               We teach you Java, databases, and system design and many more —
               the exact skills companies hire for. Learn from senior engineers,

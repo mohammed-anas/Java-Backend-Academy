@@ -106,7 +106,7 @@ export default function Footer() {
 
         <div className="pt-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 font-mono-tech text-[11px] tracking-[0.24em] uppercase text-white/50">
           <div>
-            © {year} {BRAND.name} · Best Java Training Institute in Aligarh, UP
+            © {year} {BRAND.name} · Best Java Training Institute
           </div>
         </div>
 

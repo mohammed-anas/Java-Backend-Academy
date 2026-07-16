@@ -9,7 +9,7 @@ export const BRAND = {
   whatsappHref:
     "https://wa.me/917060649647?text=Hi%20Java%20Backend%20Academy%2C%20I'd%20like%20to%20know%20about%20the%20next%20cohort.",
   address:
-    "Near Masjid Aman, Kela Nagar, Aligarh, Uttar Pradesh 202001",
+    "Near Masjid Aman, Kela Nagar, Uttar Pradesh 202001",
   hours: "Mon–Sat · 19:00 – 20:00 IST",
   mapEmbed:
     "https://www.google.com/maps?q=Java+Backend+Academy,+Masjid+Aaman,+Kela+Nagar,+Aligarh,+Uttar+Pradesh+202001&output=embed",
