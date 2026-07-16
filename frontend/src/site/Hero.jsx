@@ -4,9 +4,24 @@ import { ArrowDownRight, MoveRight } from "lucide-react";
 import { BRAND, IMAGES, TRUST_CHIPS } from "@/site/content";
 import { scrollToId } from "@/site/useLenis";
 
-const LINE_1 = ["Learn", "Java."];
-const LINE_2 = ["Land your first"];
-const LINE_3 = ["developer", "job."];
+const HERO_LINES = [
+  [
+    { t: "Learn " },
+    { t: "Java", accent: true },
+    { t: " and" },
+  ],
+  [
+    { t: "related technologies." },
+  ],
+  [
+    { t: "Land your first" },
+  ],
+  [
+    { t: "developer", accent: true },
+    { t: " " },
+    { t: "job.", accent: true },
+  ],
+];
 
 const lineVariants = {
   hidden: { y: "110%" },
@@ -69,31 +84,29 @@ export default function Hero() {
         style={{ y: textY }}
         className="mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-12 relative z-10 mt-14 sm:mt-16 lg:mt-24"
       >
-        <h1 className="font-serif-editorial tracking-tight leading-[0.9] text-[14vw] sm:text-[11vw] lg:text-[9vw] xl:text-[8.4vw]">
-          {[LINE_1, LINE_2, LINE_3].map((line, li) => (
-            <span key={li} className="block">
-              {line.map((word, wi) => {
-                const globalIndex = li * 3 + wi;
-                return (
-                  <span key={wi} className="mask-line inline-block mr-[0.18em]">
-                    <motion.span
-                      custom={globalIndex}
-                      variants={lineVariants}
-                      initial="hidden"
-                      animate="show"
-                      className="inline-block"
+        <h1 className="font-serif-editorial tracking-tight leading-[0.98] text-[11vw] sm:text-[8.5vw] lg:text-[6.4vw] xl:text-[6vw]">
+          {HERO_LINES.map((segments, li) => (
+            <span key={li} className="mask-line block">
+              <motion.span
+                custom={li}
+                variants={lineVariants}
+                initial="hidden"
+                animate="show"
+                className="inline-block whitespace-nowrap"
+              >
+                {segments.map((seg, si) =>
+                  seg.accent ? (
+                    <em
+                      key={si}
+                      className="not-italic font-serif-editorial italic text-[color:var(--accent)]"
                     >
-                      {word === "Java." || word === "developer" || word === "job." ? (
-                        <em className="not-italic font-serif-editorial italic text-[color:var(--accent)]">
-                          {word}
-                        </em>
-                      ) : (
-                        word
-                      )}
-                    </motion.span>
-                  </span>
-                );
-              })}
+                      {seg.t}
+                    </em>
+                  ) : (
+                    <span key={si}>{seg.t}</span>
+                  )
+                )}
+              </motion.span>
             </span>
           ))}
         </h1>
@@ -112,9 +125,9 @@ export default function Hero() {
               <span className="font-mono-tech text-[11px] tracking-[0.24em] uppercase text-[color:var(--ink-2)] block mb-3">
                 / {BRAND.name} · Aligarh
               </span>
-              We teach you Java, databases, and system design — the exact
-              skills companies hire for. Learn from senior engineers, build
-              real projects, and walk into interviews ready to get hired.
+              We teach you Java, databases, and system design and many more —
+              the exact skills companies hire for. Learn from senior engineers,
+              build real projects, and walk into interviews ready to get hired.
             </p>
 
             <ul
