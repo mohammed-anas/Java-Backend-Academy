@@ -675,9 +675,6 @@ export default function Batches() {
         {/* Header */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 mb-12 lg:mb-16">
           <div className="lg:col-span-4">
-            <div className="font-mono-tech text-[11px] tracking-[0.24em] uppercase text-[color:var(--ink-2)] mb-6">
-              /05 — Upcoming batches
-            </div>
             <p className="hidden lg:flex items-center gap-2 text-[11px] font-mono-tech tracking-[0.2em] uppercase text-[color:var(--ink-2)]">
               <Lock size={11} /> Owner-managed schedule
             </p>
@@ -787,7 +784,7 @@ export default function Batches() {
             data-testid="fee-clarity-chips"
             className="flex flex-wrap items-center gap-2"
           >
-            {["EMI available", "No-cost EMI on select cards", "Merit scholarship", "Limited seats"].map((t, i) => (
+            {["Merit scholarship", "Limited seats"].map((t, i) => (
               <li
                 key={t}
                 data-testid={`fee-chip-${i}`}

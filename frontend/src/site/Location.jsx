@@ -10,12 +10,7 @@ export default function Location() {
     >
       <div className="mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-12 py-24 sm:py-28 lg:py-40">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-14 lg:mb-20">
-          <div className="lg:col-span-4">
-            <div className="font-mono-tech text-[11px] tracking-[0.24em] uppercase text-[color:var(--ink-2)]">
-              /11 — Find us
-            </div>
-          </div>
-          <div className="lg:col-span-8">
+          <div className="lg:col-span-12">
             <h2 className="font-serif-editorial text-4xl sm:text-5xl lg:text-6xl leading-[1.02] tracking-tight max-w-[18ch]">
               Come sit in on a
               <em className="not-italic italic text-[color:var(--accent)]"> live design clinic.</em>

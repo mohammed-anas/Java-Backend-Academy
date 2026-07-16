@@ -17,7 +17,7 @@ const FAQS = [
   },
   {
     q: "What is the fee for Java course in Aligarh?",
-    a: "We offer competitive and affordable pricing for all our courses. Contact us at +91 70606 49647 or WhatsApp for current batch fees. We also offer flexible payment options and EMI plans to make quality education accessible."
+    a: "We offer competitive and affordable pricing for all our courses. Contact us at +91 70606 49647 or WhatsApp for current batch fees."
   },
   {
     q: "Do you help with jobs after Java training?",
@@ -83,9 +83,6 @@ export default function FAQ() {
       <div className="mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16">
           <div className="lg:col-span-5">
-            <div className="font-mono-tech text-[11px] tracking-[0.24em] uppercase text-[color:var(--ink-2)] mb-6">
-              /10 — Common questions
-            </div>
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}

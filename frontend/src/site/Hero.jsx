@@ -4,9 +4,9 @@ import { ArrowDownRight, MoveRight } from "lucide-react";
 import { BRAND, IMAGES, TRUST_CHIPS } from "@/site/content";
 import { scrollToId } from "@/site/useLenis";
 
-const LINE_1 = ["Backend", "engineers"];
-const LINE_2 = ["are made,"];
-const LINE_3 = ["not", "born."];
+const LINE_1 = ["Learn", "Java."];
+const LINE_2 = ["Land your first"];
+const LINE_3 = ["developer", "job."];
 
 const lineVariants = {
   hidden: { y: "110%" },
@@ -83,7 +83,7 @@ export default function Hero() {
                       animate="show"
                       className="inline-block"
                     >
-                      {word === "engineers" || word === "made," ? (
+                      {word === "Java." || word === "developer" || word === "job." ? (
                         <em className="not-italic font-serif-editorial italic text-[color:var(--accent)]">
                           {word}
                         </em>
@@ -112,10 +112,9 @@ export default function Hero() {
               <span className="font-mono-tech text-[11px] tracking-[0.24em] uppercase text-[color:var(--ink-2)] block mb-3">
                 / {BRAND.name} · Aligarh
               </span>
-              An institute for engineers who want to master the backend stack —
-              Java, Databases, System Design, AWS, DSA and CI/CD — and walk into
-              interviews prepared. Only 10 students per batch. Senior mentors.
-              Written feedback on every submission.
+              We teach you Java, databases, and system design — the exact
+              skills companies hire for. Learn from senior engineers, build
+              real projects, and walk into interviews ready to get hired.
             </p>
 
             <ul
@@ -139,26 +138,23 @@ export default function Hero() {
             <button
               data-testid="hero-cta-enrol"
               onClick={() => scrollToId("contact")}
-              className="btn-crisp"
+              className="btn-crisp text-base sm:text-lg px-8 py-4 shadow-[6px_6px_0_0_var(--ink)] hover:shadow-[8px_8px_0_0_var(--ink)] transition-all"
             >
-              Book a discovery call
-              <MoveRight size={16} />
+              Book a free demo class
+              <MoveRight size={18} />
             </button>
             <button
               data-testid="hero-cta-syllabus"
               onClick={() => scrollToId("courses")}
               className="btn-ghost"
             >
-              Read the syllabus
+              See what you&apos;ll learn
               <ArrowDownRight size={16} />
             </button>
           </div>
         </div>
 
-        <div className="mt-16 lg:mt-24 flex items-end justify-between border-t border-[color:var(--line)] pt-6">
-          <div className="font-mono-tech text-[11px] tracking-[0.24em] uppercase text-[color:var(--ink-2)]">
-            /01 — Scroll to enter
-          </div>
+        <div className="mt-16 lg:mt-24 flex items-end justify-end border-t border-[color:var(--line)] pt-6">
           <motion.div
             aria-hidden
             animate={{ y: [0, 8, 0] }}

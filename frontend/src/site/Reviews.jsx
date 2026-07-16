@@ -124,12 +124,7 @@ export default function Reviews() {
     >
       <div className="mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-14 lg:mb-16">
-          <div className="lg:col-span-4">
-            <div className="font-mono-tech text-[11px] tracking-[0.24em] uppercase text-[color:var(--ink-2)]">
-              /08 — On the record
-            </div>
-          </div>
-          <div className="lg:col-span-8 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
+          <div className="lg:col-span-12 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}

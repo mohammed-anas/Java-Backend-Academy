@@ -1,7 +1,6 @@
 import { lazy, Suspense } from "react";
 import Nav from "@/site/Nav";
 import Hero from "@/site/Hero";
-import Preloader from "@/site/Preloader";
 
 const Marquee     = lazy(() => import("@/site/Marquee"));
 const WhoFor      = lazy(() => import("@/site/WhoFor"));
@@ -27,7 +26,6 @@ const LazySection = ({ children }) => (
 export default function Home() {
   return (
     <main data-testid="home-page" className="relative">
-      <Preloader />
       <Nav />
       <Hero />
       <LazySection><Marquee /></LazySection>

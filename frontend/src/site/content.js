@@ -168,10 +168,10 @@ export const COURSES = [
  * All figures are conservative and defensible — no fabricated placement counts.
  */
 export const TRUST_CHIPS = [
-  "Interview-ready in 4–6 months",
-  "Only 10 seats / batch",
-  "Written 24-hr feedback",
-  "Live · never recorded",
+  "Job-ready in 4–6 months",
+  "Only 10 students / batch",
+  "Live classes with mentors",
+  "Real projects on your resume",
 ];
 
 /**
@@ -306,7 +306,7 @@ export const LEAD_MAGNETS = [
  */
 export const FAB_QUICK_ACTIONS = [
   { key: "mentor",    label: "Talk to a mentor",         msg: "Hi Java Hub Academy, I'd like to talk to a mentor about my learning plan." },
-  { key: "fees",      label: "Get fee details",          msg: "Hi Java Hub Academy, can you share the fee and EMI details for the next cohort?" },
+  { key: "fees",      label: "Get fee details",          msg: "Hi Java Hub Academy, can you share the fee details for the next cohort?" },
   { key: "demo",      label: "Book a free demo class",   msg: "Hi Java Hub Academy, I'd like to attend a free demo class. Please share the timing." },
   { key: "interview", label: "Ask about interview prep", msg: "Hi Java Hub Academy, how do you prepare students for interviews? Would love to know the process." },
 ];

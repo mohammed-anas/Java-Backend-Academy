@@ -68,12 +68,7 @@ export default function Outcomes() {
     >
       <div className="mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8 lg:mb-16">
-          <div className="lg:col-span-4">
-            <div className="font-mono-tech text-[11px] tracking-[0.24em] uppercase text-[color:var(--ink-2)]">
-              /03 — Outcomes on the record
-            </div>
-          </div>
-          <div className="lg:col-span-8">
+          <div className="lg:col-span-12">
             <h2 className="font-serif-editorial text-4xl sm:text-5xl lg:text-6xl leading-[1.02] tracking-tight max-w-[18ch]">
               We publish the numbers.
               <em className="not-italic italic text-[color:var(--accent)]"> Every cohort.</em>

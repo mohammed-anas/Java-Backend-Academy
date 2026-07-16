@@ -17,12 +17,7 @@ export default function LeadMagnet() {
     >
       <div className="mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 mb-14 lg:mb-20">
-          <div className="lg:col-span-4">
-            <div className="font-mono-tech text-[11px] tracking-[0.24em] uppercase text-[color:var(--ink-2)]">
-              /09 — Free resources
-            </div>
-          </div>
-          <div className="lg:col-span-8">
+          <div className="lg:col-span-12">
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
