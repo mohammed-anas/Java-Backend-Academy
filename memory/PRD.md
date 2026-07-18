@@ -166,3 +166,59 @@ Applied on top of v2. All original v2 content and functionality preserved.
 - Batches / Compare card colors adapted for dark mode (removed hard-coded `bg-white`).
 - Verified: no horizontal overflow at 390px, 768px, 1440px, 1920px viewports.
 
+
+
+## v4 — Block-based blog editor + Table & Calendar views (Jul 2026)
+
+Purely-static editor + renderer added on top of the existing SPA. No backend, no DB. All content stays as JSON that you paste into `content.js`.
+
+### Editor (hidden admin page at `/#/admin/editor`)
+- 20+ block types via a Notion-style "Add block" picker (searchable):
+  - **Text**: Paragraph, Heading 1-6, Quote, Callout (5 tones + custom icon), Divider
+  - **Lists**: Bulleted, Numbered, To-do (checkbox)
+  - **Media & code**: Code block (language label + copy button), Equation (KaTeX; inline or display), Image (base64 upload), Attachment (any file, base64, download button), PDF (base64, inline iframe preview + download), YouTube embed (auto URL → embed), Google Drive embed (file + docs auto-detect), Table (add/remove rows and cols in-place)
+  - **Advanced**: Date pill quick-inserts — Today / Tomorrow / Yesterday / Now / Night
+- **Inline formatting**: floating toolbar on selection — Bold, Italic, Underline, Strikethrough, inline Code, Link (with auto `target=_blank`), Inline equation, Align left / center / right
+- **Per-block controls** on hover: Move up, Move down, Duplicate, Delete, Insert block below
+- **Meta panel**: title, slug (auto-kebab), excerpt, tag, date picker, read time
+- **Autosave** to `localStorage` under `jha-blog-draft-v1`
+- **Preview toggle**: renders the exact JSON with the same renderer used on the public post page
+- **Live stats**: block count + word count
+
+### Export / Import (no backend)
+- **Export JSON** — downloads `<slug>.json`, fully self-contained (base64 assets embedded)
+- **Export Markdown** — downloads `<slug>.md` with frontmatter (`---` block)
+- **Import** — one file picker accepts either `.json` or `.md` and re-renders as blocks
+- **"Copy for content.js"** — copies the post object as pretty JSON, ready to paste inside `BLOG_POSTS`
+
+### Public blog upgrades
+- `pages/Blog.jsx` now has **3 views** (persisted per user in `localStorage`):
+  - Grid (existing card layout)
+  - **Table**: Date · Tag · Title · Read · Open
+  - **Calendar**: full month grid, post title chips on their published date, prev/next month navigation
+- `pages/BlogPost.jsx` backward-compatible: renders `blocks` array via `BlocksRenderer` if present; falls back to legacy `body: [strings]` posts.
+
+### Files added
+- `frontend/src/blog-editor/schema.js` — block factories, catalogue, mutations, uid
+- `frontend/src/blog-editor/BlockView.jsx` — single block renderer (editable & read-only)
+- `frontend/src/blog-editor/BlocksRenderer.jsx` — read-only wrapper used by the public post
+- `frontend/src/blog-editor/BlockPicker.jsx` — searchable insert menu
+- `frontend/src/blog-editor/InlineToolbar.jsx` — floating format toolbar on text selection
+- `frontend/src/blog-editor/markdown.js` — MD ⇄ blocks conversion
+- `frontend/src/pages/AdminEditor.jsx` — the editor page
+- Blog editor styles appended to `frontend/src/index.css`
+
+### Files modified
+- `App.js` — new `/admin/editor` route (unlinked from nav)
+- `pages/Blog.jsx` — Grid / Table / Calendar view switcher + empty-state CTA to editor
+- `pages/BlogPost.jsx` — renders `post.blocks` via `BlocksRenderer` when present
+- `site/content.js` — seeded one showcase post that exercises every block type + kept the beginner roadmap
+
+### Dependencies
+- Added `katex@0.16.11` for real math typesetting (imported CSS in `BlockView.jsx`)
+
+### How to publish a new post
+1. Open `/#/admin/editor`, write your post.
+2. Click **Copy for content.js** (or **Export JSON** to save a file for later re-import).
+3. Paste the JSON as a new object inside `BLOG_POSTS` in `frontend/src/site/content.js`.
+4. `yarn deploy` — done. No backend involved.

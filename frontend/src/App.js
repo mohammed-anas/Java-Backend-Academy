@@ -10,6 +10,7 @@ import { useTheme } from "@/site/useTheme";
 const Blog       = lazy(() => import("@/pages/Blog"));
 const BlogPost   = lazy(() => import("@/pages/BlogPost"));
 const Cheatsheet = lazy(() => import("@/pages/Cheatsheet"));
+const AdminEditor = lazy(() => import("@/pages/AdminEditor"));
 const SectionRail = lazy(() => import("@/site/SectionRail"));
 
 /**
@@ -62,6 +63,7 @@ function AppShell() {
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:slug" element={<BlogPost />} />
             <Route path="/cheatsheet" element={<Cheatsheet />} />
+            <Route path="/admin/editor" element={<AdminEditor />} />
             <Route path="*" element={<Home />} />
           </Routes>
         </Suspense>

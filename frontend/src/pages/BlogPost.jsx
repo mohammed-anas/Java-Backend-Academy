@@ -6,6 +6,7 @@ import Nav from "@/site/Nav";
 import Footer from "@/site/Footer";
 import BackToTop from "@/site/BackToTop";
 import { BLOG_POSTS, BRAND, buildWhatsAppMessage } from "@/site/content";
+import BlocksRenderer from "@/blog-editor/BlocksRenderer";
 
 export default function BlogPost() {
   const { slug } = useParams();
@@ -60,9 +61,11 @@ export default function BlogPost() {
           </motion.h1>
 
           <div className="mt-8 space-y-5 text-[color:var(--ink)]/90 leading-[1.75] text-[17px]">
-            {post.body.map((para, i) => (
-              <p key={i}>{para}</p>
-            ))}
+            {Array.isArray(post.blocks) && post.blocks.length > 0 ? (
+              <BlocksRenderer blocks={post.blocks} />
+            ) : (
+              (post.body || []).map((para, i) => <p key={i}>{para}</p>)
+            )}
           </div>
 
           <div className="mt-10 p-6 sm:p-7 themed-card gloss">
