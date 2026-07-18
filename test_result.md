@@ -118,7 +118,7 @@ user_problem_statement: |
 frontend:
   - task: "Block-based blog editor (v4)"
     implemented: true
-    working: false
+    working: true
     file: "frontend/src/pages/AdminEditor.jsx, frontend/src/blog-editor/*, frontend/src/pages/Blog.jsx, frontend/src/pages/BlogPost.jsx, frontend/src/App.js, frontend/src/site/content.js"
     stuck_count: 0
     priority: "high"
@@ -247,6 +247,45 @@ frontend:
             ═══════════════════════════════════════════════════════════════════════════
             VERDICT: Feature is 95% complete and functional. Only the slug sanitization 
             bug needs fixing before marking as fully working.
+        - working: "NA"
+          agent: "main"
+          comment: |
+            FIX APPLIED — slug sanitiser now calls `.toLowerCase()` before the regex
+            replacement in AdminEditor.jsx (Slug MetaField `onChange`). Line now reads:
+              `v.toLowerCase().replace(/[^a-z0-9-]/g, "-").replace(/-+/g, "-")`
+            Please re-run only step (5) — the slug normalisation check —
+            and confirm typing "How To Become A Dev!!" now yields "how-to-become-a-dev-".
+            Everything else was already green in the previous run.
+        - working: true
+          agent: "testing"
+          comment: |
+            ✅ SLUG SANITIZER FIX VERIFIED — Bug fix confirmed working.
+            
+            Ran targeted re-verification test on /#/admin/editor:
+            
+            Test Results (all steps PASSED):
+            ✓ Step 1: Admin editor loads correctly ([data-testid="admin-editor"] present)
+            ✓ Step 2: localStorage draft cleared and page reloaded successfully
+            ✓ Step 3: Slug input located (placeholder: "how-to-become-a-java-developer")
+            ✓ Step 4: Test input typed: "How To Become A Dev!!"
+            ✓ Step 5: Sanitized output verified:
+              • Input:    "How To Become A Dev!!"
+              • Expected: "how-to-become-a-dev-"
+              • Actual:   "how-to-become-a-dev-"
+              • ✅ MATCH - Slug sanitization working correctly
+            ✓ Step 6: No console errors detected
+            ✓ Step 7: Screenshot captured
+            
+            Code Verification:
+            • AdminEditor.jsx line 158 confirmed to have the fix:
+              onChange={(v) => setPost({ ...post, slug: v.toLowerCase().replace(/[^a-z0-9-]/g, "-").replace(/-+/g, "-") })}
+            • The .toLowerCase() call is now present before the regex replacement
+            
+            The critical slug sanitization bug is now FIXED. The editor correctly converts
+            uppercase letters to lowercase before applying the kebab-case transformation.
+            
+            Feature is production-ready.
+
 
             SCOPE TO TEST (all frontend, HashRouter):
 
@@ -717,6 +756,34 @@ agent_communication:
         Tracks + Prerequisites + Combo bundles, simpler beginner-friendly
         tagline, and sitemap/JSON-LD schema expansion. Please verify per the
         `WHAT NEEDS TO BE TESTED` checklist above.
+    
+    - agent: "testing"
+      message: |
+        ✅ SLUG SANITIZER BUG FIX VERIFIED (July 18, 2026)
+        
+        Re-verified the slug sanitization fix for the block editor at /#/admin/editor.
+        
+        Test performed:
+        • Cleared localStorage draft and reloaded editor
+        • Located Slug meta input (placeholder: "how-to-become-a-java-developer")
+        • Typed: "How To Become A Dev!!"
+        • Verified output: "how-to-become-a-dev-" ✅
+        
+        Result: The fix is working correctly. The .toLowerCase() call in AdminEditor.jsx
+        line 158 now properly converts uppercase letters to lowercase before applying
+        the kebab-case regex transformation.
+        
+        All other editor features remain working (from previous comprehensive test):
+        • Block insertion (16/16 block types)
+        • Block controls (up/down/copy/delete)
+        • Content-editable typing + preview toggle
+        • Export actions (JSON/Markdown)
+        • Blog index view switcher (grid/table/calendar)
+        • Public post rendering (KaTeX, code blocks, table, YouTube, alignment)
+        • Legacy post rendering
+        
+        The "Block-based blog editor (v4)" task is now marked as working: true,
+        needs_retesting: false. Feature is production-ready.
     
     - agent: "testing"
       message: |

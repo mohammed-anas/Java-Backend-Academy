@@ -155,7 +155,7 @@ export default function AdminEditor() {
           {/* Meta panel */}
           <div className="mt-6 rounded-2xl border border-[color:var(--line-strong)] p-4 sm:p-5 grid grid-cols-1 md:grid-cols-2 gap-3">
             <MetaField label="Title" value={post.title} onChange={(v) => setPost({ ...post, title: v })} placeholder="How to become a Java developer" />
-            <MetaField label="Slug" value={post.slug} onChange={(v) => setPost({ ...post, slug: v.replace(/[^a-z0-9-]/g, "-").replace(/-+/g, "-") })} placeholder="how-to-become-a-java-developer" mono />
+            <MetaField label="Slug" value={post.slug} onChange={(v) => setPost({ ...post, slug: v.toLowerCase().replace(/[^a-z0-9-]/g, "-").replace(/-+/g, "-") })} placeholder="how-to-become-a-java-developer" mono />
             <MetaField label="Excerpt" value={post.excerpt} onChange={(v) => setPost({ ...post, excerpt: v })} placeholder="One-line summary that appears on the blog index." />
             <div className="grid grid-cols-3 gap-3">
               <MetaField label="Tag" value={post.tag} onChange={(v) => setPost({ ...post, tag: v })} placeholder="Backend" />
