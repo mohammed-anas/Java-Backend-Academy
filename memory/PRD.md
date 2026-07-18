@@ -54,3 +54,43 @@ Legacy `/api/leads` endpoint exists in `backend/server.py` from v1 but is **no l
 - P2: Add `CNAME` when a custom domain is purchased
 - P2: Optional Formspree/Web3Forms integration if email submissions become desirable
 - P2: Add a syllabus PDF download per course
+
+## v3 — Themed / attractive / responsive redesign (Jul 2026)
+Applied on top of v2. All original v2 content and functionality preserved.
+
+### Design system
+- New CSS variable-driven theme in `frontend/src/index.css` covering light + dark modes.
+- Full **dark mode** with a Sun/Moon toggle in the nav (persists to `localStorage` under `jha-theme`).
+- **Ambient aurora** — animated radial-gradient backdrop that gently drifts.
+- **Glassmorphism** — `.glass-card`, `.gloss` (hover shine sweep), `.gradient-text` utilities.
+- **Uniform typography**: Inter (body), Playfair (display), JetBrains Mono (technical). Fluid `clamp()` base size 16–18px for eye-comfortable reading.
+- **Higher contrast palette** in both light & dark, defensible AA contrast.
+- Buttons upgraded to gradient with animated shine sweep.
+
+### Navigation / UX
+- Sticky nav shows a **breadcrumb trail** ("Home / Current section") and active-section highlight.
+- **Section rail** on right side (desktop only) — 12 dots that jump to each section and glow on the active one; label on hover.
+- **Scroll progress bar** at the very top (rainbow).
+- **Back-to-Top** floating button after 720px scroll.
+- Mobile menu now lists all 11 sections in serif style; scroll-spy shows current one in orange.
+- `html { scroll-padding-top: 96px }` fixes anchor jumps so section titles aren't hidden by the fixed header.
+- On mount the app honors any `#hash` in the URL (deep-linking works from Google Business Profile posts, sitemap, etc.).
+
+### SEO / discoverability
+- `public/sitemap.xml` now includes all section deep-links: `/#courses`, `/#projects`, `/#batches`, `/#about`, `/#why-us`, `/#reviews`, `/#free-resources`, `/#faq`, `/#location`, `/#contact` — every one has a `<lastmod>` and priority.
+- `index.html` adds a **BreadcrumbList** JSON-LD and a **SiteNavigationElement** array so Google can build sitelinks under the main result.
+
+### New files
+- `frontend/src/site/useActiveSection.js` — IntersectionObserver-based scroll spy; also updates `location.hash` as you scroll.
+- `frontend/src/site/SectionRail.jsx` — right-side dot navigator.
+- `frontend/src/site/ScrollProgress.jsx` — top rainbow progress bar.
+- `frontend/src/site/BackToTop.jsx` — floating back-to-top button.
+- `frontend/src/site/SectionNavStrip.jsx` — reusable prev/next strip (optional per-section use).
+- `frontend/src/site/ThemeToggle.jsx` + `useTheme.js` — Sun/Moon toggle with localStorage persistence and `prefers-color-scheme` default.
+
+### Responsiveness fixes
+- Hero big-type wraps on mobile (no more clipped "technolo…").
+- Mobile nav is now a scrollable full-height sheet listing every section.
+- Batches / Compare card colors adapted for dark mode (removed hard-coded `bg-white`).
+- Verified: no horizontal overflow at 390px, 768px, 1440px, 1920px viewports.
+

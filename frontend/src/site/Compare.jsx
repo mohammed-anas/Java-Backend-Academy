@@ -29,7 +29,7 @@ export default function Compare() {
           </div>
         </div>
 
-        <div className="border border-[color:var(--line)] bg-white overflow-x-auto">
+        <div className="border border-[color:var(--line)] bg-[color:var(--surface)] overflow-x-auto">
           <table className="w-full text-left" data-testid="compare-table">
             <thead>
               <tr className="border-b border-[color:var(--line)]">

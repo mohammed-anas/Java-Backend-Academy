@@ -3,4 +3,12 @@
     background: var(--bg);
     color: var(--ink);
     min-height: 100vh;
+    position: relative;
+    z-index: 1;
+}
+
+/* Ensure sections sit above the aurora backdrop */
+.App > main {
+    position: relative;
+    z-index: 2;
 }

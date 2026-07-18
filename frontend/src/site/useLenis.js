@@ -36,9 +36,16 @@ export default function useLenis() {
 export function scrollToId(id) {
   const el = document.getElementById(id);
   if (!el) return;
+  // Update the URL hash immediately so the deep-link is copy-able and the
+  // section rail / crumb reflects the intent instantly.
+  if (typeof window !== "undefined" && window.history?.replaceState) {
+    try {
+      window.history.replaceState(null, "", id === "top" ? "#" : `#${id}`);
+    } catch (_) { /* ignore */ }
+  }
   const lenis = window.__lenis;
   if (lenis && typeof lenis.scrollTo === "function") {
-    lenis.scrollTo(el, { offset: -20, duration: 1.4 });
+    lenis.scrollTo(el, { offset: -80, duration: 1.4 });
   } else {
     el.scrollIntoView({ behavior: "smooth", block: "start" });
   }

@@ -167,7 +167,7 @@ function CourseChip({ active, count, label, onClick }) {
         ${
           active
             ? "bg-[color:var(--ink)] text-white border-[color:var(--ink)]"
-            : "bg-white text-[color:var(--ink)] border-[color:var(--line)] hover:border-[color:var(--ink)]"
+            : "bg-[color:var(--surface)] text-[color:var(--ink)] border-[color:var(--line)] hover:border-[color:var(--ink)]"
         }`}
     >
       <span>{label}</span>
@@ -189,7 +189,7 @@ function BatchCard({ batch, onEnrol, onOptOut }) {
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, ease: [0.2, 0.7, 0.2, 1] }}
-      className="relative bg-white border border-[color:var(--line)] hover:border-[color:var(--ink)] transition-colors"
+      className="relative bg-[color:var(--surface)] border border-[color:var(--line)] hover:border-[color:var(--ink)] transition-colors"
     >
       {batch.overlap && (
         <div className="absolute -top-2 left-4 z-10">
@@ -285,7 +285,7 @@ function BatchCard({ batch, onEnrol, onOptOut }) {
 
 function SkeletonCard() {
   return (
-    <div className="bg-white border border-[color:var(--line)] p-6">
+    <div className="bg-[color:var(--surface)] border border-[color:var(--line)] p-6">
       <div className="animate-pulse space-y-3">
         <div className="h-3 w-16 bg-[color:var(--surface)]" />
         <div className="h-6 w-2/3 bg-[color:var(--surface)]" />
@@ -452,7 +452,7 @@ function EnrollDialog({ open, onOpenChange, initial, batches, onSuccess }) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg bg-white border border-[color:var(--line)] p-0 overflow-hidden">
+      <DialogContent className="max-w-lg bg-[color:var(--surface)] border border-[color:var(--line)] p-0 overflow-hidden">
         <DialogHeader className="px-6 pt-6 pb-3 border-b border-[color:var(--line)]">
           <DialogTitle className="font-serif-editorial text-2xl tracking-tight">
             Reserve your seat
@@ -495,7 +495,7 @@ function EnrollDialog({ open, onOpenChange, initial, batches, onSuccess }) {
               <select
                 value={courseN}
                 onChange={(e) => { setCourseN(e.target.value); setBatchId(""); }}
-                className="w-full border border-[color:var(--line)] bg-white px-3 py-2 text-[13px] focus:outline-none focus:border-[color:var(--ink)]"
+                className="w-full border border-[color:var(--line)] bg-[color:var(--surface)] px-3 py-2 text-[13px] focus:outline-none focus:border-[color:var(--ink)]"
               >
                 <option value="">— Any / Not sure —</option>
                 {COURSES.map((c) => (
@@ -513,7 +513,7 @@ function EnrollDialog({ open, onOpenChange, initial, batches, onSuccess }) {
                 <select
                   value={batchId}
                   onChange={(e) => setBatchId(e.target.value)}
-                  className="w-full border border-[color:var(--line)] bg-white px-3 py-2 text-[13px] focus:outline-none focus:border-[color:var(--ink)]"
+                  className="w-full border border-[color:var(--line)] bg-[color:var(--surface)] px-3 py-2 text-[13px] focus:outline-none focus:border-[color:var(--ink)]"
                   required={activeIntent.needsBatch}
                 >
                   <option value="">— Select —</option>
@@ -538,7 +538,7 @@ function EnrollDialog({ open, onOpenChange, initial, batches, onSuccess }) {
                 onChange={(e) => setName(e.target.value)}
                 maxLength={120}
                 required
-                className="w-full border border-[color:var(--line)] bg-white px-3 py-2 text-[13px] focus:outline-none focus:border-[color:var(--ink)]"
+                className="w-full border border-[color:var(--line)] bg-[color:var(--surface)] px-3 py-2 text-[13px] focus:outline-none focus:border-[color:var(--ink)]"
               />
             </div>
             <div>
@@ -551,7 +551,7 @@ function EnrollDialog({ open, onOpenChange, initial, batches, onSuccess }) {
                 onChange={(e) => setEmail(e.target.value)}
                 maxLength={160}
                 placeholder="you@example.com"
-                className="w-full border border-[color:var(--line)] bg-white px-3 py-2 text-[13px] focus:outline-none focus:border-[color:var(--ink)]"
+                className="w-full border border-[color:var(--line)] bg-[color:var(--surface)] px-3 py-2 text-[13px] focus:outline-none focus:border-[color:var(--ink)]"
               />
             </div>
             <div>
@@ -564,7 +564,7 @@ function EnrollDialog({ open, onOpenChange, initial, batches, onSuccess }) {
                 onChange={(e) => setPhone(e.target.value)}
                 maxLength={32}
                 placeholder="+91 ..."
-                className="w-full border border-[color:var(--line)] bg-white px-3 py-2 text-[13px] focus:outline-none focus:border-[color:var(--ink)]"
+                className="w-full border border-[color:var(--line)] bg-[color:var(--surface)] px-3 py-2 text-[13px] focus:outline-none focus:border-[color:var(--ink)]"
               />
             </div>
           </div>
@@ -578,7 +578,7 @@ function EnrollDialog({ open, onOpenChange, initial, batches, onSuccess }) {
               onChange={(e) => setMessage(e.target.value)}
               rows={3}
               maxLength={1200}
-              className="w-full border border-[color:var(--line)] bg-white px-3 py-2 text-[13px] focus:outline-none focus:border-[color:var(--ink)]"
+              className="w-full border border-[color:var(--line)] bg-[color:var(--surface)] px-3 py-2 text-[13px] focus:outline-none focus:border-[color:var(--ink)]"
             />
           </div>
 
@@ -732,7 +732,7 @@ export default function Batches() {
               </>
             ) : filtered.length === 0 ? (
               <div className="col-span-full">
-                <div className="border border-dashed border-[color:var(--line)] bg-white p-10 text-center">
+                <div className="border border-dashed border-[color:var(--line)] bg-[color:var(--surface)] p-10 text-center">
                   <p className="font-serif-editorial text-2xl tracking-tight mb-2">
                     No upcoming batches for this course yet.
                   </p>
