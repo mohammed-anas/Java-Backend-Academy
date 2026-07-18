@@ -90,7 +90,7 @@ export default function Hero() {
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass-card border-[color:var(--glass-border)]">
           <span className="pulse-dot" />
           <span className="font-mono-tech text-[10.5px] sm:text-[11px] tracking-[0.24em] uppercase text-[color:var(--ink-2)]">
-            Next batch open · Only 10 seats
+            Next batch open · Aligarh · Online across India
           </span>
         </div>
       </motion.div>

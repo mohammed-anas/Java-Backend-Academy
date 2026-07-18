@@ -83,6 +83,43 @@ Follow-up to v3, verified end-to-end by testing_agent (25/25 checks passed).
 - `pages/Blog.jsx`, `pages/BlogPost.jsx`, `pages/Cheatsheet.jsx` (new).
 - `public/sitemap.xml`, `public/index.html` schemas.
 
+## v3.2 — SEO / enquiry-driven content (Jul 2026)
+
+### Target keywords (20)
+Local high-intent: "Java course in Aligarh", "Java training in Aligarh", "Java classes in Aligarh", "Java institute in Aligarh", "Java full stack course in Aligarh", "Spring Boot training in Aligarh", "Java course near me", "Java training near me".
+Content: "Java roadmap for beginners", "How to become a Java developer", "Java interview questions for freshers", "Core Java interview questions", "Java projects for students", "Java full stack developer roadmap", "Java vs Python for jobs".
+Trust: "Java syllabus", "Java course duration", "Java course fees", "Java placement training", "Java internship training".
+
+### Content pillar — enquiry-driven blog
+Blog now has 10 posts (was 3). Every new post is student-career oriented rather than dry technical:
+- `java-course-in-aligarh` — local landing article (syllabus, duration, fees, placement help)
+- `should-i-learn-java-for-a-software-job-in-2026` — enquiry-driver
+- `how-to-become-a-java-developer` — 9-milestone roadmap
+- `java-full-stack-developer-roadmap` — 6-phase Java + React roadmap
+- `java-vs-python-for-jobs-in-india` — decision helper
+- `10-java-projects-for-students` — project ideas that stand out
+- `50-java-interview-questions-for-freshers` — Core Java Q bank
+- `spring-boot-first-rest-api`, `resume-tips-for-freshers`, `how-to-start-learning-java-in-2026` — retained + retitled to include target keywords
+
+### On-page metadata
+`public/index.html`:
+- New title: "Java Course in Aligarh | Java Hub Academy — Live Java, Spring Boot & Full-Stack Training"
+- Description now leads with "Java course in Aligarh — live Java, Spring Boot, Full Stack, DSA, System Design & AWS training. Small batches (10 students), transparent fees, interview + placement help, resume rewrite. Studio at Kela Nagar, Aligarh 202001."
+- `meta name="keywords"` expanded to cover all 20 keyword targets.
+- OG/Twitter title + description mirror the new value.
+
+### Structured data
+`public/index.html`:
+- `FAQPage` expanded from 8 to 13 questions, every one aligned to a target keyword (Java syllabus, Java course duration, Java course fees, Java placement training, Java internship training, How to become a Java developer, Java vs Python, interview Qs, Java projects, full stack in Aligarh, beginners, batch size).
+- New `Course` JSON-LD — one entry per course we run (9 courses) with `hasCourseInstance` (OnSite + Online).
+- New `BlogPosting` JSON-LD — one entry per blog post with `keywords` field to help Google index each post against its target.
+
+### Sitemap
+`public/sitemap.xml` updated with every new blog slug + retained older ones (`.../#/blog/<slug>` for 10 posts).
+
+### Small on-page hint
+Hero location pill now reads "Next batch open · Aligarh · Online across India" so the primary keyword appears above the fold on the homepage (no keyword stuffing beyond one natural mention).
+
 ## Next tasks / backlog
 - P1: Replace placeholder phone/address in `content.js` with the actual JBA studio details
 - P1: Replace the Google Maps embed URL with the real studio pin (Maps → Share → Embed → copy `src`)
