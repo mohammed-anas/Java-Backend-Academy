@@ -39,24 +39,57 @@ export default function Nav() {
   useEffect(() => { setOpen(false); }, [location.pathname]);
 
   // Lock body scroll when the mobile menu is open — prevents the hero text
-  // behind the panel from peeking through / scrolling. Also stops Lenis so
-  // touch scroll on iOS doesn't move the underlying page.
+  // behind the panel from peeking through / scrolling. We use the
+  // "position:fixed + preserve scrollY" pattern which is the only bulletproof
+  // way to stop scrolling on iOS Safari (overflow:hidden alone is not enough
+  // when a smooth-scroll library like Lenis is running).
   useEffect(() => {
     if (typeof document === "undefined") return;
-    const original = document.body.style.overflow;
     const lenis = window.__lenis;
     if (open) {
+      const y = window.scrollY || window.pageYOffset || 0;
+      document.body.dataset.mnavScrollY = String(y);
+      document.body.style.position = "fixed";
+      document.body.style.top = `-${y}px`;
+      document.body.style.left = "0";
+      document.body.style.right = "0";
+      document.body.style.width = "100%";
       document.body.style.overflow = "hidden";
       document.documentElement.style.overflow = "hidden";
       if (lenis && typeof lenis.stop === "function") lenis.stop();
     } else {
-      document.body.style.overflow = original || "";
+      const savedRaw = document.body.dataset.mnavScrollY;
+      const saved = savedRaw ? parseInt(savedRaw, 10) : 0;
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.left = "";
+      document.body.style.right = "";
+      document.body.style.width = "";
+      document.body.style.overflow = "";
       document.documentElement.style.overflow = "";
-      if (lenis && typeof lenis.start === "function") lenis.start();
+      delete document.body.dataset.mnavScrollY;
+      if (savedRaw) {
+        // Restore scroll position without smooth animation.
+        window.scrollTo(0, saved);
+      }
+      const l = window.__lenis;
+      if (l && typeof l.start === "function") l.start();
     }
     return () => {
-      document.body.style.overflow = original || "";
-      document.documentElement.style.overflow = "";
+      // Safety: if the component unmounts while open, restore everything.
+      const savedRaw = document.body.dataset.mnavScrollY;
+      if (savedRaw) {
+        const saved = parseInt(savedRaw, 10);
+        document.body.style.position = "";
+        document.body.style.top = "";
+        document.body.style.left = "";
+        document.body.style.right = "";
+        document.body.style.width = "";
+        document.body.style.overflow = "";
+        document.documentElement.style.overflow = "";
+        delete document.body.dataset.mnavScrollY;
+        window.scrollTo(0, saved);
+      }
       const l = window.__lenis;
       if (l && typeof l.start === "function") l.start();
     };
