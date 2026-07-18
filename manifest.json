@@ -1,7 +1,7 @@
 {
-  "name": "Java Hub Academy - Best Java Training Institute in Aligarh",
+  "name": "Java Hub Academy",
   "short_name": "Java Hub",
-  "description": "Learn Java, Spring Boot, System Design, AWS, DSA & CI/CD from senior engineers. Only 10 students per batch in Aligarh, UP.",
+  "description": "Live Java & backend training — Spring Boot, System Design, AWS & DSA. 10 students per batch. Studio and online cohorts for India and worldwide.",
   "start_url": ".",
   "display": "standalone",
   "theme_color": "#050505",
@@ -9,6 +9,7 @@
   "orientation": "portrait-primary",
   "scope": ".",
   "lang": "en-IN",
+  "dir": "ltr",
   "categories": ["education", "business"],
   "icons": [
     {
