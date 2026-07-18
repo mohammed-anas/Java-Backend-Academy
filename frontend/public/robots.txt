@@ -1,16 +1,15 @@
-# Java Hub Academy - Aligarh
+# Java Hub Academy — Aligarh, Uttar Pradesh, India
 # https://javahub.in/
 
 User-agent: *
 Allow: /
 
-# Sitemaps
+# Primary sitemap (submit this URL in Google Search Console)
 Sitemap: https://javahub.in/sitemap.xml
 
-# Crawl-delay for politeness
+# Prefer polite crawling
 Crawl-delay: 1
 
-# Allow all search engine bots
 User-agent: Googlebot
 Allow: /
 
@@ -20,8 +19,5 @@ Allow: /
 User-agent: DuckDuckBot
 Allow: /
 
-User-agent: Slurp
-Allow: /
-
-# Host
+# Host preference for Yandex / legacy crawlers
 Host: https://javahub.in/

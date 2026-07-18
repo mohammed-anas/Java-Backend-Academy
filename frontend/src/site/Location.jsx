@@ -15,6 +15,10 @@ export default function Location() {
               Come sit in on a
               <em className="not-italic italic text-[color:var(--accent)]"> live design clinic.</em>
             </h2>
+            <p className="mt-6 text-[color:var(--ink)]/80 max-w-[54ch] text-base sm:text-lg leading-relaxed">
+              Visit the studio for a live session, or join the same cohort
+              online from anywhere in India or abroad.
+            </p>
           </div>
         </div>
 
@@ -79,7 +83,7 @@ export default function Location() {
           <div className="lg:col-span-8">
             <div className="relative w-full aspect-[16/10] lg:aspect-[16/9] overflow-hidden border border-[color:var(--line)]">
               <iframe
-                title="Java Hub Academy — Location"
+                title="Java Hub Academy — studio location"
                 src={BRAND.mapEmbed}
                 loading="lazy"
                 className="absolute inset-0 w-full h-full"

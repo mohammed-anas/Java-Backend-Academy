@@ -68,7 +68,7 @@ export default function Hero() {
             src={`${IMAGES.hero}&w=720&q=80`}
             srcSet={`${IMAGES.hero}&w=480&q=75 480w, ${IMAGES.hero}&w=720&q=80 720w, ${IMAGES.hero}&w=1080&q=85 1080w`}
             sizes="(max-width: 768px) 0px, 62vw"
-            alt="Java Hub Academy - Backend engineering training institute in Aligarh"
+            alt="Java Hub Academy — backend engineering training"
             className="w-full h-full object-cover"
             style={{ filter: "grayscale(100%) contrast(1.05)" }}
             fetchpriority="high"
@@ -125,9 +125,10 @@ export default function Hero() {
               <span className="font-mono-tech text-[11px] tracking-[0.24em] uppercase text-[color:var(--ink-2)] block mb-3">
                 / {BRAND.name}
               </span>
-              We teach you Java, databases, and system design and many more —
-              the exact skills companies hire for. Learn from senior engineers,
+              We teach you Java, databases, system design and more — the exact
+              skills companies hire for. Learn live from senior engineers,
               build real projects, and walk into interviews ready to get hired.
+              Studio and online cohorts for learners across India and worldwide.
             </p>
 
             <ul

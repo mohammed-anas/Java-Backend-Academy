@@ -34,7 +34,8 @@ export default function About() {
               <p>
                 We do not sell recorded videos. We do not promise magic. What we
                 promise — and measure — is that you will finish being able to
-                design, build, deploy and defend real backend systems.
+                design, build, deploy and defend real backend systems. Join from
+                our studio or live online from anywhere.
               </p>
             </div>
 
@@ -68,7 +69,7 @@ export default function About() {
                   src={`${IMAGES.whiteboard}&w=600&q=75`}
                   srcSet={`${IMAGES.whiteboard}&w=400&q=75 400w, ${IMAGES.whiteboard}&w=600&q=80 600w, ${IMAGES.whiteboard}&w=800&q=85 800w`}
                   sizes="(max-width: 768px) 100vw, 50vw"
-                  alt="Whiteboard architecture session at Java Hub Academy Aligarh"
+                  alt="Whiteboard architecture session at Java Hub Academy"
                   className="w-full h-full object-cover"
                   style={{ filter: "grayscale(100%) contrast(1.05)" }}
                   loading="lazy"
@@ -90,7 +91,7 @@ export default function About() {
                   src={`${IMAGES.code}&w=400&q=75`}
                   srcSet={`${IMAGES.code}&w=300&q=75 300w, ${IMAGES.code}&w=400&q=80 400w`}
                   sizes="(max-width: 768px) 50vw, 25vw"
-                  alt="Code review session - Java training in Aligarh"
+                  alt="Code review session — Java backend training"
                   className="w-full h-full object-cover"
                   style={{ filter: "grayscale(100%) contrast(1.05)" }}
                   loading="lazy"
@@ -131,7 +132,7 @@ export default function About() {
                   src={`${IMAGES.office}&w=500&q=75`}
                   srcSet={`${IMAGES.office}&w=400&q=75 400w, ${IMAGES.office}&w=500&q=80 500w`}
                   sizes="(max-width: 768px) 50vw, 35vw"
-                  alt="Java Hub Academy studio in Aligarh, UP"
+                  alt="Java Hub Academy training studio"
                   className="w-full h-full object-cover"
                   style={{ filter: "grayscale(100%) contrast(1.05)" }}
                   loading="lazy"

@@ -8,11 +8,16 @@ export const BRAND = {
   whatsapp: "+91 70606 49647",
   whatsappHref:
     "https://wa.me/917060649647?text=Hi%20Java%20Backend%20Academy%2C%20I'd%20like%20to%20know%20about%20the%20next%20cohort.",
+  // NAP must stay identical everywhere (schema, footer, Location, GMB).
+  city: "Aligarh",
+  region: "Uttar Pradesh",
+  country: "India",
+  postalCode: "202001",
   address:
-    "Near Masjid Aman, Kela Nagar, Uttar Pradesh 202001",
+    "Near Masjid Aman, Kela Nagar, Aligarh, Uttar Pradesh 202001",
   hours: "Mon–Sat · 19:00 – 20:00 IST",
   mapEmbed:
-    "https://www.google.com/maps?q=Java+Backend+Academy,+Masjid+Aaman,+Kela+Nagar,+Aligarh,+Uttar+Pradesh+202001&output=embed",
+    "https://www.google.com/maps?q=Java+Hub+Academy,+Masjid+Aaman,+Kela+Nagar,+Aligarh,+Uttar+Pradesh+202001&output=embed",
   mapLink:
     "https://www.google.com/maps/dir/?api=1&destination=Masjid+Aaman,+Kela+Nagar,+Aligarh,+Uttar+Pradesh+202001",
   socials: [
@@ -170,7 +175,7 @@ export const COURSES = [
 export const TRUST_CHIPS = [
   "Job-ready in 4–6 months",
   "Only 10 students / batch",
-  "Live classes with mentors",
+  "Live classes · India & online",
   "Real projects on your resume",
 ];
 
