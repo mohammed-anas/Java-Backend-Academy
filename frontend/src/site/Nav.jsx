@@ -38,6 +38,30 @@ export default function Nav() {
   // Close the mobile menu whenever the route changes.
   useEffect(() => { setOpen(false); }, [location.pathname]);
 
+  // Lock body scroll when the mobile menu is open — prevents the hero text
+  // behind the panel from peeking through / scrolling. Also stops Lenis so
+  // touch scroll on iOS doesn't move the underlying page.
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    const original = document.body.style.overflow;
+    const lenis = window.__lenis;
+    if (open) {
+      document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow = "hidden";
+      if (lenis && typeof lenis.stop === "function") lenis.stop();
+    } else {
+      document.body.style.overflow = original || "";
+      document.documentElement.style.overflow = "";
+      if (lenis && typeof lenis.start === "function") lenis.start();
+    }
+    return () => {
+      document.body.style.overflow = original || "";
+      document.documentElement.style.overflow = "";
+      const l = window.__lenis;
+      if (l && typeof l.start === "function") l.start();
+    };
+  }, [open]);
+
   const handleGo = (id) => {
     setOpen(false);
     if (!isHome) {
@@ -66,9 +90,9 @@ export default function Nav() {
         initial={{ y: -40, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, ease: [0.2, 0.7, 0.2, 1] }}
-        className={`fixed top-0 inset-x-0 z-50 transition-colors duration-300 ${
-          scrolled
-            ? "bg-[color:var(--glass)] backdrop-blur-md border-b border-[color:var(--glass-border)]"
+        className={`fixed top-0 inset-x-0 z-[60] transition-colors duration-300 ${
+          scrolled || open
+            ? "bg-[color:var(--bg)] backdrop-blur-md border-b border-[color:var(--line)] shadow-sm"
             : "bg-transparent"
         }`}
       >
@@ -171,8 +195,9 @@ export default function Nav() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-x-0 top-[60px] z-40 bg-[color:var(--bg)]/95 backdrop-blur-md border-b border-[color:var(--line)] lg:hidden max-h-[calc(100vh-60px)] overflow-y-auto"
+            className="fixed inset-x-0 top-[60px] bottom-0 z-[55] bg-[color:var(--bg)] border-t border-[color:var(--line)] lg:hidden overflow-y-auto shadow-2xl"
             data-testid="mobile-nav-panel"
+            style={{ backgroundColor: "var(--bg)" }}
           >
             <div className="px-5 sm:px-8 py-6 flex flex-col gap-3">
               <button

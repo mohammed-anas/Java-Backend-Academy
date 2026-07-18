@@ -339,9 +339,9 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Batches page revamp (Google-Sheet-backed, secure)"
-    - "Seat counter mutation on ENROL / OPT_OUT (Apps Script + frontend)"
-  stuck_tasks: []
+    - "Mobile menu overlap bug — opaque overlay + scroll lock"
+  stuck_tasks:
+    - "Mobile menu overlap bug — opaque overlay + scroll lock"
   test_all: false
   test_priority: "high_first"
 
@@ -465,206 +465,6 @@ agent_communication:
         NEXT STEP: Owner must redeploy the Apps Script to the live URL for the
         fix to take effect in production.
 
-
-  - task: "Multi-page routing + Home crumb fix + Course roadmap + Blog + Cheatsheet"
-    implemented: true
-    working: true
-    file: "frontend/src/App.js, frontend/src/site/Nav.jsx, frontend/src/site/Manifesto.jsx, frontend/src/pages/Blog.jsx, frontend/src/pages/BlogPost.jsx, frontend/src/pages/Cheatsheet.jsx, frontend/src/site/content.js, frontend/src/site/Footer.jsx, frontend/src/site/useLenis.js"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-        - working: "NA"
-          agent: "main"
-          comment: |
-            BUG (user-reported): "The HOME clickable text is useless, when i hover
-            cursor nothing happen or clicked".
-            
-            ROOT CAUSE: The crumb-trail in Nav.jsx rendered "Home" as a plain
-            <span>, so it had no click handler and no hover feedback.
-            
-            FIX: Turned the Home crumb into a real <button data-testid="crumb-home">
-            with a click handler that either (a) scrolls to #top on the home route
-            or (b) navigates to "/" on any other route. It also has a
-            hover:text-[color:var(--accent)] transition for visual affordance.
-            
-            SAME COMMIT ALSO ADDS (per user request):
-              1. Multi-page routing via HashRouter (react-router-dom v7):
-                   / , /blog , /blog/:slug , /cheatsheet
-              2. Blog list + 3 seed blog posts (BLOG_POSTS in content.js).
-              3. Cheatsheet page with 4 sheets (Big-O, SQL, Spring annotations,
-                 Git) — tabbed, copy-to-clipboard on hover.
-              4. Courses roadmap redesign in Manifesto.jsx:
-                   - New simpler tagline: "Your step-by-step roadmap. From your
-                     first line of code to your first job offer." (replacing the
-                     old "Nine courses… engineers who still ship").
-                   - Grouped by TRACKS (Start-here Basics · Build backends ·
-                     Ship & operate · Get the job) with tinted STEP badges,
-                     prerequisite line, and course counts.
-                   - Track filter chips at the top ("All courses" + 4 tracks).
-                   - New COMBO_BUNDLES section with 3 real-project combos
-                     (Job-Ready · Cloud-Native · Campus Fast-Track) that each
-                     enumerate their course sequence + WhatsApp CTA.
-              5. Nav.jsx: Blog + Cheatsheets route links added (desktop + mobile).
-                 Section links auto-navigate home first when clicked from /blog
-                 or /cheatsheet.
-              6. Footer: Blog and Cheatsheet links added under Academy nav.
-              7. useLenis.js scrollToId(): if the section is not on the current
-                 route, redirect to "/" via a "?s=<id>" query so App.js can pick
-                 it up and scroll after the route mounts.
-              8. sitemap.xml + index.html JSON-LD (BreadcrumbList,
-                 SiteNavigationElement) expanded to include /#/blog,
-                 /#/blog/<slug>, /#/cheatsheet and /#/?s=<section> for every
-                 home section so GMB / Google can crawl deep-links.
-            
-            WHAT NEEDS TO BE TESTED:
-              a. Bug regression: clicking "Home" in the top nav (data-testid
-                 "crumb-home") scrolls to #top on / and navigates to / from
-                 /blog and /cheatsheet.
-              b. Routing:
-                   - /#/blog renders the blog list.
-                   - Clicking a blog card lands on /#/blog/<slug> and renders
-                     the post with prev/next buttons.
-                   - /#/cheatsheet renders the tabbed sheet page.
-                   - /#/?s=courses (deep-link) scrolls to the courses section
-                     on home after the route mounts.
-              c. Courses roadmap:
-                   - Filter chips (data-testid track-chip-*) filter the list.
-                   - Track headers (data-testid track-header-*) show STEP badge
-                     + prerequisite line + course count.
-                   - Combo cards render (data-testid combo-*), CTA works.
-              d. Cross-page nav: on /blog, clicking data-testid nav-courses,
-                 nav-batches, nav-reviews, nav-contact should route to / and
-                 scroll to that section.
-              e. Mobile menu (< 1024px) shows Home + all 11 sections + Blog +
-                 Cheatsheets + Talk to us. Selecting a section from /blog goes
-                 back to /.
-              f. No horizontal scroll at 390, 768, 1024, 1440, 1920.
-              g. Dark mode toggle still persists.
-            
-            NOT touched: backend, .env, existing Reviews / Batches Google-Sheet
-            integration, contact form's WhatsApp deep-link, existing content
-            (courses, brand info).
-        - working: true
-          agent: "testing"
-          comment: |
-            ✅ COMPREHENSIVE TESTING COMPLETE — ALL 25 TESTS PASSED
-            
-            Tested all 7 categories from the review request at http://localhost:3000
-            using HashRouter URLs (/#/, /#/blog, /#/cheatsheet, etc.)
-            
-            ═══════════════════════════════════════════════════════════════════
-            1) BUG FIX — HOME CRUMB CLICK (HIGHEST PRIORITY) ✅
-            ═══════════════════════════════════════════════════════════════════
-            ✓ 1a: [data-testid="crumb-home"] exists and visible at 1440×900
-            ✓ 1b: Element is <BUTTON> with cursor:pointer (hover state confirmed)
-            ✓ 1c: Scroll to 2000px → click crumb-home → scrollY=0 (≤50) within 2s
-            ✓ 1d: From /#/blog → click crumb-home → URL becomes /#/ and Hero renders
-            
-            ═══════════════════════════════════════════════════════════════════
-            2) MULTI-PAGE ROUTING ✅
-            ═══════════════════════════════════════════════════════════════════
-            ✓ 2a: /#/blog renders [data-testid="blog-page"] with exactly 3 blog cards
-            ✓ 2b: Click [data-testid="blog-read-how-to-start-learning-java-in-2026"]
-                  → URL: /#/blog/how-to-start-learning-java-in-2026
-                  → [data-testid="blog-post-page"] renders with H1 visible
-            ✓ 2c: Prev/next buttons navigate between posts
-                  Last post's "next" links to /#/cheatsheet via [data-testid^="blog-cheat-"]
-            ✓ 2d: /#/cheatsheet renders [data-testid="cheatsheet-page"]
-                  All 4 tabs exist and switch panels correctly:
-                  - [data-testid="cheat-tab-big-o"] → [data-testid="cheat-panel-big-o"]
-                  - [data-testid="cheat-tab-sql"] → [data-testid="cheat-panel-sql"]
-                  - [data-testid="cheat-tab-spring-annotations"] → [data-testid="cheat-panel-spring-annotations"]
-                  - [data-testid="cheat-tab-git"] → [data-testid="cheat-panel-git"]
-            ✓ 2e: Deep-link /#/?s=courses scrolls to courses section (scrollY=2600 > 500)
-            
-            ═══════════════════════════════════════════════════════════════════
-            3) CROSS-PAGE SECTION NAVIGATION ✅
-            ═══════════════════════════════════════════════════════════════════
-            ✓ 3a: From /#/blog → click [data-testid="nav-courses"]
-                  → URL: /#/ and scrollY=1315 (>500) within 3s
-            ✓ 3b: From /#/cheatsheet → click [data-testid="nav-contact"]
-                  → URL: /#/ and scrollY=1382 (>500) within 3s
-            
-            ═══════════════════════════════════════════════════════════════════
-            4) COURSES ROADMAP + COMBOS ✅
-            ═══════════════════════════════════════════════════════════════════
-            ✓ 4a: Heading contains "roadmap" (case-insensitive) ✓
-                  Does NOT contain "still ship" ✓
-                  Actual text: "Your step-by-step roadmap. From your first line of code to your first job offer."
-            ✓ 4b: All 5 track filter chips exist:
-                  - [data-testid="track-chip-all"]
-                  - [data-testid="track-chip-foundation"]
-                  - [data-testid="track-chip-backend"]
-                  - [data-testid="track-chip-devops"]
-                  - [data-testid="track-chip-career"]
-            ✓ 4c: Click [data-testid="track-chip-foundation"]
-                  → Exactly 2 [data-testid^="course-row-"] visible (Core Java + DSA)
-            ✓ 4d: After reset to "all", 3 combo cards render with CTAs:
-                  - [data-testid="combo-job-ready"] + [data-testid="combo-cta-job-ready"]
-                  - [data-testid="combo-cloud-native"] + [data-testid="combo-cta-cloud-native"]
-                  - [data-testid="combo-campus-fast-track"] + [data-testid="combo-cta-campus-fast-track"]
-            
-            ═══════════════════════════════════════════════════════════════════
-            5) MOBILE MENU (VIEWPORT 390×800) ✅
-            ═══════════════════════════════════════════════════════════════════
-            ✓ 5a: [data-testid="mobile-menu-toggle"] opens [data-testid="mobile-nav-panel"]
-            ✓ 5b: Sheet contains all required links:
-                  - [data-testid="mnav-home"]
-                  - All section links (mnav-courses, mnav-batches, mnav-why-us, mnav-reviews, mnav-contact, etc.)
-                  - [data-testid="mnav-route-blog"]
-                  - [data-testid="mnav-route-cheatsheets"]
-            ✓ 5c: Click [data-testid="mnav-route-blog"] → URL: /#/blog
-            ✓ 5d: No horizontal overflow at 390px (scrollWidth=390 ≤ 390)
-            
-            ═══════════════════════════════════════════════════════════════════
-            6) DARK MODE ✅
-            ═══════════════════════════════════════════════════════════════════
-            ✓ 6a: [data-testid="theme-toggle"] toggles 'dark' class on <html>
-                  Initial: "lenis" → After toggle: "lenis dark"
-            ✓ 6b: Theme persists after page reload
-            
-            ═══════════════════════════════════════════════════════════════════
-            7) REGRESSION — HOME PAGE STILL WORKS ✅
-            ═══════════════════════════════════════════════════════════════════
-            ✓ 7a: Hero title contains "Learn Java and related technologies"
-            ✓ 7b: [data-testid="section-rail"] visible ONLY on /#/ (home)
-                  NOT visible on /#/blog or /#/cheatsheet
-            ✓ 7c: [data-testid="scroll-progress"] exists on ALL pages
-                  (home, blog, cheatsheet)
-            ✓ 7d: Batches section (#batches) renders SlotsPill with "LEFT" text
-            
-            ═══════════════════════════════════════════════════════════════════
-            FINAL SCORE: 25/25 TESTS PASSED ✅
-            ═══════════════════════════════════════════════════════════════════
-            
-            NO CRITICAL ISSUES FOUND. All functionality working as specified.
-            
-            Key verifications:
-            • HOME crumb bug is FIXED — button is clickable, has hover state, scrolls to top, navigates from other pages
-            • Multi-page routing works perfectly with HashRouter
-            • Cross-page navigation correctly returns to home and scrolls to sections
-            • Courses roadmap has new "roadmap" tagline (old "still ship" removed)
-            • Track filters and combo bundles render and function correctly
-            • Mobile menu (390px) has all links and no horizontal overflow
-            • Dark mode toggle works and persists across reloads
-            • All existing home page features still work (Hero, section rail, scroll progress, batches)
-            
-            The implementation is production-ready.
-
-metadata:
-  created_by: "main_agent"
-  version: "3.1"
-  test_sequence: 4
-  run_ui: true
-
-test_plan:
-  current_focus: []
-  stuck_tasks: []
-  test_all: false
-  test_priority: "high_first"
-
-agent_communication:
     - agent: "main"
       message: |
         Fixed the reported bug (HOME crumb was not clickable). Also implemented
@@ -707,23 +507,251 @@ agent_communication:
         
         NO CRITICAL ISSUES. Implementation is production-ready.
         Main agent can summarize and finish.
-        - working: true
+    
+    - agent: "main"
+      message: |
+        Mobile menu overlap bug fix applied. Changed mobile-nav-panel to:
+          1. Fully opaque background (bg-[color:var(--bg)] + inline style fallback)
+          2. Full-viewport overlay (fixed inset-x-0 top-[60px] bottom-0)
+          3. Z-index bumped to z-[55] (menu) and z-[60] (header)
+          4. Header solid background when menu is open
+          5. Body + HTML overflow:hidden + lenis.stop() for scroll lock
+          6. Removed backdrop-blur-md
+        
+        Testing agent: Please verify the 8-section checklist from the review 
+        request, focusing on opacity/coverage (section 1) and scroll lock 
+        (section 2) as the critical tests.
+    
+    - agent: "testing"
+      message: |
+        ✅ PARTIAL FIX VERIFIED — Opacity and coverage RESOLVED
+        ❌ CRITICAL BUG REMAINS — Scroll lock NOT working
+        
+        RESULTS: 46/48 checks PASSED (2 failures)
+        
+        ✅ WORKING:
+        • Section 1 (Opacity & Coverage): ALL 24 checks PASSED across 4 viewports
+          - Menu is fully opaque (solid RGB, no alpha)
+          - Menu covers entire viewport below header
+          - Hero text is NOT visible behind menu
+          - Z-index layering correct (menu=55, header=60)
+        
+        • Section 3 (Menu Content): ALL 6 checks PASSED
+        • Section 4 (Header Styling): ALL 2 checks PASSED
+        • Section 5 (Tablet): ALL 3 checks PASSED
+        • Section 6 (Desktop): ALL 4 checks PASSED
+        • Section 8 (Regression): ALL 7 checks PASSED
+        
+        ❌ NOT WORKING:
+        • Section 2 (Scroll Lock): CRITICAL FAILURE
+          - window.scrollBy(0, 500) changed scrollY from 0 to 444
+          - Underlying page scrolls despite overflow:hidden being set
+          - Diagnostic confirms: overflow:hidden is set correctly on body & HTML
+          - Diagnostic confirms: lenis.stop() is called and isStopped=true
+          - BUT native scroll events are still being processed
+          - RAF loop in useLenis.js continues running even when Lenis is stopped
+        
+        • Section 7 (Dark Mode): Could not test (theme toggle not clickable at mobile)
+        
+        ROOT CAUSE: Even though overflow:hidden is set and Lenis is stopped, 
+        the page still scrolls. This suggests the RAF loop is still processing 
+        scroll events, or there's a scroll event listener interfering.
+        
+        RECOMMENDED FIX: Add position:fixed to body when menu is open, or stop 
+        the RAF loop, or add scroll event listener with preventDefault.
+
+  - task: "Mobile menu overlap bug — opaque overlay + scroll lock"
+    implemented: true
+    working: false
+    file: "frontend/src/site/Nav.jsx"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: |
+            BUG (user-reported, iPhone real device): When the hamburger menu is
+            opened on mobile the menu items overlap with the hero heading
+            ("Learn Java and related technologies. Land your first developer
+            job.") — the underlying page bleeds through the panel and the two
+            texts mix, making the menu unreadable.
+            
+            ROOT CAUSE: The mobile-nav-panel had (a) semi-transparent bg
+            ("bg-[color:var(--bg)]/95") which allowed content behind to show
+            through, (b) `max-h-[calc(100vh-60px)]` so a short menu did not
+            cover the full viewport, and (c) `z-40` which was equal to the
+            section-rail and below the ContactFab (z-50) so touch elements
+            behind it could still be interacted with. Also, `backdrop-blur-md`
+            renders inconsistently on iOS Safari.
+            
+            FIX:
+              1. Made the mobile-nav-panel FULLY OPAQUE using
+                 `bg-[color:var(--bg)]` with an inline
+                 `style={{ backgroundColor: "var(--bg)" }}` fallback that
+                 works even if Tailwind's arbitrary color-var utility fails
+                 (iOS Safari-safe).
+              2. Made it a FULL-VIEWPORT overlay:
+                 `fixed inset-x-0 top-[60px] bottom-0` (was
+                 `max-h-[calc(100vh-60px)]`) so hero text is never visible.
+              3. Bumped z-index to `z-[55]` (menu) and `z-[60]` (header) so
+                 both float above the section-rail (z-40), aurora (z-0) and
+                 ContactFab (z-50).
+              4. Header now uses a solid background whenever the menu is open,
+                 not just when scrolled — no more transparent bar over the menu
+                 title area.
+              5. Added a body + html `overflow: hidden` lock while the menu is
+                 open AND called `lenis.stop()` (and `lenis.start()` on close)
+                 so the underlying page cannot scroll behind the menu on iOS,
+                 which was the second-half of the "intermingle" complaint.
+              6. Removed the `backdrop-blur-md` — with a fully opaque bg the
+                 blur is unnecessary and its iOS inconsistency risked leaving a
+                 translucent gap.
+            
+            AFFECTED FILE: frontend/src/site/Nav.jsx
+            
+            WHAT TO TEST:
+              a. iPhone 14 (390 × 844): open the hamburger. Menu must fully
+                 cover everything below the header. The hero text "Learn Java
+                 and related technologies…" must NOT be visible behind the
+                 menu items.
+              b. iPhone SE (375 × 667): same check.
+              c. Android mid-size (360 × 780): same check.
+              d. iPad portrait (768 × 1024) and landscape (1024 × 768): same
+                 check — menu still renders on the sub-lg breakpoint since
+                 our nav switches at lg (1024). At 1024+ the desktop nav is
+                 shown instead — verify no hamburger appears.
+              e. Body scroll lock: with the menu open, trying to scroll the
+                 underlying page (window.scrollBy) must NOT change
+                 window.scrollY.
+              f. Close (X) restores scrolling.
+              g. computed style of `[data-testid="mobile-nav-panel"]` should
+                 have `background-color` = full opaque `rgb(251, 250, 246)`
+                 (light) or `rgb(10, 11, 16)` (dark), NEVER an rgba() with
+                 alpha < 1.
+              h. Menu still lists Home + all 11 section items + Blog +
+                 Cheatsheets + Talk to us CTA and every item is clickable.
+        - working: false
           agent: "testing"
           comment: |
-            All 25 checks PASSED at http://localhost:3000.
-            - crumb-home is a real <button>, scrolls to top on / (scrollY=0),
-              and returns to / from /blog when clicked.
-            - HashRouter routes verified: /#/blog (3 cards), /#/blog/<slug>
-              (post renders, prev/next work, last post's next → /#/cheatsheet),
-              /#/cheatsheet (4 tabs switch correctly), /#/?s=courses deep-link
-              scrolls to courses (scrollY=2600).
-            - Cross-page nav: nav-courses from /#/blog and nav-contact from
-              /#/cheatsheet both route to / and scroll to their section.
-            - Courses roadmap: heading contains "roadmap" and no longer says
-              "still ship"; 5 track chips work; foundation chip filters to 2
-              courses (Core Java + DSA); all 3 combo cards render with CTAs.
-            - Mobile 390: menu shows Home + sections + Blog + Cheatsheets, no
-              horizontal overflow.
-            - Dark mode: toggle flips <html>.dark and persists after reload.
-            - Regression: hero unchanged, section-rail only on /, scroll
-              progress on every page, Batches SlotsPill still shows "LEFT".
+            ✅ PARTIAL FIX VERIFIED — Opacity and coverage issues RESOLVED
+            ❌ CRITICAL BUG REMAINS — Scroll lock NOT working
+            
+            Tested all 8 sections from the review request at http://localhost:3000
+            
+            ═══════════════════════════════════════════════════════════════════
+            SECTION 1: Mobile menu opacity and coverage ✅ ALL PASSED (24/24)
+            ═══════════════════════════════════════════════════════════════════
+            Tested 4 viewports: iPhone 14 (390×844), iPhone SE (375×667), 
+            Android mid (360×780), Small mobile (320×568)
+            
+            For each viewport, verified:
+            ✓ Background is fully opaque solid RGB: rgb(251, 250, 246)
+            ✓ Z-index is 55 (meets requirement >= 55)
+            ✓ Panel top position is 60px (within tolerance 55-65)
+            ✓ Panel bottom matches viewport height exactly
+            ✓ Panel height equals innerHeight - 60
+            ✓ Hero text is NOT visible (elementFromPoint at center is inside panel)
+            
+            ═══════════════════════════════════════════════════════════════════
+            SECTION 2: Scroll lock ❌ CRITICAL FAILURE
+            ═══════════════════════════════════════════════════════════════════
+            ✗ FAIL: Scroll is NOT locked when menu is open
+              - Called window.scrollBy(0, 500) with menu open
+              - scrollY changed from 0 to 444 (should have stayed at 0)
+              - Underlying page scrolls despite overflow:hidden being set
+            
+            ✓ PASS: Scroll unlocked when menu closed (scrollY changed as expected)
+            
+            DIAGNOSTIC FINDINGS:
+            • Body overflow (inline): 'hidden' ✓
+            • HTML overflow (inline): 'hidden' ✓
+            • Body overflow (computed): 'hidden' ✓
+            • HTML overflow (computed): 'hidden' ✓
+            • Lenis stopped: True ✓
+            • HTML classes: ['lenis', 'lenis-stopped'] ✓
+            • BUT page STILL scrolls when calling window.scrollBy() ✗
+            • AND Lenis scroll still works: lenis.scrollTo(500) changed scrollY ✗
+            
+            ROOT CAUSE: Even though overflow:hidden is correctly set on both 
+            body and HTML, and lenis.stop() is called, the native scroll events 
+            are still being processed. The RAF loop in useLenis.js continues 
+            running and processes scroll events even when Lenis is stopped.
+            
+            RECOMMENDED FIX: Add position:fixed to body when menu is open, or 
+            stop the RAF loop, or add scroll event listener with preventDefault.
+            
+            ═══════════════════════════════════════════════════════════════════
+            SECTION 3: Menu content ✅ ALL PASSED (6/6)
+            ═══════════════════════════════════════════════════════════════════
+            ✓ mnav-home exists and clicking closes menu, stays on /
+            ✓ mnav-courses exists
+            ✓ mnav-route-blog exists
+            ✓ mnav-route-cheatsheets exists
+            ✓ mnav-call exists
+            ✓ mnav-route-blog navigates to /#/blog and closes menu
+            
+            ═══════════════════════════════════════════════════════════════════
+            SECTION 4: Header styling ✅ ALL PASSED (2/2)
+            ═══════════════════════════════════════════════════════════════════
+            ✓ Header has solid background: rgb(251, 250, 246)
+            ✓ Header z-index is 60 (meets requirement >= 60)
+            
+            ═══════════════════════════════════════════════════════════════════
+            SECTION 5: Tablet viewport (768×1024) ✅ ALL PASSED (3/3)
+            ═══════════════════════════════════════════════════════════════════
+            ✓ Hamburger toggle visible at 768×1024
+            ✓ Menu opens correctly
+            ✓ Menu is opaque: rgb(251, 250, 246)
+            
+            ═══════════════════════════════════════════════════════════════════
+            SECTION 6: Desktop viewports ✅ ALL PASSED (4/4)
+            ═══════════════════════════════════════════════════════════════════
+            Desktop 1024×800:
+            ✓ Hamburger is hidden
+            ✓ Desktop nav links visible
+            
+            Desktop 1440×900:
+            ✓ Hamburger is hidden
+            ✓ Desktop nav links visible
+            
+            ═══════════════════════════════════════════════════════════════════
+            SECTION 7: Dark mode ⚠️ COULD NOT TEST (1/1)
+            ═══════════════════════════════════════════════════════════════════
+            ✗ Theme toggle not clickable at mobile viewport (390×844)
+            ⚠️ Could not verify dark mode panel background color
+            
+            Note: This is a minor test infrastructure issue, not a bug in the 
+            implementation. The theme toggle exists but is not visible/clickable 
+            at the mobile viewport during automated testing.
+            
+            ═══════════════════════════════════════════════════════════════════
+            SECTION 8: Regression ✅ ALL PASSED (7/7)
+            ═══════════════════════════════════════════════════════════════════
+            ✓ section-rail present on / (desktop)
+            ✓ scroll-progress exists on / 
+            ✓ /#/blog renders blog-page with 3 cards
+            ✓ scroll-progress exists on /#/blog
+            ✓ /#/cheatsheet renders cheatsheet-page
+            ✓ scroll-progress exists on /#/cheatsheet
+            
+            ═══════════════════════════════════════════════════════════════════
+            FINAL SCORE: 46/48 CHECKS PASSED (2 FAILURES)
+            ═══════════════════════════════════════════════════════════════════
+            
+            SUMMARY:
+            ✅ FIXED: Menu opacity and coverage issues completely resolved
+               - Menu is fully opaque across all viewports
+               - Menu covers entire viewport below header
+               - Hero text is not visible behind menu
+               - Z-index layering is correct
+            
+            ❌ NOT FIXED: Scroll lock is NOT working
+               - This is the CRITICAL bug that must be fixed
+               - The underlying page scrolls when the menu is open
+               - User will still experience the "intermingle" issue on scroll
+            
+            The opacity/coverage part of the fix is working perfectly. However, 
+            the scroll lock is completely non-functional, which means users can 
+            still scroll the underlying page when the menu is open, potentially 
+            causing the hero text to scroll up and intermingle with menu items.
