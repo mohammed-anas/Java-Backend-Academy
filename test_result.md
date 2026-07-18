@@ -707,3 +707,23 @@ agent_communication:
         
         NO CRITICAL ISSUES. Implementation is production-ready.
         Main agent can summarize and finish.
+        - working: true
+          agent: "testing"
+          comment: |
+            All 25 checks PASSED at http://localhost:3000.
+            - crumb-home is a real <button>, scrolls to top on / (scrollY=0),
+              and returns to / from /blog when clicked.
+            - HashRouter routes verified: /#/blog (3 cards), /#/blog/<slug>
+              (post renders, prev/next work, last post's next → /#/cheatsheet),
+              /#/cheatsheet (4 tabs switch correctly), /#/?s=courses deep-link
+              scrolls to courses (scrollY=2600).
+            - Cross-page nav: nav-courses from /#/blog and nav-contact from
+              /#/cheatsheet both route to / and scroll to their section.
+            - Courses roadmap: heading contains "roadmap" and no longer says
+              "still ship"; 5 track chips work; foundation chip filters to 2
+              courses (Core Java + DSA); all 3 combo cards render with CTAs.
+            - Mobile 390: menu shows Home + sections + Blog + Cheatsheets, no
+              horizontal overflow.
+            - Dark mode: toggle flips <html>.dark and persists after reload.
+            - Regression: hero unchanged, section-rail only on /, scroll
+              progress on every page, Batches SlotsPill still shows "LEFT".

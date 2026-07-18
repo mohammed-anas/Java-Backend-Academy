@@ -48,6 +48,41 @@ Rebuild from scratch as a purely static SPA (no backend) for **Java Backend Acad
 ## Backend
 Legacy `/api/leads` endpoint exists in `backend/server.py` from v1 but is **no longer used** by the frontend. It can be ignored for the static Pages deploy.
 
+## v3.1 — Bug fix + Multi-page routing + Course roadmap (Jul 2026)
+Follow-up to v3, verified end-to-end by testing_agent (25/25 checks passed).
+
+### Bug fix
+- Nav crumb "Home" was rendered as a plain `<span>` — no click, no hover. It's now a real `<button data-testid="crumb-home">` that scrolls to `#top` on the home page and navigates to `/` from `/blog` or `/cheatsheet`.
+
+### Multi-page routing
+- Wrapped the app in `HashRouter` (`react-router-dom v7`).
+- Routes: `/`, `/blog`, `/blog/:slug`, `/cheatsheet` — perfect for pasting on Google Business Profile posts.
+- New pages: `pages/Blog.jsx`, `pages/BlogPost.jsx`, `pages/Cheatsheet.jsx`.
+- Section links in Nav/Footer auto-navigate to `/` and then scroll if you're on any other page (`useLenis.scrollToId` handles the cross-page case).
+- Deep-link `/#/?s=<section>` scrolls to that section on load — usable from sitemap / GMB.
+- `SectionRailIfHome` shows the right-side dot navigator only on `/`.
+
+### New content
+- `content.js`: added `TRACKS`, `COMBO_BUNDLES`, `BLOG_POSTS`, `CHEATSHEETS`.
+- 3 seed blog posts (roadmap for beginners, Spring Boot first REST API, resume tips).
+- 4 cheatsheets (Big-O, everyday SQL, Spring Boot annotations, everyday Git), copy-to-clipboard on hover.
+- 3 combo bundles (Job-Ready · Cloud-Native · Campus Placement Fast-Track) with course lists and Enquire CTAs.
+
+### Courses roadmap redesign (`Manifesto.jsx`)
+- Simpler headline: **"Your step-by-step roadmap. From your first line of code to your first job offer."** (replaces the industry-jargon "engineers who still ship").
+- Grouped by 4 tracks with STEP badges: Start-here Basics (must-have) → Build backends → Ship & operate → Get the job (advanced, last).
+- Every course row shows the prerequisite ("Take alongside Core Java or after") and clearer time/mode chips.
+- Track filter chips at the top ("All courses / Start here / Build backends / Ship & operate / Get the job") — instant filter.
+
+### SEO / discoverability
+- `public/sitemap.xml` now lists `/#/blog`, all blog post slugs, `/#/cheatsheet` and `/#/?s=<section>` for every home section.
+- `index.html` JSON-LD BreadcrumbList + SiteNavigationElement expanded to include the new pages.
+
+### New/modified files
+- `App.js`, `site/Nav.jsx`, `site/Manifesto.jsx`, `site/Footer.jsx`, `site/useLenis.js`, `site/content.js`.
+- `pages/Blog.jsx`, `pages/BlogPost.jsx`, `pages/Cheatsheet.jsx` (new).
+- `public/sitemap.xml`, `public/index.html` schemas.
+
 ## Next tasks / backlog
 - P1: Replace placeholder phone/address in `content.js` with the actual JBA studio details
 - P1: Replace the Google Maps embed URL with the real studio pin (Maps → Share → Embed → copy `src`)
