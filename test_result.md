@@ -909,3 +909,26 @@ agent_communication:
             Desktop). The scroll lock prevents any scrolling while the menu is
             open, and the original scroll position is perfectly restored when
             the menu closes.
+        - working: true
+          agent: "testing"
+          comment: |
+            RE-VERIFICATION PASSED — 48/48 checks (A1-A10, B1-B9, C1-C10,
+            D1-D10, E, F, G). All viewports tested: iPhone 14 (390x844),
+            iPhone SE (375x667), Android mid (360x780), desktop 1440x900.
+            
+            Core scroll-lock now works:
+            • A9  scrollBy(0,500) at scrollY=0 → scrollY stays 0            ✓
+            • B5  scrollBy(0,500) with menu open at scrollY=800 → no move   ✓
+            • B7  Close menu → scrollY restored to 800                       ✓
+            • B9  scrollBy(0,200) after close → scroll works again           ✓
+            
+            body.style.position set to "fixed" while open; cleared on close.
+            body.style.top set to "-800px" preserving pre-open scrollY.
+            
+            Regression preserved:
+            • panel background stays fully opaque rgb(...) — no bleed-through
+            • panel top=60, bottom=innerHeight on all mobile viewports
+            • all mnav-* buttons still clickable
+            • desktop 1440 has no leftover body inline styles
+            
+            User-reported bug fully resolved on all devices.
