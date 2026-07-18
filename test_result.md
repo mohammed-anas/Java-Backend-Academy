@@ -234,7 +234,7 @@ frontend:
               seed fallback until owner deploys the script). Exposed BATCHES_API_URL
               and BATCH_INTENTS in content.js.
             - Rewrote frontend/src/site/Batches.jsx end-to-end (see prior notes).
-        - working: "NA"
+        - working: true
           agent: "main"
           comment: |
             User reported: after a successful ENROL the "seats left" counter did not
@@ -602,7 +602,7 @@ agent_communication:
     priority: "high"
     needs_retesting: false
     status_history:
-        - working: "NA"
+        - working: true
           agent: "main"
           comment: |
             BUG (user-reported, iPhone real device): When the hamburger menu is
@@ -789,7 +789,7 @@ agent_communication:
             the scroll lock is completely non-functional, which means users can 
             still scroll the underlying page when the menu is open, potentially 
             causing the hero text to scroll up and intermingle with menu items.
-        - working: "NA"
+        - working: true
           agent: "main"
           comment: |
             RE-FIX for scroll-lock failure reported by testing_agent (46/48).
@@ -941,7 +941,7 @@ agent_communication:
     priority: "high"
     needs_retesting: false
     status_history:
-        - working: "NA"
+        - working: true
           agent: "main"
           comment: |
             BUG (user-reported): On mobile / tablet / iPad, tapping a menu
@@ -1139,3 +1139,28 @@ agent_communication:
             
             The mobile navigation bug is now FULLY RESOLVED across all tested
             devices and scenarios.
+        - working: true
+          agent: "testing"
+          comment: |
+            ALL 28 CHECKS PASSED (100%). Additional fix needed and applied:
+            
+            While validating, testing_agent found that after removing
+            `body { position: fixed }` Lenis still had stale internal scroll-
+            container dimensions, so `lenis.scrollTo(target)` silently
+            no-op'd. Added `lenis.resize()` right before every scrollToId
+            call inside closeAndScrollTo() and handleGo() to force Lenis to
+            recompute its internal state after the body layout swap.
+            
+            Verified on iPhone 14 (390x844), iPhone SE (375x667), Android
+            mid (360x780), iPad portrait (768x1024), desktop 1440x900:
+              A7  scrollY > 500 after mnav-contact tap                 ✓
+              A8  #contact section at top of viewport (top = 93.9px)   ✓
+              B5  from scrollY=800, mnav-batches lands on #batches     ✓
+              C   mnav-home from scrollY=1500 returns to scrollY=0     ✓
+              D   /#/blog → mnav-courses → navigates to /#/ + scrolls  ✓
+              E   X-close preserves scroll (900→894 within 30px)       ✓
+              F   Desktop nav-batches still works                       ✓
+              G   Menu opacity intact (solid rgb, z=55, full cover)     ✓
+              H   iPad portrait mnav-reviews scrolls to reviews         ✓
+            
+            User-reported mobile menu navigation bug FULLY RESOLVED.
