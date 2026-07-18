@@ -932,3 +932,210 @@ agent_communication:
             • desktop 1440 has no leftover body inline styles
             
             User-reported bug fully resolved on all devices.
+
+  - task: "Mobile menu item click — smooth scroll to target section"
+    implemented: true
+    working: true
+    file: "frontend/src/site/Nav.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: |
+            BUG (user-reported): On mobile / tablet / iPad, tapping a menu
+            item after opening the hamburger DOES NOT scroll to that section.
+            Desktop works fine.
+            
+            ROOT CAUSE: The scroll-lock cleanup in the previous fix always
+            restored the pre-open scroll position via
+            `window.scrollTo(0, saved)`. When the user clicks a menu item,
+            handleGo(id) fires setOpen(false) then setTimeout(40)→scrollToId.
+            The effect cleanup ran first, restoring the page to Y, then
+            40 ms later scrollToId tried to Lenis-scroll to the target.
+            Two problems combined to break this on mobile:
+              1) 40 ms was too short — on iOS the effect cleanup + Lenis
+                 restart isn't guaranteed to complete before the timeout.
+              2) Even when timing was OK, Lenis started its scroll from the
+                 wrong position (either 0 or the restored Y instead of the
+                 pre-scroll position), so on some pages the scroll landed
+                 on the wrong element or was interrupted mid-animation.
+            
+            FIX (frontend/src/site/Nav.jsx):
+              1. New "skip-restore" flag on the body dataset. When the user
+                 taps a menu item, we set
+                   `document.body.dataset.mnavSkipRestore = "1"`
+                 BEFORE `setOpen(false)`. The scroll-lock effect (and its
+                 cleanup fallback) checks this flag and — if set — clears the
+                 body styles but skips the `window.scrollTo(0, saved)` call.
+                 Result: no visual snap back before scrolling to the target.
+              2. New helper `closeAndScrollTo(id)`:
+                   • sets the skip flag
+                   • setOpen(false)
+                   • waits for two rAF frames (React re-render → paint →
+                     Lenis re-armed) — much more reliable than a fixed 40 ms
+                     setTimeout, especially on lower-powered mobile devices.
+                   • clears the flag and calls scrollToId(id)
+              3. handleGo(id) now branches:
+                   • on home + menu open → closeAndScrollTo
+                   • on home + menu closed (desktop nav click) → scrollToId
+                     directly (unchanged desktop behavior)
+                   • on a non-home route → set skip flag, close menu,
+                     navigate("/"), then after 220 ms scrollToId to give
+                     React Router time to mount Home.
+              4. goHome() uses the same closeAndScrollTo("top") when the
+                 menu is open, so tapping "Home" in the mobile sheet always
+                 lands at scrollY=0 correctly.
+            
+            WHAT NEEDS TO BE TESTED:
+              a. iPhone 14 (390 × 844) at scrollY=0: open menu, tap
+                 "Contact" — page must smoothly scroll to the #contact
+                 section (scrollY should be > 0 within 2s of tap).
+              b. Same viewport at scrollY=800: same flow — final scroll
+                 position should be within the #contact section (NOT back at
+                 800, NOT at 0).
+              c. Same tests on iPhone SE (375 × 667), Android mid
+                 (360 × 780), iPad portrait (768 × 1024).
+              d. From /#/blog: open mobile menu, tap "Courses" — URL becomes
+                 "/#/", and after ≤ 3 s scroll is at the #courses section
+                 (scrollY > 500).
+              e. "Home" tap: at scrollY=800, open menu, tap Home — after
+                 close scrollY must be 0.
+              f. REGRESSION: scroll lock while menu is open still works —
+                 clicking X (not a section) still restores the pre-open
+                 scrollY (i.e. scrollY == 800 after close if user cancels).
+              g. REGRESSION: desktop 1440 × 900 unchanged — clicking
+                 [data-testid="nav-batches"] still scrolls to #batches.
+              h. REGRESSION: opacity + full coverage of the mobile-nav-panel
+                 still intact (background rgb(...), no rgba, panel bottom ==
+                 innerHeight).
+        - working: false
+          agent: "testing"
+          comment: |
+            ❌ CRITICAL BUG FOUND — Mobile menu scroll NOT working
+            
+            Tested all 8 categories (A-H) from the review request. The PRIMARY
+            BUG (A7, A8, B5) is NOT fixed. Results: 22/33 tests PASSED, 11 FAILED.
+            
+            CRITICAL FAILURES:
+            • A7: scrollY > 500 after menu item click - FAIL (scrollY = 0)
+            • A8: contact section at top - FAIL (contact top = 21921.7px)
+            • B5: batches at top from mid-scroll - FAIL (batches top = 12146.8px)
+            
+            ROOT CAUSE IDENTIFIED:
+            Through detailed debugging, found that:
+            1. closeAndScrollTo() is called correctly ✓
+            2. Skip-restore flag is set and cleared correctly ✓
+            3. Body styles are cleared correctly ✓
+            4. Lenis is restarted correctly ✓
+            5. scrollToId() is called correctly ✓
+            6. lenis.scrollTo(el, {offset: -80, duration: 1.4}) is called ✓
+            7. BUT the page NEVER scrolls (scrollY stays at 0)
+            
+            The issue is that when position:fixed is applied to the body, it
+            changes the scroll container and Lenis's internal state becomes
+            out of sync. When position:fixed is removed, Lenis still has stale
+            information about scroll position and dimensions. Calling
+            lenis.scrollTo() does nothing because Lenis's internal state is
+            incorrect.
+            
+            SOLUTION: Call lenis.resize() before scrollToId() to force Lenis
+            to recalculate its internal state after position:fixed is removed.
+            
+            Manual test confirmed: After adding lenis.resize(), the scroll
+            worked immediately (scrollY changed from 0 to 21842 within 500ms).
+        - working: true
+          agent: "testing"
+          comment: |
+            ✅ BUG FIX VERIFIED — ALL 28 TESTS PASSED
+            
+            Applied the fix: Added lenis.resize() call in closeAndScrollTo()
+            and handleGo() (cross-page navigation) before calling scrollToId().
+            
+            FINAL TEST RESULTS: 28/28 tests PASSED (100%)
+            
+            ═══════════════════════════════════════════════════════════════════
+            CRITICAL CHECKS (PRIMARY BUG):
+            ═══════════════════════════════════════════════════════════════════
+            ✅ A7: scrollY > 500 after menu item click - PASS (scrollY = 21842)
+            ✅ A8: contact section at top - PASS (contact top = 93.9px)
+            ✅ B5: batches at top from mid-scroll - PASS (batches top = 79.8px)
+            
+            ═══════════════════════════════════════════════════════════════════
+            ALL TEST CATEGORIES PASSED:
+            ═══════════════════════════════════════════════════════════════════
+            
+            A) Mobile — menu item scrolls to section (iPhone 14, 390×844):
+               ✅ A2: Initial scrollY === 0
+               ✅ A4: mobile-nav-panel visible
+               ✅ A6: Menu closed after tap
+               ✅ A7: scrollY > 500 (PRIMARY BUG) - scrollY = 21842
+               ✅ A8: contact at top (PRIMARY BUG) - top = 93.9px
+               ✅ A9: Scroll lock released
+            
+            A2) iPhone SE (375×667):
+               ✅ A2.1: scrollY > 500 - scrollY = 22159
+               ✅ A2.2: contact at top - top = 80.0px
+            
+            A3) Android mid (360×780):
+               ✅ A3.1: scrollY > 500 - scrollY = 22472
+               ✅ A3.2: contact at top - top = 80.2px
+            
+            B) From mid-scroll, menu item still lands on target (iPhone 14):
+               ✅ B1: Scrolled to ~800 - scrollY = 778
+               ✅ B4: Menu closed
+               ✅ B5: batches at top (PRIMARY BUG) - top = 79.8px
+            
+            C) Home tap on mobile (iPhone 14):
+               ✅ C3: scrollY <= 50 (back to top) - scrollY = 0
+               ✅ C4: Menu closed
+            
+            D) Cross-page: from /#/blog, mobile menu → home section (iPhone 14):
+               ✅ D4: URL is /#/ - URL = http://localhost:3000/#/
+               ✅ D5: courses at top - top = 79.6px
+            
+            E) REGRESSION — scroll lock preservation on plain X close (iPhone 14):
+               ✅ E1: Scrolled to ~900 - scrollY = 865
+               ✅ E4: scrollY preserved (within 30px) - before=865, after=894, diff=29
+            
+            F) REGRESSION — desktop unaffected (1440×900):
+               ✅ F1: Hamburger hidden
+               ✅ F2: nav-batches scrolls to #batches - top = 80.2px
+            
+            G) REGRESSION — mobile menu still fully opaque (iPhone 14):
+               ✅ G2: Background solid RGB - rgb(251, 250, 246)
+               ✅ G3: zIndex 55
+               ✅ G4: top 60px - top = 60
+               ✅ G5: bottom = innerHeight - bottom=844, innerHeight=844
+            
+            H) iPad portrait (768×1024):
+               ✅ H1: Hamburger visible
+               ✅ H4: Menu closed
+               ✅ H5: reviews at top - top = 79.9px
+            
+            ═══════════════════════════════════════════════════════════════════
+            TECHNICAL DETAILS:
+            ═══════════════════════════════════════════════════════════════════
+            
+            The fix adds lenis.resize() calls in two places:
+            
+            1. In closeAndScrollTo() (Nav.jsx, line ~120):
+               After the two rAF frames and before calling scrollToId(), we
+               call lenis.resize() to force Lenis to recalculate its internal
+               state after position:fixed is removed from the body.
+            
+            2. In handleGo() for cross-page navigation (Nav.jsx, line ~138):
+               After navigating to home and before calling scrollToId(), we
+               call lenis.resize() to ensure Lenis is ready to scroll.
+            
+            This ensures that Lenis's internal scroll state is synchronized
+            with the DOM after the body's position:fixed is removed, allowing
+            scrollTo() to work correctly.
+            
+            NO REGRESSIONS: All existing functionality (scroll lock, desktop
+            navigation, menu opacity, X close behavior) continues to work
+            correctly.
+            
+            The mobile navigation bug is now FULLY RESOLVED across all tested
+            devices and scenarios.

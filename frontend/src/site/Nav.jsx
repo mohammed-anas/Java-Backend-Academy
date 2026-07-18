@@ -43,6 +43,13 @@ export default function Nav() {
   // "position:fixed + preserve scrollY" pattern which is the only bulletproof
   // way to stop scrolling on iOS Safari (overflow:hidden alone is not enough
   // when a smooth-scroll library like Lenis is running).
+  //
+  // Special-case: when the menu is closed as part of a NAVIGATION click
+  // (e.g. tap on "Contact") we must NOT restore the pre-open scroll
+  // position — otherwise the browser first jumps back to Y then smoothly
+  // scrolls to the target, which on mobile can be interrupted or look
+  // broken. Nav sets `document.body.dataset.mnavSkipRestore = "1"` right
+  // before setOpen(false), and this effect respects it.
   useEffect(() => {
     if (typeof document === "undefined") return;
     const lenis = window.__lenis;
@@ -60,6 +67,7 @@ export default function Nav() {
     } else {
       const savedRaw = document.body.dataset.mnavScrollY;
       const saved = savedRaw ? parseInt(savedRaw, 10) : 0;
+      const skipRestore = document.body.dataset.mnavSkipRestore === "1";
       document.body.style.position = "";
       document.body.style.top = "";
       document.body.style.left = "";
@@ -68,7 +76,7 @@ export default function Nav() {
       document.body.style.overflow = "";
       document.documentElement.style.overflow = "";
       delete document.body.dataset.mnavScrollY;
-      if (savedRaw) {
+      if (savedRaw && !skipRestore) {
         // Restore scroll position without smooth animation.
         window.scrollTo(0, saved);
       }
@@ -78,6 +86,7 @@ export default function Nav() {
     return () => {
       // Safety: if the component unmounts while open, restore everything.
       const savedRaw = document.body.dataset.mnavScrollY;
+      const skipRestore = document.body.dataset.mnavSkipRestore === "1";
       if (savedRaw) {
         const saved = parseInt(savedRaw, 10);
         document.body.style.position = "";
@@ -88,28 +97,72 @@ export default function Nav() {
         document.body.style.overflow = "";
         document.documentElement.style.overflow = "";
         delete document.body.dataset.mnavScrollY;
-        window.scrollTo(0, saved);
+        if (!skipRestore) window.scrollTo(0, saved);
       }
       const l = window.__lenis;
       if (l && typeof l.start === "function") l.start();
     };
   }, [open]);
 
-  const handleGo = (id) => {
+  // Menu-item tap → unlock the scroll lock without restoring position, then
+  // scroll to the target section. On mobile the lock-cleanup + Lenis restart
+  // needs at least one paint before Lenis can accept a new scrollTo, so we
+  // wait for two rAF frames.
+  const closeAndScrollTo = (id) => {
+    document.body.dataset.mnavSkipRestore = "1";
     setOpen(false);
+    // Wait for React re-render + the useEffect cleanup (which clears body
+    // styles and restarts Lenis) to run, then scroll on the next paint.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        delete document.body.dataset.mnavSkipRestore;
+        // CRITICAL: After removing position:fixed from body, Lenis needs to
+        // recalculate its internal scroll state. Call resize() to force this.
+        const lenis = window.__lenis;
+        if (lenis && typeof lenis.resize === 'function') {
+          lenis.resize();
+        }
+        scrollToId(id);
+      });
+    });
+  };
+
+  const handleGo = (id) => {
     if (!isHome) {
-      // Navigate to home first, then scroll after render.
+      // Not on home — close the menu, navigate to /, then scroll after mount.
+      document.body.dataset.mnavSkipRestore = "1";
+      setOpen(false);
       navigate("/");
-      setTimeout(() => scrollToId(id), 200);
+      // Give React Router time to mount the Home route.
+      setTimeout(() => {
+        delete document.body.dataset.mnavSkipRestore;
+        // After cross-page navigation, Lenis needs to recalculate.
+        const lenis = window.__lenis;
+        if (lenis && typeof lenis.resize === 'function') {
+          lenis.resize();
+        }
+        scrollToId(id);
+      }, 220);
       return;
     }
-    setTimeout(() => scrollToId(id), 40);
+    // Already on home — just close the menu and scroll.
+    if (open) {
+      closeAndScrollTo(id);
+    } else {
+      scrollToId(id);
+    }
   };
 
   const goHome = () => {
-    setOpen(false);
-    if (!isHome) { navigate("/"); return; }
-    setTimeout(() => scrollToId("top"), 40);
+    if (!isHome) {
+      document.body.dataset.mnavSkipRestore = "1";
+      setOpen(false);
+      navigate("/");
+      setTimeout(() => { delete document.body.dataset.mnavSkipRestore; }, 300);
+      return;
+    }
+    if (open) closeAndScrollTo("top");
+    else scrollToId("top");
   };
 
   const currentCrumb = isHome
