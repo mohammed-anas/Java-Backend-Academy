@@ -14,8 +14,8 @@ import {
   makeBlock, makeEmptyPost, moveBlock, duplicateBlock, deleteBlock, updateBlock,
 } from "@/blog-editor/schema";
 import { postToMarkdown, markdownToPost } from "@/blog-editor/markdown";
-
-const LS_KEY = "jha-blog-draft-v1";
+import PostsLibrary from "@/blog-editor/PostsLibrary";
+import { loadDrafts, saveDrafts, upsertDraft, deleteDraft as removeDraftFromList, newDraftId, ensureBlocks } from "@/blog-editor/library";
 
 function downloadFile(name, content, mime = "application/octet-stream") {
   const blob = new Blob([content], { type: mime });
@@ -30,12 +30,16 @@ function downloadFile(name, content, mime = "application/octet-stream") {
 }
 
 export default function AdminEditor() {
+  // Drafts: multiple, stored under jha-blog-drafts-v2 (auto-migrated from v1)
+  const [drafts, setDrafts] = useState(() => loadDrafts());
+  const [currentDraftId, setCurrentDraftId] = useState(() => {
+    const list = loadDrafts();
+    return list[0]?.id || newDraftId();
+  });
   const [post, setPost] = useState(() => {
-    try {
-      const raw = localStorage.getItem(LS_KEY);
-      if (raw) return JSON.parse(raw);
-    } catch (_) {}
-    return makeEmptyPost();
+    const list = loadDrafts();
+    const first = list[0];
+    return first?.post || makeEmptyPost();
   });
   const [pickerFor, setPickerFor] = useState(null); // insert index or null
   const [preview, setPreview] = useState(false);
@@ -45,10 +49,20 @@ export default function AdminEditor() {
     document.title = "Blog Editor · Java Hub Academy";
   }, []);
 
-  // Autosave to localStorage
+  // Autosave the current post into the drafts list
   useEffect(() => {
-    try { localStorage.setItem(LS_KEY, JSON.stringify(post)); } catch (_) {}
-  }, [post]);
+    setDrafts((prev) => {
+      const next = upsertDraft(prev, {
+        id: currentDraftId,
+        title: post.title || "Untitled draft",
+        slug: post.slug || "",
+        updatedAt: Date.now(),
+        post,
+      });
+      saveDrafts(next);
+      return next;
+    });
+  }, [post, currentDraftId]);
 
   const setBlocks = (blocks) => setPost((p) => ({ ...p, blocks }));
   const setBlock = (idx, patch) => setBlocks(updateBlock(post.blocks, idx, patch));
@@ -114,6 +128,49 @@ export default function AdminEditor() {
     return { words, blocks: post.blocks.length };
   }, [post.blocks]);
 
+  /* ---------- Posts library handlers ---------- */
+
+  const handleNewDraft = () => {
+    const id = newDraftId();
+    setCurrentDraftId(id);
+    setPost(makeEmptyPost());
+    toast.success("New draft started");
+  };
+
+  const handleLoadDraft = (draft) => {
+    if (!draft) return;
+    setCurrentDraftId(draft.id);
+    setPost(ensureBlocks(draft.post || makeEmptyPost()));
+    toast.success(`Loaded: ${draft.title || "Untitled"}`);
+  };
+
+  const handleDeleteDraft = (id) => {
+    setDrafts((prev) => {
+      const next = removeDraftFromList(prev, id);
+      saveDrafts(next);
+      // If we deleted the current draft, either load the next or spin up a fresh one
+      if (id === currentDraftId) {
+        if (next.length) {
+          setCurrentDraftId(next[0].id);
+          setPost(ensureBlocks(next[0].post || makeEmptyPost()));
+        } else {
+          const nid = newDraftId();
+          setCurrentDraftId(nid);
+          setPost(makeEmptyPost());
+        }
+      }
+      return next;
+    });
+  };
+
+  const handleLoadBundled = (postFromLibrary) => {
+    // Load a published post as a NEW draft (so we don't overwrite an existing one)
+    const id = newDraftId();
+    setCurrentDraftId(id);
+    setPost(postFromLibrary);
+    toast.success(`Loaded "${postFromLibrary.title || postFromLibrary.slug}" as new draft`);
+  };
+
   return (
     <main data-testid="admin-editor" className="relative min-h-screen">
       <Nav />
@@ -151,6 +208,16 @@ export default function AdminEditor() {
               <button type="button" onClick={onCopyJson} className="btn-crisp gloss text-xs inline-flex items-center gap-1.5" data-testid="btn-copy-json"><CopyIcon size={12}/> Copy for content.js</button>
             </div>
           </div>
+
+          {/* Posts library — manage published & drafts */}
+          <PostsLibrary
+            drafts={drafts}
+            currentDraftId={currentDraftId}
+            onNewDraft={handleNewDraft}
+            onLoadDraft={handleLoadDraft}
+            onDeleteDraft={handleDeleteDraft}
+            onLoadBundled={handleLoadBundled}
+          />
 
           {/* Meta panel */}
           <div className="mt-6 rounded-2xl border border-[color:var(--line-strong)] p-4 sm:p-5 grid grid-cols-1 md:grid-cols-2 gap-3">
