@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { BRAND } from "@/site/content";
 import { scrollToId } from "@/site/useLenis";
 
@@ -48,6 +49,24 @@ export default function Footer() {
                   </button>
                 </li>
               ))}
+              <li>
+                <Link
+                  data-testid="footer-link-blog"
+                  to="/blog"
+                  className="hover:text-[color:var(--accent)] transition-colors"
+                >
+                  Blog
+                </Link>
+              </li>
+              <li>
+                <Link
+                  data-testid="footer-link-cheatsheet"
+                  to="/cheatsheet"
+                  className="hover:text-[color:var(--accent)] transition-colors"
+                >
+                  Cheatsheets
+                </Link>
+              </li>
             </ul>
           </div>
 

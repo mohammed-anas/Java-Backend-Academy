@@ -169,6 +169,214 @@ export const COURSES = [
 ];
 
 /**
+ * Learning tracks — clean roadmap grouping, prerequisites & difficulty.
+ * These map onto the COURSES list above by `track` and drive the roadmap UI.
+ */
+export const TRACKS = [
+  {
+    key: "foundation",
+    label: "Start here — Basics",
+    kicker: "Must-have",
+    tint: "brand-4", // emerald
+    summary:
+      "The two courses every backend engineer needs. Even if you have never written code before, you start here.",
+    accepts: [],
+  },
+  {
+    key: "backend",
+    label: "Build backends",
+    kicker: "Intermediate",
+    tint: "brand", // orange
+    summary:
+      "Turn your Java skills into real, working web servers. Databases, REST APIs and system design — the stack companies actually hire for.",
+    accepts: ["foundation"],
+  },
+  {
+    key: "devops",
+    label: "Ship & operate",
+    kicker: "Intermediate",
+    tint: "brand-3", // indigo
+    summary:
+      "Take what you built and put it on the internet. Cloud, containers, pipelines — the parts that keep a backend alive.",
+    accepts: ["foundation"],
+  },
+  {
+    key: "career",
+    label: "Get the job",
+    kicker: "Advanced · Final step",
+    tint: "brand-5", // pink
+    summary:
+      "Interview prep, resume, referrals and salary talks. Take this last, when you already have the technical skills in place.",
+    accepts: ["backend", "devops"],
+  },
+];
+
+/**
+ * Combo bundles — multi-course packs that cover a real-world scenario.
+ * Priced separately (contact for details). Great for GMB post links.
+ */
+export const COMBO_BUNDLES = [
+  {
+    key: "job-ready",
+    title: "Job-Ready Backend Engineer",
+    tag: "Most popular",
+    courses: ["01", "02", "03", "04", "08", "09"],
+    duration: "5–6 months",
+    outcome:
+      "Zero to hire-worthy. Core Java, DSA, Databases, Spring Boot REST APIs, interview prep and resume rewrite — one flow, one mentor, one plan.",
+  },
+  {
+    key: "cloud-native",
+    title: "Cloud-Native Backend",
+    tag: "For working devs",
+    courses: ["03", "04", "05", "06", "07"],
+    duration: "6 months",
+    outcome:
+      "Take an existing backend to production. Databases at scale, System Design, AWS and CI/CD — build, ship, monitor, cost-optimise.",
+  },
+  {
+    key: "campus-fast-track",
+    title: "Campus Placement Fast-Track",
+    tag: "For students",
+    courses: ["01", "02", "04", "08"],
+    duration: "4 months",
+    outcome:
+      "Everything a campus recruiter tests, taught in the order they test it. Java + DSA + Spring Boot REST + mock interviews.",
+  },
+];
+
+/**
+ * Blog articles — short, evergreen posts. Rendered at /blog and /blog/:slug.
+ * Great to drop as Learn-More links on Google Business Profile posts.
+ * Content is intentionally plain-text paragraphs for maximum readability
+ * and easy CMS-free authoring; add MD support later if the volume justifies it.
+ */
+export const BLOG_POSTS = [
+  {
+    slug: "how-to-start-learning-java-in-2026",
+    title: "How to start learning Java in 2026 (a plain-English roadmap)",
+    excerpt:
+      "You do not need a computer-science degree to learn Java. Here is the smallest sequence of topics that will actually get you writing real programs — in order.",
+    tag: "Beginners",
+    date: "2026-07-14",
+    read: "6 min read",
+    body: [
+      "If you have never written a line of code, do not start with Spring Boot. Start with just Java. The language is not the hard part — thinking like a programmer is. That takes about six weeks of small daily practice, not a weekend crash course.",
+      "Week 1–2: variables, if-else, loops, and printing to the screen. That is enough to write tiny calculators, guessing games, and simple text tools. Do twenty of these before moving on.",
+      "Week 3–4: methods and classes. Learn how to break a program into small pieces. Build a to-do list on the command line — nothing fancy, just add / remove / show tasks.",
+      "Week 5–6: collections (List, Map, Set) and reading files. Now you can process actual data. Try writing a program that reads a CSV of your expenses and prints a monthly total.",
+      "After that, and only after that, look at Spring Boot, databases, and web APIs. Every senior engineer you admire took this exact staircase — most of them just do not remember how slow the first step felt.",
+    ],
+  },
+  {
+    slug: "spring-boot-first-rest-api",
+    title: "Your first Spring Boot REST API, one file at a time",
+    excerpt:
+      "A step-by-step tour of what actually happens when you build a REST endpoint in Spring Boot — with the smallest possible code sample.",
+    tag: "Spring Boot",
+    date: "2026-07-06",
+    read: "8 min read",
+    body: [
+      "Spring Boot feels like magic when you first see it. In three lines of annotations, an entire HTTP server appears. Behind the magic there are exactly four moving parts — and once you can name them, the framework stops feeling scary.",
+      "First moving part: the main class with @SpringBootApplication. This tells Spring to scan the current package and register everything it finds.",
+      "Second: a controller class with @RestController. Every method inside becomes an HTTP endpoint. The @GetMapping / @PostMapping annotation says which URL and verb it answers to.",
+      "Third: a service class with @Service. This is where the actual logic lives. Keep controllers thin; keep services testable.",
+      "Fourth: a repository (usually a Spring Data JPA interface). This is your database access — Spring writes the SQL for the common queries automatically.",
+      "That is the whole game. Every production Spring Boot app you will ever write is just more controllers, more services, and more repositories stacked on top of these four ideas.",
+    ],
+  },
+  {
+    slug: "resume-tips-for-freshers",
+    title: "The one-page resume that gets backend freshers hired",
+    excerpt:
+      "Recruiters spend 20 seconds on your resume. Here is what needs to be in the top third of the page — and what can be safely deleted.",
+    tag: "Career",
+    date: "2026-06-28",
+    read: "5 min read",
+    body: [
+      "You do not need a design template. You need a one-page PDF that gets read in twenty seconds and screened in. Almost every fresher resume I see is missing the same three things.",
+      "Missing thing #1: the title. Write \"Backend Engineer — Java / Spring Boot\" right under your name. If you do not say what role you want, the recruiter will guess — and they will guess wrong.",
+      "Missing thing #2: measurable projects. \"Built a URL shortener with Spring Boot, Postgres, and Redis. Handled 1,000 rps in local load tests.\" is a hundred times stronger than \"Worked on a URL shortener project.\"",
+      "Missing thing #3: the tech stack, together, at the top. Recruiters ATS-scan for keywords. If Java, Spring Boot, MySQL, Docker are scattered across five projects, add a small \"Tech stack\" line under your title so the scanner catches them all in one place.",
+      "Delete: photograph, date of birth, marital status, hobbies, and the objective. They eat space and add nothing. Your certificates go in a link at the bottom, not the middle of the page.",
+    ],
+  },
+];
+
+/**
+ * Quick-glance cheatsheets — one screen each, useful for revision.
+ */
+export const CHEATSHEETS = [
+  {
+    key: "big-o",
+    title: "Big-O at a glance",
+    intro: "Cost of the operations you'll be asked about in every DSA round.",
+    rows: [
+      ["Array — read by index", "O(1)"],
+      ["Array — insert / delete in middle", "O(n)"],
+      ["ArrayList — add at end (amortised)", "O(1)"],
+      ["LinkedList — insert / delete at ends", "O(1)"],
+      ["HashMap — get / put (average)", "O(1)"],
+      ["HashMap — get / put (worst case)", "O(n)"],
+      ["TreeMap — get / put", "O(log n)"],
+      ["Binary search on a sorted array", "O(log n)"],
+      ["Sorting (Arrays.sort primitives)", "O(n log n)"],
+      ["Nested loop over the same list", "O(n²)"],
+    ],
+  },
+  {
+    key: "sql",
+    title: "Everyday SQL you must know",
+    intro: "The nine queries that cover 90% of backend work.",
+    rows: [
+      ["Read one row by primary key", "SELECT * FROM users WHERE id = ?"],
+      ["Filter + sort", "SELECT * FROM orders WHERE status = 'PAID' ORDER BY created_at DESC"],
+      ["Paginate", "SELECT * FROM posts ORDER BY id DESC LIMIT 20 OFFSET 40"],
+      ["Count grouped", "SELECT status, COUNT(*) FROM orders GROUP BY status"],
+      ["Inner join", "SELECT o.id, u.name FROM orders o JOIN users u ON u.id = o.user_id"],
+      ["Left join with nulls", "SELECT u.id, o.id FROM users u LEFT JOIN orders o ON o.user_id = u.id"],
+      ["Update by id", "UPDATE users SET status='ACTIVE' WHERE id = ?"],
+      ["Insert one row", "INSERT INTO users(name, email) VALUES (?, ?)"],
+      ["Delete safely", "DELETE FROM sessions WHERE expires_at < NOW()"],
+    ],
+  },
+  {
+    key: "spring-annotations",
+    title: "Spring Boot annotations, decoded",
+    intro: "What each of the big annotations actually does — in one line.",
+    rows: [
+      ["@SpringBootApplication", "Boots the app + scans this package for beans"],
+      ["@RestController", "Class is a controller; every method returns JSON"],
+      ["@GetMapping / @PostMapping", "Maps an HTTP verb + URL to a method"],
+      ["@RequestBody", "Parse the JSON body into a Java object"],
+      ["@PathVariable", "Grab a value from the URL like /users/{id}"],
+      ["@RequestParam", "Grab a value from the query string like ?page=2"],
+      ["@Service", "Class is business logic; Spring can inject it"],
+      ["@Repository", "Class talks to the DB; wraps SQL exceptions"],
+      ["@Autowired / constructor param", "Ask Spring to hand me this dependency"],
+      ["@Transactional", "Run this method inside a DB transaction"],
+    ],
+  },
+  {
+    key: "git",
+    title: "Git you'll use every day",
+    intro: "The dozen commands that solve 95% of your version-control problems.",
+    rows: [
+      ["Clone a repo", "git clone <url>"],
+      ["Create a branch and switch", "git checkout -b feature/x"],
+      ["See what changed", "git status  &&  git diff"],
+      ["Stage + commit", "git add .  &&  git commit -m 'msg'"],
+      ["Push a new branch", "git push -u origin feature/x"],
+      ["Pull the latest main", "git checkout main  &&  git pull"],
+      ["Merge main into your branch", "git merge main"],
+      ["Undo the last commit (kept)", "git reset --soft HEAD~1"],
+      ["Discard local changes to a file", "git checkout -- path/file"],
+      ["Stash / unstash work", "git stash  &&  git stash pop"],
+    ],
+  },
+];
+
+/**
  * Outcome-first trust chips shown just under the hero headline.
  * All figures are conservative and defensible — no fabricated placement counts.
  */

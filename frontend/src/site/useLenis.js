@@ -33,15 +33,20 @@ export default function useLenis() {
   }, []);
 }
 
+/**
+ * Scroll to an element by id. If the element does not exist on the current
+ * route (e.g. user is on /blog and clicks "Courses" in the footer), we redirect
+ * to the home route with a `?s=<id>` param — the router picks that up and
+ * scrolls after render.
+ */
 export function scrollToId(id) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  // Update the URL hash immediately so the deep-link is copy-able and the
-  // section rail / crumb reflects the intent instantly.
-  if (typeof window !== "undefined" && window.history?.replaceState) {
-    try {
-      window.history.replaceState(null, "", id === "top" ? "#" : `#${id}`);
-    } catch (_) { /* ignore */ }
+  const el = typeof document !== "undefined" ? document.getElementById(id) : null;
+  if (!el) {
+    // Cross-page navigation: switch to home route with the section as a query.
+    if (typeof window !== "undefined") {
+      window.location.hash = id === "top" ? "#/" : `#/?s=${encodeURIComponent(id)}`;
+    }
+    return;
   }
   const lenis = window.__lenis;
   if (lenis && typeof lenis.scrollTo === "function") {

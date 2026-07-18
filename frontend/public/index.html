@@ -285,23 +285,26 @@
         }
         </script>
         
-        <!-- Structured Data — BreadcrumbList (section deep-links) -->
+        <!-- Structured Data — BreadcrumbList (top-level pages + section deep-links) -->
         <script type="application/ld+json">
         {
             "@context": "https://schema.org",
             "@type": "BreadcrumbList",
             "itemListElement": [
-                { "@type": "ListItem", "position": 1, "name": "Home",       "item": "https://javahub.in/" },
-                { "@type": "ListItem", "position": 2, "name": "Courses",    "item": "https://javahub.in/#courses" },
-                { "@type": "ListItem", "position": 3, "name": "Projects",   "item": "https://javahub.in/#projects" },
-                { "@type": "ListItem", "position": 4, "name": "Batches",    "item": "https://javahub.in/#batches" },
-                { "@type": "ListItem", "position": 5, "name": "About",      "item": "https://javahub.in/#about" },
-                { "@type": "ListItem", "position": 6, "name": "Why us",     "item": "https://javahub.in/#why-us" },
-                { "@type": "ListItem", "position": 7, "name": "Reviews",    "item": "https://javahub.in/#reviews" },
-                { "@type": "ListItem", "position": 8, "name": "Free PDFs",  "item": "https://javahub.in/#free-resources" },
-                { "@type": "ListItem", "position": 9, "name": "FAQ",        "item": "https://javahub.in/#faq" },
-                { "@type": "ListItem", "position": 10,"name": "Location",   "item": "https://javahub.in/#location" },
-                { "@type": "ListItem", "position": 11,"name": "Contact",    "item": "https://javahub.in/#contact" }
+                { "@type": "ListItem", "position": 1, "name": "Home",         "item": "https://javahub.in/" },
+                { "@type": "ListItem", "position": 2, "name": "Blog",         "item": "https://javahub.in/#/blog" },
+                { "@type": "ListItem", "position": 3, "name": "Cheatsheets",  "item": "https://javahub.in/#/cheatsheet" },
+                { "@type": "ListItem", "position": 4, "name": "Courses",      "item": "https://javahub.in/#/?s=courses" },
+                { "@type": "ListItem", "position": 5, "name": "Combos",       "item": "https://javahub.in/#/?s=combos" },
+                { "@type": "ListItem", "position": 6, "name": "Projects",     "item": "https://javahub.in/#/?s=projects" },
+                { "@type": "ListItem", "position": 7, "name": "Batches",      "item": "https://javahub.in/#/?s=batches" },
+                { "@type": "ListItem", "position": 8, "name": "About",        "item": "https://javahub.in/#/?s=about" },
+                { "@type": "ListItem", "position": 9, "name": "Why us",       "item": "https://javahub.in/#/?s=why-us" },
+                { "@type": "ListItem", "position": 10,"name": "Reviews",      "item": "https://javahub.in/#/?s=reviews" },
+                { "@type": "ListItem", "position": 11,"name": "Free PDFs",    "item": "https://javahub.in/#/?s=free-resources" },
+                { "@type": "ListItem", "position": 12,"name": "FAQ",          "item": "https://javahub.in/#/?s=faq" },
+                { "@type": "ListItem", "position": 13,"name": "Location",     "item": "https://javahub.in/#/?s=location" },
+                { "@type": "ListItem", "position": 14,"name": "Contact",      "item": "https://javahub.in/#/?s=contact" }
             ]
         }
         </script>
@@ -309,16 +312,19 @@
         <!-- Structured Data — SiteNavigationElement (helps Google build sitelinks) -->
         <script type="application/ld+json">
         [
-            { "@context":"https://schema.org","@type":"SiteNavigationElement","name":"Courses","url":"https://javahub.in/#courses" },
-            { "@context":"https://schema.org","@type":"SiteNavigationElement","name":"Projects","url":"https://javahub.in/#projects" },
-            { "@context":"https://schema.org","@type":"SiteNavigationElement","name":"Batches","url":"https://javahub.in/#batches" },
-            { "@context":"https://schema.org","@type":"SiteNavigationElement","name":"About","url":"https://javahub.in/#about" },
-            { "@context":"https://schema.org","@type":"SiteNavigationElement","name":"Why us","url":"https://javahub.in/#why-us" },
-            { "@context":"https://schema.org","@type":"SiteNavigationElement","name":"Reviews","url":"https://javahub.in/#reviews" },
-            { "@context":"https://schema.org","@type":"SiteNavigationElement","name":"Free PDFs","url":"https://javahub.in/#free-resources" },
-            { "@context":"https://schema.org","@type":"SiteNavigationElement","name":"FAQ","url":"https://javahub.in/#faq" },
-            { "@context":"https://schema.org","@type":"SiteNavigationElement","name":"Location","url":"https://javahub.in/#location" },
-            { "@context":"https://schema.org","@type":"SiteNavigationElement","name":"Contact","url":"https://javahub.in/#contact" }
+            { "@context":"https://schema.org","@type":"SiteNavigationElement","name":"Blog","url":"https://javahub.in/#/blog" },
+            { "@context":"https://schema.org","@type":"SiteNavigationElement","name":"Cheatsheets","url":"https://javahub.in/#/cheatsheet" },
+            { "@context":"https://schema.org","@type":"SiteNavigationElement","name":"Courses","url":"https://javahub.in/#/?s=courses" },
+            { "@context":"https://schema.org","@type":"SiteNavigationElement","name":"Combos","url":"https://javahub.in/#/?s=combos" },
+            { "@context":"https://schema.org","@type":"SiteNavigationElement","name":"Projects","url":"https://javahub.in/#/?s=projects" },
+            { "@context":"https://schema.org","@type":"SiteNavigationElement","name":"Batches","url":"https://javahub.in/#/?s=batches" },
+            { "@context":"https://schema.org","@type":"SiteNavigationElement","name":"About","url":"https://javahub.in/#/?s=about" },
+            { "@context":"https://schema.org","@type":"SiteNavigationElement","name":"Why us","url":"https://javahub.in/#/?s=why-us" },
+            { "@context":"https://schema.org","@type":"SiteNavigationElement","name":"Reviews","url":"https://javahub.in/#/?s=reviews" },
+            { "@context":"https://schema.org","@type":"SiteNavigationElement","name":"Free PDFs","url":"https://javahub.in/#/?s=free-resources" },
+            { "@context":"https://schema.org","@type":"SiteNavigationElement","name":"FAQ","url":"https://javahub.in/#/?s=faq" },
+            { "@context":"https://schema.org","@type":"SiteNavigationElement","name":"Location","url":"https://javahub.in/#/?s=location" },
+            { "@context":"https://schema.org","@type":"SiteNavigationElement","name":"Contact","url":"https://javahub.in/#/?s=contact" }
         ]
         </script>
         

@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <!--
-    Single-page site. Section URLs are submitted so that they show up as
-    deep-links inside Google search results (via Sitelinks). Each entry
-    corresponds to a real anchor rendered on the page.
-    Also useful for Google Business Profile posts — paste the specific section
-    URL below when linking to that part of the site.
+    Multi-page SPA with HashRouter.
+    - Home is at /  (with section anchors via ?s=)
+    - Blog list at /#/blog
+    - Blog posts at /#/blog/<slug>
+    - Cheatsheets at /#/cheatsheet
+    Home-section deep-links use the plain #<section> form so that when someone
+    lands there we still scroll correctly (App.js reads it on mount too).
   -->
   <url>
     <loc>https://javahub.in/</loc>
@@ -14,61 +16,97 @@
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://javahub.in/#courses</loc>
+    <loc>https://javahub.in/#/blog</loc>
     <lastmod>2026-07-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://javahub.in/#projects</loc>
-    <lastmod>2026-07-18</lastmod>
+    <loc>https://javahub.in/#/blog/how-to-start-learning-java-in-2026</loc>
+    <lastmod>2026-07-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://javahub.in/#batches</loc>
+    <loc>https://javahub.in/#/blog/spring-boot-first-rest-api</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://javahub.in/#/blog/resume-tips-for-freshers</loc>
+    <lastmod>2026-06-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://javahub.in/#/cheatsheet</loc>
+    <lastmod>2026-07-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://javahub.in/#/?s=courses</loc>
     <lastmod>2026-07-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://javahub.in/#about</loc>
+    <loc>https://javahub.in/#/?s=combos</loc>
+    <lastmod>2026-07-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://javahub.in/#/?s=projects</loc>
+    <lastmod>2026-07-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://javahub.in/#/?s=batches</loc>
+    <lastmod>2026-07-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://javahub.in/#/?s=about</loc>
     <lastmod>2026-07-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://javahub.in/#why-us</loc>
+    <loc>https://javahub.in/#/?s=why-us</loc>
     <lastmod>2026-07-18</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://javahub.in/#reviews</loc>
+    <loc>https://javahub.in/#/?s=reviews</loc>
     <lastmod>2026-07-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://javahub.in/#free-resources</loc>
+    <loc>https://javahub.in/#/?s=free-resources</loc>
     <lastmod>2026-07-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://javahub.in/#faq</loc>
+    <loc>https://javahub.in/#/?s=faq</loc>
     <lastmod>2026-07-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://javahub.in/#location</loc>
+    <loc>https://javahub.in/#/?s=location</loc>
     <lastmod>2026-07-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://javahub.in/#contact</loc>
+    <loc>https://javahub.in/#/?s=contact</loc>
     <lastmod>2026-07-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
