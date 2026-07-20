@@ -255,39 +255,6 @@ export const COMBO_BUNDLES = [
  */
 export const BLOG_POSTS = [
   {
-    slug: "editor-showcase",
-    title: "Everything the new block editor can do",
-    excerpt:
-      "A living demo of every block type — headings, callouts, code, tables, math, images, YouTube, PDFs, todo lists, and more.",
-    tag: "Editor",
-    date: "2026-07-18",
-    read: "3 min read",
-    blocks: [
-      { id: "b1", type: "heading", props: { level: 1, align: "left" }, content: "Everything the new block editor can do" },
-      { id: "b2", type: "paragraph", props: { align: "left" }, content: "This post is <b>rendered from JSON blocks</b> — the same structure the editor produces when you click <code>Export JSON</code>. Paste any exported post into <code>content.js</code> under <code>BLOG_POSTS</code> and it renders like this." },
-      { id: "b3", type: "callout", props: { icon: "💡", tone: "amber" }, content: "Tip: open <b>/#/admin/editor</b>, write your post, then hit “Copy for content.js” — no backend needed." },
-      { id: "b4", type: "heading", props: { level: 2, align: "left" }, content: "Text & formatting" },
-      { id: "b5", type: "paragraph", props: { align: "left" }, content: "Bold, <i>italic</i>, <u>underline</u>, <s>strikethrough</s>, <code>inline code</code>, and even <span data-eq=\"1\">e^{i\\pi} + 1 = 0</span> — all in one line." },
-      { id: "b6", type: "heading", props: { level: 3, align: "center" }, content: "Alignment works per block" },
-      { id: "b7", type: "paragraph", props: { align: "right" }, content: "This paragraph is right-aligned." },
-      { id: "b8", type: "divider", content: null },
-      { id: "b9", type: "heading", props: { level: 2, align: "left" }, content: "Lists" },
-      { id: "bA", type: "bulletList", content: [{ text: "Bulleted item one" }, { text: "Bulleted item two" }] },
-      { id: "bB", type: "numberList", content: [{ text: "First step" }, { text: "Second step" }, { text: "Third step" }] },
-      { id: "bC", type: "todoList", content: [{ text: "Publish first post", checked: true }, { text: "Add cover image", checked: false }] },
-      { id: "bD", type: "heading", props: { level: 2, align: "left" }, content: "Code & maths" },
-      { id: "bE", type: "code", props: { lang: "java" }, content: "public class Hello {\n  public static void main(String[] args) {\n    System.out.println(\"Hello Java Hub!\");\n  }\n}" },
-      { id: "bF", type: "equation", props: { inline: false }, content: "\\int_{-\\infty}^{\\infty} e^{-x^{2}}\\,dx = \\sqrt{\\pi}" },
-      { id: "bG", type: "heading", props: { level: 2, align: "left" }, content: "Tables" },
-      { id: "bH", type: "table", content: { rows: [["Command", "What it does"], ["git status", "See what changed"], ["git commit -m", "Save a snapshot"]] } },
-      { id: "bI", type: "heading", props: { level: 2, align: "left" }, content: "Embeds" },
-      { id: "bJ", type: "embed", props: { provider: "youtube" }, content: { url: "https://www.youtube.com/watch?v=eIrMbAQSU34" } },
-      { id: "bK", type: "quote", props: { align: "left" }, content: "The best time to plant a tree was twenty years ago. The second best time is now." },
-      { id: "bL", type: "paragraph", props: { align: "left" }, content: "Timestamp:" },
-      { id: "bM", type: "date", content: { display: "Today", iso: "2026-07-18", preset: "today" } },
-    ],
-  },
-  {
     slug: "how-to-start-learning-java-in-2026",
     title: "Java roadmap for beginners — how to start learning Java in 2026",
     excerpt:
