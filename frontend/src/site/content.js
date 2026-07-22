@@ -270,6 +270,428 @@ export const BLOG_POSTS = [
       "After that, and only after that, look at Spring Boot, databases, and web APIs. Every senior engineer you admire took this exact staircase — most of them just do not remember how slow the first step felt.",
     ],
   },
+  {
+  "slug": "database-normalization-1nf-2nf-3nf-explained",
+  "title": "Master Database Normalization: A Practical Guide to 1NF, 2NF, and 3NF",
+  "excerpt": "Learn database normalization (1NF, 2NF, 3NF) with a real-world step-by-step example. Eliminate redundancy and improve performance with simple tables.",
+  "tag": "Database",
+  "date": "2026-07-18",
+  "read": "10 min read",
+  "cover": "",
+  "blocks": [
+    {
+      "id": "b_mrwdzr2c_1",
+      "type": "heading",
+      "props": {
+        "level": 4,
+        "align": "left"
+      },
+      "content": "What is Database Normalization?"
+    },
+    {
+      "id": "b_mrwdzwl9_2",
+      "type": "paragraph",
+      "props": {
+        "align": "left"
+      },
+      "content": "Database normalization is an approach to organise data in relational database. Data is divided into smaller tables and linked to achieve two mail goals:"
+    },
+    {
+      "id": "b_mrwe42nh_3",
+      "type": "bulletList",
+      "props": {},
+      "content": [
+        {
+          "text": "<b>Eliminate Data Redundancy: </b>Stop storing same information at multiple places."
+        },
+        {
+          "text": "<b data-path-to-node=\"13,1,0\" data-index-in-node=\"0\">Ensure Data Integrity:</b> Prevent logical anomalies (insert, update, and delete errors)."
+        }
+      ]
+    },
+    {
+      "id": "b_mrwee7ih_5",
+      "type": "heading",
+      "props": {
+        "level": 5,
+        "align": "left"
+      },
+      "content": "Real World Example: An E-Commerce Order Platform"
+    },
+    {
+      "id": "b_mrwef3ij_6",
+      "type": "paragraph",
+      "props": {
+        "align": "left"
+      },
+      "content": "Suppose we building a system to track customer orders for an online store<div>Below is the table that is unnormalized Order table</div>"
+    },
+    {
+      "id": "b_mrwehjol_8",
+      "type": "table",
+      "props": {},
+      "content": {
+        "rows": [
+          [
+            "OrderId",
+            "CustomerName",
+            "City",
+            "ItemOrdered",
+            "ItemPrice"
+          ],
+          [
+            "<font face=\"Google Sans Text, sans-serif\"><b>101</b></font>",
+            "Alice Smith",
+            "New York",
+            "Laptop, Mouse",
+            "$1250"
+          ],
+          [
+            "102",
+            "Bob Jones",
+            "Chicago",
+            "Keyboard",
+            "$100"
+          ],
+          [
+            "103",
+            "Alice Smith",
+            "New York",
+            "Monitor, Laptop",
+            "$1500"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "b_mrweqkbs_9",
+      "type": "paragraph",
+      "props": {
+        "align": "left"
+      },
+      "content": "Take a pause and think for a while whats wrong with this data before reading out further....."
+    },
+    {
+      "id": "b_mrwertwk_a",
+      "type": "paragraph",
+      "props": {
+        "align": "left"
+      },
+      "content": "Why this table is bad?"
+    },
+    {
+      "id": "b_mrwescsd_b",
+      "type": "bulletList",
+      "props": {},
+      "content": [
+        {
+          "text": "ItemOrdered column have multiple values."
+        },
+        {
+          "text": "Customer city repeating across multiple order for the same customer.&nbsp;"
+        },
+        {
+          "text": "If Alice Smith changed his city later, we have to update every row."
+        }
+      ]
+    },
+    {
+      "id": "b_mrwf3ohg_d",
+      "type": "paragraph",
+      "props": {
+        "align": "left"
+      },
+      "content": "<h3 data-path-to-node=\"24\"><p data-path-to-node=\"22\">Let's fix this step by step.</p><p data-path-to-node=\"22\"><br></p></h3><h3 data-path-to-node=\"24\">Step 1: First Normal Form (1NF)</h3><h3 data-path-to-node=\"24\"><blockquote data-path-to-node=\"25\"><p data-path-to-node=\"25,0\"><b data-path-to-node=\"25,0\" data-index-in-node=\"0\">Rule of 1NF:</b> &gt; 1. Each table cell must contain a single (atomic) value.\n2. Each record must be unique (requires a Primary Key).</p></blockquote></h3><h4 data-path-to-node=\"26\">Step-by-Step Change</h4><h3 data-path-to-node=\"24\"><p data-path-to-node=\"27\">We need to split the comma-separated list in \"ItemOrdered\" so that every row contains only <b data-path-to-node=\"27\" data-index-in-node=\"93\">one item</b>. We also add an <code data-path-to-node=\"27\" data-index-in-node=\"118\">ItemPrice</code> column to track costs per item accurately.</p></h3>"
+    },
+    {
+      "id": "b_mrwexjzy_c",
+      "type": "table",
+      "props": {},
+      "content": {
+        "rows": [
+          [
+            "OrderId",
+            "Customer Name",
+            "City",
+            "ItemOrdered",
+            "ItemPrice"
+          ],
+          [
+            "<font face=\"Google Sans Text, sans-serif\">101</font>",
+            "Alice Smith",
+            "New York",
+            "Laptop",
+            "$1200"
+          ],
+          [
+            "101",
+            "Alice Smith",
+            "New York",
+            "Mouse",
+            "$50"
+          ],
+          [
+            "102",
+            "Bob Jones",
+            "Chicago",
+            "Keyboard",
+            "$100"
+          ],
+          [
+            "103",
+            "Alice Smith",
+            "New York",
+            "Monitor",
+            "$300"
+          ],
+          [
+            "103",
+            "Alice Smith",
+            "New York",
+            "Laptop",
+            "$1200"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "b_mrwf99nf_e",
+      "type": "paragraph",
+      "props": {
+        "align": "left"
+      },
+      "content": "After this change, every row have atomic value under each column, and the row is uniquely identified by composite primary key (OrderId + ItemOrdered)"
+    },
+    {
+      "id": "b_mrwfkhr9_f",
+      "type": "paragraph",
+      "props": {
+        "align": "left"
+      },
+      "content": "<h3 data-path-to-node=\"33\">Step 2: Second Normal Form (2NF)</h3><blockquote data-path-to-node=\"34\"><p data-path-to-node=\"34,0\"><b data-path-to-node=\"34,0\" data-index-in-node=\"0\">Rule of 2NF:</b> &gt; 1. Must already be in <b data-path-to-node=\"34,0\" data-index-in-node=\"37\">1NF</b>.\n2. Remove <b data-path-to-node=\"34,0\" data-index-in-node=\"52\">Partial Dependencies</b> (every non-key column must depend on the <i data-path-to-node=\"34,0\" data-index-in-node=\"114\">entire</i> primary key, not just a part of it).</p><p data-path-to-node=\"34,0\"><br></p><h4 data-path-to-node=\"35\">Step-by-Step Change</h4><p data-path-to-node=\"36\">Our composite primary key is <code data-path-to-node=\"36\" data-index-in-node=\"44\">(OrderID, ItemOrdered)</code>.\nNotice that <code data-path-to-node=\"36\" data-index-in-node=\"77\">CustomerName</code> and <code data-path-to-node=\"36\" data-index-in-node=\"94\">City</code> depend <i data-path-to-node=\"36\" data-index-in-node=\"114\">only</i> on <code data-path-to-node=\"36\" data-index-in-node=\"122\">OrderID</code>, not on <code data-path-to-node=\"36\" data-index-in-node=\"138\">ItemOrdered</code>. That is a partial dependency.</p><p data-path-to-node=\"37\">To fix this, we split the table into two separate tables:</p><ol start=\"1\" data-path-to-node=\"38\"><li><p data-path-to-node=\"38,0,0\"><b data-path-to-node=\"38,0,0\" data-index-in-node=\"0\"><code data-path-to-node=\"38,0,0\" data-index-in-node=\"0\">Orders</code> Table:</b> Stores details related to the order as a whole.</p></li><li><p data-path-to-node=\"38,1,0\"><b data-path-to-node=\"38,1,0\" data-index-in-node=\"0\"><code data-path-to-node=\"38,1,0\" data-index-in-node=\"0\">OrderItems</code> Table:</b> Stores details about individual items within an order.</p></li></ol><ol start=\"1\" data-path-to-node=\"38\"><li><p data-path-to-node=\"38,1,0\"><br></p></li></ol></blockquote>"
+    },
+    {
+      "id": "b_mrwfm2ft_h",
+      "type": "paragraph",
+      "props": {
+        "align": "left"
+      },
+      "content": "<b>Orders</b>"
+    },
+    {
+      "id": "b_mrwfmec3_i",
+      "type": "table",
+      "props": {},
+      "content": {
+        "rows": [
+          [
+            "OrderId",
+            "CustomerName",
+            "City"
+          ],
+          [
+            "101",
+            "Alice Smith",
+            "New York"
+          ],
+          [
+            "102",
+            "Bob Jones",
+            "Chicago"
+          ],
+          [
+            "103",
+            "Alice Smith",
+            "New York"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "b_mrwfo7f2_j",
+      "type": "paragraph",
+      "props": {
+        "align": "left"
+      },
+      "content": "<b>OrderItems</b>"
+    },
+    {
+      "id": "b_mrwfomke_k",
+      "type": "table",
+      "props": {},
+      "content": {
+        "rows": [
+          [
+            "OrderId",
+            "ItemOrdered",
+            "ItemPrice"
+          ],
+          [
+            "101",
+            "Laptop",
+            "$1200"
+          ],
+          [
+            "101",
+            "Mouse",
+            "$50"
+          ],
+          [
+            "102",
+            "Keyboard",
+            "$100"
+          ],
+          [
+            "103",
+            "Monitor",
+            "$300"
+          ],
+          [
+            "103",
+            "Laptop",
+            "$1200"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "b_mrwfrp1p_l",
+      "type": "paragraph",
+      "props": {
+        "align": "left"
+      },
+      "content": "<div class=\"horizontal-scroll-wrapper\" style=\"font-family: &quot;Google Sans Text&quot;, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;\"><div class=\"table-block-component\" style=\"line-height: 1.15 !important; margin-top: 0px !important;\"><response-element class=\"\" ng-version=\"0.0.0-PLACEHOLDER\" style=\"line-height: 1.15 !important; margin-top: 0px !important;\"><table-block _nghost-ng-c1508722937=\"\" class=\"enable-luminous-table-block ng-star-inserted\" style=\"line-height: 1.15 !important; margin-top: 0px !important;\"><div _ngcontent-ng-c1508722937=\"\" class=\"table-block has-export-button new-table-style is-at-scroll-start is-at-scroll-end\" style=\"line-height: 1.15 !important; margin-top: 0px !important;\"><div _ngcontent-ng-c1508722937=\"\" not-end-of-paragraph=\"\" class=\"table-content\" jslog=\"275421;track:impression,attention\" data-hveid=\"0\" decode-data-ved=\"1\" data-ved=\"0CAAQ3ecQahcKEwjSnuy17eaVAxUAAAAAHQAAAAAQbQ\" style=\"line-height: 1.15 !important; margin-top: 0px !important;\"></div></div><!----></table-block><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----></response-element></div></div><p data-path-to-node=\"44\" style=\"font-family: &quot;Google Sans Text&quot;, sans-serif !important; line-height: 1.15 !important;\"><i data-path-to-node=\"44\" data-index-in-node=\"0\" style=\"line-height: 1.15 !important; margin-top: 0px !important;\">(Composite Primary Key: <code data-path-to-node=\"44\" data-index-in-node=\"24\" style=\"font-family: &quot;Google Sans Text&quot;, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;\">OrderID</code> + <code data-path-to-node=\"44\" data-index-in-node=\"34\" style=\"font-family: &quot;Google Sans Text&quot;, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important;\">ItemOrdered</code>)</i></p><p data-path-to-node=\"45\" style=\"font-family: &quot;Google Sans Text&quot;, sans-serif !important; line-height: 1.15 !important;\"><b data-path-to-node=\"45\" data-index-in-node=\"2\" style=\"line-height: 1.15 !important; margin-top: 0px !important;\">2NF Achieved:</b> All non-key attributes fully depend on their table's primary key.</p>"
+    },
+    {
+      "id": "b_mrwfwo09_m",
+      "type": "paragraph",
+      "props": {
+        "align": "left"
+      },
+      "content": "<h3 data-path-to-node=\"47\">Step 3: Third Normal Form (3NF)</h3><blockquote data-path-to-node=\"48\"><p data-path-to-node=\"48,0\"><b data-path-to-node=\"48,0\" data-index-in-node=\"0\">Rule of 3NF:</b> &gt; 1. Must already be in <b data-path-to-node=\"48,0\" data-index-in-node=\"37\">2NF</b>.\n2. Remove <b data-path-to-node=\"48,0\" data-index-in-node=\"52\">Transitive Dependencies</b> (non-key columns must NOT depend on other non-key columns).</p></blockquote><h4 data-path-to-node=\"49\">Step-by-Step Change</h4><p data-path-to-node=\"50\">Look at the <code data-path-to-node=\"50\" data-index-in-node=\"12\">Orders</code> table from 2NF:</p><p data-path-to-node=\"50\"><code data-path-to-node=\"51,0,0\" data-index-in-node=\"0\">City</code> depends on <code data-path-to-node=\"51,0,0\" data-index-in-node=\"24\">CustomerName</code>.</p><ul data-path-to-node=\"51\"><li><p data-path-to-node=\"51,1,0\"><code data-path-to-node=\"51,1,0\" data-index-in-node=\"0\">CustomerName</code> depends on <code data-path-to-node=\"51,1,0\" data-index-in-node=\"24\">OrderID</code>.</p></li></ul><p data-path-to-node=\"52\">This means <code data-path-to-node=\"52\" data-index-in-node=\"11\">City</code> indirectly depends on <code data-path-to-node=\"52\" data-index-in-node=\"46\">OrderID</code> through <code data-path-to-node=\"52\" data-index-in-node=\"62\">CustomerName</code>. This is a <b data-path-to-node=\"52\" data-index-in-node=\"86\">transitive dependency</b>. If Alice orders 10 times, we repeat \"Alice Smith\" and \"New York\" 10 times.</p><p data-path-to-node=\"53\">To fix this, we extract customer details into a dedicated <code data-path-to-node=\"53\" data-index-in-node=\"58\">Customers</code> table.</p>"
+    },
+    {
+      "id": "b_mrwfxtae_n",
+      "type": "paragraph",
+      "props": {
+        "align": "left"
+      },
+      "content": "<b>Customers</b>"
+    },
+    {
+      "id": "b_mrwfy8sz_o",
+      "type": "table",
+      "props": {},
+      "content": {
+        "rows": [
+          [
+            "CustomerId",
+            "CustomerName",
+            "City"
+          ],
+          [
+            "C1",
+            "Alice Smith",
+            "New York"
+          ],
+          [
+            "C2",
+            "Bob Jones",
+            "Chicago"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "b_mrwg3bse_u",
+      "type": "paragraph",
+      "props": {
+        "align": "left"
+      },
+      "content": "<b>Orders</b>"
+    },
+    {
+      "id": "b_mrwfzt6o_q",
+      "type": "table",
+      "props": {},
+      "content": {
+        "rows": [
+          [
+            "OrderId",
+            "CustomerId"
+          ],
+          [
+            "101",
+            "C1"
+          ],
+          [
+            "102",
+            "C2"
+          ],
+          [
+            "103",
+            "C1"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "b_mrwg3k1z_v",
+      "type": "paragraph",
+      "props": {
+        "align": "left"
+      },
+      "content": "<b>OrderItems</b>"
+    },
+    {
+      "id": "b_mrwg1y8f_t",
+      "type": "table",
+      "props": {},
+      "content": {
+        "rows": [
+          [
+            "OrderId",
+            "ItemOrdered",
+            "ItemPrice"
+          ],
+          [
+            "101",
+            "Laptop",
+            "$1200"
+          ],
+          [
+            "101",
+            "Mouse",
+            "$50"
+          ],
+          [
+            "102",
+            "Keyboard",
+            "$100"
+          ],
+          [
+            "103",
+            "Monitor",
+            "$300"
+          ],
+          [
+            "103",
+            "Laptop",
+            "$1200"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "b_mrwg432b_w",
+      "type": "paragraph",
+      "props": {
+        "align": "left"
+      },
+      "content": "<p data-path-to-node=\"62\"><i data-path-to-node=\"62\" data-index-in-node=\"0\">(Composite Key: <code data-path-to-node=\"62\" data-index-in-node=\"16\">OrderID</code> + <code data-path-to-node=\"62\" data-index-in-node=\"26\">ItemOrdered</code>)</i></p><p data-path-to-node=\"63\"><b data-path-to-node=\"63\" data-index-in-node=\"2\">3NF Achieved:</b> Data is fully decoupled. Every non-key column directly describes the primary key of its table.</p>"
+    }
+  ]
+},
 ];
 
 /**
