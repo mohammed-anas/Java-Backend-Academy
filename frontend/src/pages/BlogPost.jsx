@@ -17,13 +17,13 @@ export default function BlogPost() {
 
   useEffect(() => {
     if (post) {
-      document.title = `${post.title} · Java Hub Academy Blog`;
+      document.title = `${post.title} · Java Hub Academy Articles`;
     }
     window.scrollTo({ top: 0, behavior: "instant" });
   }, [post]);
 
   const askUrl = useMemo(
-    () => buildWhatsAppMessage(post ? `Hi ${BRAND.name}, I read \"${post.title}\" on your blog and would like to learn more.` : ""),
+    () => buildWhatsAppMessage(post ? `Hi ${BRAND.name}, I read \"${post.title}\" article on your site and would like to learn more.` : ""),
     [post]
   );
 
@@ -39,7 +39,7 @@ export default function BlogPost() {
               <HomeIcon size={12} /> Home
             </Link>
             <span aria-hidden>/</span>
-            <Link to="/blog" className="hover:text-[color:var(--accent)] transition-colors">Blog</Link>
+            <Link to="/blog" className="hover:text-[color:var(--accent)] transition-colors">Articles</Link>
             <span aria-hidden>/</span>
             <span className="crumb-trail__current truncate max-w-[16ch] sm:max-w-none">{post.tag}</span>
           </nav>
@@ -87,7 +87,7 @@ export default function BlogPost() {
                 <span className="inline-flex items-center gap-2"><ChevronLeft size={14} /> Previous</span>
                 <span className="text-[color:var(--ink)] font-body font-medium normal-case tracking-normal text-sm truncate max-w-[24ch]">{prev.title}</span>
               </Link>
-            ) : <Link to="/blog" data-testid={`blog-back-${slug}`}><span>← All posts</span><span className="text-[color:var(--ink)] font-body font-medium normal-case tracking-normal text-sm">Blog</span></Link>}
+            ) : <Link to="/blog" data-testid={`blog-back-${slug}`}><span>← All articles</span><span className="text-[color:var(--ink)] font-body font-medium normal-case tracking-normal text-sm">Articles</span></Link>}
             {next ? (
               <Link to={`/blog/${next.slug}`} data-testid={`blog-next-${slug}`} style={{ textAlign: "right" }}>
                 <span className="text-[color:var(--ink)] font-body font-medium normal-case tracking-normal text-sm truncate max-w-[24ch] block">{next.title}</span>

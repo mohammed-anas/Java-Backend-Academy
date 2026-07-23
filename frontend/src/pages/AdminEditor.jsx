@@ -46,7 +46,7 @@ export default function AdminEditor() {
   const containerRef = useRef(null);
 
   useEffect(() => {
-    document.title = "Blog Editor · Java Hub Academy";
+    document.title = "Article Editor · Java Hub Academy";
   }, []);
 
   // Autosave the current post into the drafts list
@@ -180,14 +180,14 @@ export default function AdminEditor() {
           <nav aria-label="Breadcrumb" className="crumb-trail flex flex-wrap items-center gap-2">
             <Link to="/" className="inline-flex items-center gap-1.5 hover:text-[color:var(--accent)]"><HomeIcon size={12}/> Home</Link>
             <span aria-hidden>/</span>
-            <Link to="/blog" className="hover:text-[color:var(--accent)]">Blog</Link>
+            <Link to="/blog" className="hover:text-[color:var(--accent)]">Articles</Link>
             <span aria-hidden>/</span>
             <span className="crumb-trail__current">Editor</span>
           </nav>
 
           <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h1 className="font-serif-editorial text-3xl sm:text-4xl leading-tight">Blog editor</h1>
+              <h1 className="font-serif-editorial text-3xl sm:text-4xl leading-tight">Article editor</h1>
               <p className="text-sm text-[color:var(--ink-2)]">Write here → export JSON / Markdown → paste JSON into <code className="px-1 py-0.5 rounded border border-[color:var(--line-strong)] font-mono-tech text-[12px]">content.js</code> to publish.</p>
             </div>
             <div className="flex flex-wrap gap-2">

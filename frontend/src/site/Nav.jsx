@@ -16,7 +16,7 @@ const LINKS = [
 ];
 
 const ROUTES = [
-  { to: "/blog", label: "Blog", icon: BookOpen },
+  { to: "/blog", label: "Articles", icon: BookOpen },
   { to: "/cheatsheet", label: "Cheatsheets", icon: Zap },
 ];
 
@@ -167,7 +167,7 @@ export default function Nav() {
 
   const currentCrumb = isHome
     ? (SECTIONS.find((s) => s.id === active)?.crumb || "Home")
-    : (location.pathname.startsWith("/blog") ? "Blog" : location.pathname.startsWith("/cheatsheet") ? "Cheatsheets" : "");
+    : (location.pathname.startsWith("/blog") ? "Articles" : location.pathname.startsWith("/cheatsheet") ? "Cheatsheets" : "");
 
   return (
     <>
@@ -297,25 +297,6 @@ export default function Nav() {
                 </span>
                 <span className="font-mono-tech text-[10px] tracking-[0.24em] text-[color:var(--ink-2)]">/00</span>
               </button>
-              {SECTIONS.filter((s) => s.id !== "top").map((l, i) => {
-                const isActive = isHome && active === l.id;
-                return (
-                  <button
-                    key={l.id}
-                    data-testid={`mnav-${l.id}`}
-                    data-active={isActive}
-                    onClick={() => handleGo(l.id)}
-                    className={`flex items-center justify-between text-left py-2 border-b border-[color:var(--line)] transition-colors ${
-                      isActive ? "text-[color:var(--accent)]" : "text-[color:var(--ink)]"
-                    }`}
-                  >
-                    <span className="font-serif-editorial text-2xl leading-none">{l.label}</span>
-                    <span className="font-mono-tech text-[10px] tracking-[0.24em] text-[color:var(--ink-2)]">
-                      /{String(i + 1).padStart(2, "0")}
-                    </span>
-                  </button>
-                );
-              })}
               {ROUTES.map((r, i) => {
                 const Icon = r.icon;
                 return (
@@ -330,9 +311,28 @@ export default function Nav() {
                       <Icon size={18} /> {r.label}
                     </span>
                     <span className="font-mono-tech text-[10px] tracking-[0.24em] text-[color:var(--ink-2)]">
-                      /{String(SECTIONS.length + i).padStart(2, "0")}
+                      /{String(i + 1).padStart(2, "0")}
                     </span>
                   </Link>
+                );
+              })}
+              {SECTIONS.filter((s) => s.id !== "top").map((l, i) => {
+                const isActive = isHome && active === l.id;
+                return (
+                  <button
+                    key={l.id}
+                    data-testid={`mnav-${l.id}`}
+                    data-active={isActive}
+                    onClick={() => handleGo(l.id)}
+                    className={`flex items-center justify-between text-left py-2 border-b border-[color:var(--line)] transition-colors ${
+                      isActive ? "text-[color:var(--accent)]" : "text-[color:var(--ink)]"
+                    }`}
+                  >
+                    <span className="font-serif-editorial text-2xl leading-none">{l.label}</span>
+                    <span className="font-mono-tech text-[10px] tracking-[0.24em] text-[color:var(--ink-2)]">
+                      /{String(ROUTES.length + i + 1).padStart(2, "0")}
+                    </span>
+                  </button>
                 );
               })}
               <a

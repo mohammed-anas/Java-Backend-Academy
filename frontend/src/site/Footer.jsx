@@ -55,7 +55,7 @@ export default function Footer() {
                   to="/blog"
                   className="hover:text-[color:var(--accent)] transition-colors"
                 >
-                  Blog
+                  Articles
                 </Link>
               </li>
               <li>

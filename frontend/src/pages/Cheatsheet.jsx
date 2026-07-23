@@ -107,7 +107,7 @@ export default function Cheatsheet() {
           <div className="section-nav-strip mt-14 max-w-[720px] mx-auto">
             <Link to="/blog" data-testid="cheat-nav-blog">
               <span className="inline-flex items-center gap-2">← Previous</span>
-              <span className="text-[color:var(--ink)] font-body font-medium normal-case tracking-normal text-sm">Blog</span>
+              <span className="text-[color:var(--ink)] font-body font-medium normal-case tracking-normal text-sm">Articles</span>
             </Link>
             <Link to="/#courses" data-testid="cheat-nav-courses" style={{ textAlign: "right" }}>
               <span className="text-[color:var(--ink)] font-body font-medium normal-case tracking-normal text-sm">Courses roadmap</span>

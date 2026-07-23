@@ -159,7 +159,7 @@ frontend:
                 - New handlers: handleNewDraft / handleLoadDraft / handleDeleteDraft / handleLoadBundled
 
             TEST PLAN (Playwright)
-              Preview URL: https://blog-builder-44.preview.emergentagent.com
+              Preview URL: https://blog-mobile-fix.preview.emergentagent.com
               Router: HashRouter.
 
               Before each test:
@@ -547,7 +547,7 @@ frontend:
            12) No console errors on load of /, /#/blog, /#/blog/editor-showcase, /#/admin/editor.
 
            Notes for tester:
-             - Preview URL: https://blog-builder-44.preview.emergentagent.com
+             - Preview URL: https://blog-mobile-fix.preview.emergentagent.com
              - HashRouter — links are /#/... .
              - Clear localStorage between blog view assertions if needed:
                await page.evaluate("localStorage.removeItem('jha-blog-view')");

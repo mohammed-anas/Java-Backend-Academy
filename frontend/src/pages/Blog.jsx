@@ -18,7 +18,7 @@ function Crumb() {
         <HomeIcon size={12} /> Home
       </Link>
       <span aria-hidden>/</span>
-      <span className="crumb-trail__current">Blog</span>
+      <span className="crumb-trail__current">Articles</span>
     </nav>
   );
 }
@@ -38,7 +38,7 @@ export default function Blog() {
   }, [view]);
 
   useEffect(() => {
-    document.title = "Blog · Java Hub Academy — plain-English guides for Java backend engineers";
+    document.title = "Articles · Java Hub Academy — plain-English guides for Java backend engineers";
     window.scrollTo({ top: 0, behavior: "instant" });
   }, []);
 
@@ -54,7 +54,7 @@ export default function Blog() {
             transition={{ duration: 0.7, ease: [0.2, 0.7, 0.2, 1] }}
             className="mt-6 font-serif-editorial text-4xl sm:text-5xl lg:text-6xl leading-[1.02] tracking-tight max-w-[22ch]"
           >
-            The <em className="not-italic italic gradient-text">blog</em>. Plain-English guides for Java backend engineers.
+            The <em className="not-italic italic gradient-text">articles</em>. Plain-English guides for Java backend engineers.
           </motion.h1>
           <p className="mt-5 text-[color:var(--ink)]/80 max-w-[62ch] text-base sm:text-lg leading-relaxed">
             Short, opinionated notes on Java, Spring Boot, databases, cloud, and how to land your first offer. Written by mentors who still ship production code.
@@ -62,7 +62,7 @@ export default function Blog() {
 
           {/* View switcher */}
           <div className="mt-8 flex items-center justify-between flex-wrap gap-3">
-            <div className="inline-flex items-center rounded-full border border-[color:var(--line-strong)] p-1" role="tablist" aria-label="Blog view">
+            <div className="inline-flex items-center rounded-full border border-[color:var(--line-strong)] p-1" role="tablist" aria-label="Articles view">
               {VIEWS.map(({ key, label, Icon }) => (
                 <button
                   key={key}
@@ -81,7 +81,7 @@ export default function Blog() {
               ))}
             </div>
             <div className="text-[11px] font-mono-tech tracking-[0.24em] uppercase text-[color:var(--ink-2)]">
-              {BLOG_POSTS.length} {BLOG_POSTS.length === 1 ? "post" : "posts"}
+              {BLOG_POSTS.length} {BLOG_POSTS.length === 1 ? "article" : "articles"}
             </div>
           </div>
 
@@ -119,7 +119,7 @@ function EmptyState() {
       <div className="mx-auto w-12 h-12 grid place-items-center rounded-full border border-[color:var(--line-strong)] mb-3">
         <BookOpen size={18} className="text-[color:var(--accent)]" />
       </div>
-      <p className="font-serif-editorial text-2xl leading-tight">No posts published yet.</p>
+      <p className="font-serif-editorial text-2xl leading-tight">No articles published yet.</p>
       <p className="mt-2 text-[color:var(--ink-2)] text-sm">
         Write one in the editor and paste the exported JSON into <code className="px-1 py-0.5 rounded border border-[color:var(--line-strong)] font-mono-tech text-[12px]">content.js → BLOG_POSTS</code>.
       </p>
