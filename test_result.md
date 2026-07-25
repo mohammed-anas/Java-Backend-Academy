@@ -769,6 +769,76 @@ backend:
             comes from a Google Sheet fronted by /docs/batches-apps-script.gs — the
             same immutability model as reviews. Nothing on FastAPI touched.
 
+  - task: "Edit-in-place for published articles + Like/Share on posts"
+    implemented: true
+    working: true
+    file: "frontend/src/blog-editor/library.js, frontend/src/blog-editor/PostActions.jsx, frontend/src/blog-editor/PostsLibrary.jsx, frontend/src/pages/AdminEditor.jsx, frontend/src/pages/Blog.jsx, frontend/src/pages/BlogPost.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "main"
+          comment: |
+            NEW FEATURE (July 2026) — user request:
+              1) Editing a published article should NOT dump it into drafts.
+                 Provide edit-in-place with a "Publish update" flow.
+              2) Add Like and Share to each article.
+
+            IMPLEMENTATION
+              • Published overrides (edit-in-place, no draft duplication):
+                - localStorage key jha-blog-published-overrides-v1 keyed by slug.
+                - library.js: loadPublishedOverrides / savePublishedOverrides /
+                  upsertPublishedOverride / deletePublishedOverride /
+                  hasPublishedOverride / getPublishedPosts / getPublishedPost /
+                  isPublishedSlug.
+                - Blog.jsx + BlogPost.jsx read via getPublishedPosts() so overrides
+                  render live on the public site.
+              • AdminEditor:
+                - New state: editingPublishedSlug + publishedDirty.
+                - When user clicks Edit on a published post it goes straight into
+                  the editor bound to the original slug (no new draft row).
+                - Top bar shows: [btn-publish-update], [btn-revert-published],
+                  [btn-exit-edit-mode] plus an "EDITING PUBLISHED" banner.
+                - Autosave is gated: skipped while editingPublishedSlug is set.
+                - Existing "Copy for content.js" still available for permanent
+                  commits back to source.
+              • PostsLibrary:
+                - Added props: editingPublishedSlug, onEditPublished, onRevertPublished.
+                - Row-level UI: "editing" pill on the current one, "modified" pill
+                  for rows that have an override, per-row Duplicate + Revert.
+              • Likes (per-browser only):
+                - library.js: getLikeCount / isLikedByMe / toggleLike backed by
+                  jha-blog-likes-v1 (count) and jha-blog-liked-v1 (bool).
+              • Share:
+                - PostActions component with heart (like) + share pill.
+                - Share uses navigator.share() first, falls back to a themed modal
+                  with Copy link + WhatsApp + Twitter/X + LinkedIn + Facebook.
+              • Placement:
+                - Article page: block above the CTA card.
+                - Blog list: compact Like + Share on every grid card.
+
+            FILES ADDED
+              • frontend/src/blog-editor/PostActions.jsx
+
+            FILES CHANGED
+              • frontend/src/blog-editor/library.js
+              • frontend/src/blog-editor/PostsLibrary.jsx
+              • frontend/src/pages/AdminEditor.jsx
+              • frontend/src/pages/Blog.jsx
+              • frontend/src/pages/BlogPost.jsx
+
+            SMOKE VERIFIED VIA PLAYWRIGHT (author-run):
+              ✅ /blog list renders Like + Share on every card.
+              ✅ Article page renders Like + Share row above the CTA card.
+              ✅ Like toggles 0→1→0→1 and label switches LIKE ↔ LIKED, persists in
+                 localStorage per browser.
+              ✅ Share modal opens with prefilled URL and 4 social targets.
+              ✅ /admin/editor "Edit" on a published post enters edit-published mode
+                 (no new draft row), banner + Publish/Revert/Close buttons appear.
+              ✅ Publish update immediately reflects on the public article page.
+              ✅ Revert restores the bundled original on the public article page.
+
 metadata:
   created_by: "main_agent"
   version: "1.1"
@@ -777,12 +847,43 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Delete-blog + multi-draft manager (Posts library)"
+    - "Edit-in-place for published articles + Like/Share on posts"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
 
 agent_communication:
+    - agent: "main"
+      message: |
+        v4.2 (July 2026) — Edit-in-place for published articles + Like/Share on posts.
+
+        User asked: (1) editing an already-published article should not send it to
+        drafts, give a way to edit and post it back; (2) each post should have Like
+        and Share.
+
+        DELIVERED
+          • In-place edit for published posts:
+            - Editor now has an "EDITING PUBLISHED" mode. Clicking Edit on a
+              published post opens it bound to its original slug, without
+              spawning a new draft row.
+            - New buttons: Publish update, Revert, Close edit.
+            - Changes are persisted as localStorage overrides and merged over
+              BLOG_POSTS by getPublishedPosts(), so the live site reflects
+              the edit immediately without touching content.js.
+            - Existing "Copy for content.js" still available for permanent
+              source-level commits.
+          • Like:
+            - Per-browser localStorage counter (jha-blog-likes-v1) plus a
+              liked-flag (jha-blog-liked-v1). Toggle 0↔1 with tap animation.
+          • Share:
+            - Uses navigator.share() when available; falls back to a modal
+              with Copy link + WhatsApp + Twitter/X + LinkedIn + Facebook.
+          • Placement:
+            - Article page: dedicated row above the CTA card.
+            - Blog index (grid view): compact PostActions next to Read the post.
+
+        Frontend-only change. Backend untouched.
+
     - agent: "main"
       message: |
         v4.1 (July 2026) — Delete-blog + multi-draft manager (Posts library).

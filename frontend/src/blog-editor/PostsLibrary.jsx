@@ -2,9 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import {
   Pencil, Trash2, Copy as CopyIcon, Download, X, Plus, BookOpen, ClipboardList, FileText,
+  CheckCircle2, Undo2,
 } from "lucide-react";
-import { BLOG_POSTS } from "@/site/content";
-import { ensureBlocks, serialiseBlogPosts } from "./library";
+import { getPublishedPosts, hasPublishedOverride, ensureBlocks, serialiseBlogPosts } from "./library";
 
 /**
  * PostsLibrary — collapsible manager panel shown at the top of the editor.
@@ -19,17 +19,23 @@ import { ensureBlocks, serialiseBlogPosts } from "./library";
 export default function PostsLibrary({
   drafts,
   currentDraftId,
+  editingPublishedSlug,
   onNewDraft,
   onLoadDraft,
   onDeleteDraft,
-  onLoadBundled,
+  onLoadBundled,       // duplicate published as new draft
+  onEditPublished,     // edit published in-place
+  onRevertPublished,   // clear override for a slug
 }) {
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState("published"); // "published" | "drafts"
   const [confirmDel, setConfirmDel] = useState(null); // { kind:"published"|"draft", post|draft }
   const [deleteSnippet, setDeleteSnippet] = useState(null); // string when a published-delete modal is open
 
-  const publishedCount = BLOG_POSTS.length;
+  // Recompute merged list each render so recent overrides show up
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const publishedPosts = useMemo(() => getPublishedPosts(), [editingPublishedSlug, deleteSnippet, confirmDel]);
+  const publishedCount = publishedPosts.length;
   const draftCount = drafts.length;
 
   return (
@@ -74,13 +80,18 @@ export default function PostsLibrary({
 
           {tab === "published" ? (
             <PublishedList
-              onEdit={(p) => onLoadBundled(ensureBlocks(deepCopy(p)))}
+              posts={publishedPosts}
+              editingSlug={editingPublishedSlug}
+              onEdit={(p) => onEditPublished && onEditPublished(ensureBlocks(deepCopy(p)))}
+              onDuplicate={(p) => onLoadBundled && onLoadBundled(ensureBlocks(deepCopy(p)))}
+              onRevert={(p) => onRevertPublished && onRevertPublished(p.slug)}
               onDelete={(p) => setConfirmDel({ kind: "published", post: p })}
             />
           ) : (
             <DraftsList
               drafts={drafts}
               currentId={currentDraftId}
+              editingPublishedSlug={editingPublishedSlug}
               onLoad={onLoadDraft}
               onDelete={(d) => setConfirmDel({ kind: "draft", draft: d })}
             />
@@ -114,7 +125,7 @@ export default function PostsLibrary({
           confirmLabel="Generate paste snippet"
           onCancel={() => setConfirmDel(null)}
           onConfirm={() => {
-            const remaining = BLOG_POSTS.filter((p) => p.slug !== confirmDel.post.slug);
+            const remaining = publishedPosts.filter((p) => p.slug !== confirmDel.post.slug);
             setDeleteSnippet(serialiseBlogPosts(remaining));
           }}
           confirmTestId="confirm-del-published"
@@ -152,81 +163,129 @@ function TabBtn({ active, onClick, children, testId }) {
   );
 }
 
-function PublishedList({ onEdit, onDelete }) {
-  if (!BLOG_POSTS.length) {
+function PublishedList({ posts, editingSlug, onEdit, onDuplicate, onRevert, onDelete }) {
+  if (!posts.length) {
     return <EmptyLine>No published posts yet. Write one, then click <b>Copy for content.js</b> and paste it there.</EmptyLine>;
   }
   return (
     <ul className="divide-y divide-[color:var(--line)]">
-      {BLOG_POSTS.map((p) => (
-        <li key={p.slug} className="py-2.5 flex items-center gap-3" data-testid={`lib-published-${p.slug}`}>
-          <div className="flex-1 min-w-0">
-            <div className="truncate text-sm font-medium">{p.title || p.slug}</div>
-            <div className="text-[11px] text-[color:var(--ink-2)] truncate">
-              {p.slug} · {p.date || "—"} · {p.tag || "—"}
+      {posts.map((p) => {
+        const isEditing = editingSlug === p.slug;
+        const modified = hasPublishedOverride(p.slug);
+        return (
+          <li
+            key={p.slug}
+            className={`py-2.5 flex items-center gap-3 flex-wrap ${isEditing ? "bg-[color:var(--accent)]/8 -mx-2 px-2 rounded-md" : ""}`}
+            data-testid={`lib-published-${p.slug}`}
+          >
+            <div className="flex-1 min-w-0">
+              <div className="truncate text-sm font-medium inline-flex items-center gap-2">
+                {p.title || p.slug}
+                {isEditing && (
+                  <span className="inline-flex items-center gap-1 text-[10px] font-mono-tech tracking-[0.16em] uppercase text-[color:var(--accent)]">
+                    <CheckCircle2 size={10}/> editing
+                  </span>
+                )}
+                {modified && !isEditing && (
+                  <span
+                    className="text-[10px] font-mono-tech tracking-[0.16em] uppercase text-amber-500 border border-amber-500/60 px-1.5 py-0.5 rounded-full"
+                    data-testid={`lib-modified-${p.slug}`}
+                    title="This post has an unpublished local edit override"
+                  >
+                    modified
+                  </span>
+                )}
+              </div>
+              <div className="text-[11px] text-[color:var(--ink-2)] truncate">
+                {p.slug} · {p.date || "—"} · {p.tag || "—"}
+              </div>
             </div>
-          </div>
-          <button
-            type="button"
-            onClick={() => onEdit(p)}
-            className="text-xs inline-flex items-center gap-1 px-2 py-1 rounded-md border border-[color:var(--line-strong)] hover:text-[color:var(--accent)]"
-            data-testid={`lib-edit-${p.slug}`}
-            title="Load into editor"
-          >
-            <Pencil size={12}/> Edit
-          </button>
-          <button
-            type="button"
-            onClick={() => onDelete(p)}
-            className="text-xs inline-flex items-center gap-1 px-2 py-1 rounded-md border border-[color:var(--line-strong)] hover:text-rose-500"
-            data-testid={`lib-delete-${p.slug}`}
-            title="Remove from BLOG_POSTS"
-          >
-            <Trash2 size={12}/> Delete
-          </button>
-        </li>
-      ))}
+            <button
+              type="button"
+              onClick={() => onEdit(p)}
+              disabled={isEditing}
+              className="text-xs inline-flex items-center gap-1 px-2 py-1 rounded-md border border-[color:var(--line-strong)] hover:text-[color:var(--accent)] disabled:opacity-40 disabled:cursor-not-allowed"
+              data-testid={`lib-edit-${p.slug}`}
+              title="Edit this published article in place"
+            >
+              <Pencil size={12}/> {isEditing ? "Editing" : "Edit"}
+            </button>
+            <button
+              type="button"
+              onClick={() => onDuplicate(p)}
+              className="text-xs inline-flex items-center gap-1 px-2 py-1 rounded-md border border-[color:var(--line-strong)] hover:text-[color:var(--accent)]"
+              data-testid={`lib-duplicate-${p.slug}`}
+              title="Duplicate as a new draft"
+            >
+              <CopyIcon size={12}/>
+            </button>
+            {modified && (
+              <button
+                type="button"
+                onClick={() => onRevert(p)}
+                className="text-xs inline-flex items-center gap-1 px-2 py-1 rounded-md border border-[color:var(--line-strong)] hover:text-amber-500"
+                data-testid={`lib-revert-${p.slug}`}
+                title="Discard local edits, revert to bundled original"
+              >
+                <Undo2 size={12}/> Revert
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => onDelete(p)}
+              className="text-xs inline-flex items-center gap-1 px-2 py-1 rounded-md border border-[color:var(--line-strong)] hover:text-rose-500"
+              data-testid={`lib-delete-${p.slug}`}
+              title="Remove from BLOG_POSTS"
+            >
+              <Trash2 size={12}/>
+            </button>
+          </li>
+        );
+      })}
     </ul>
   );
 }
 
-function DraftsList({ drafts, currentId, onLoad, onDelete }) {
+function DraftsList({ drafts, currentId, editingPublishedSlug, onLoad, onDelete }) {
   if (!drafts.length) {
     return <EmptyLine>No local drafts saved. Every keystroke autosaves the current one — start typing to create it.</EmptyLine>;
   }
   return (
     <ul className="divide-y divide-[color:var(--line)]">
-      {drafts.map((d) => (
-        <li key={d.id} className={`py-2.5 flex items-center gap-3 ${d.id === currentId ? "bg-[color:var(--accent)]/6 -mx-2 px-2 rounded-md" : ""}`} data-testid={`lib-draft-${d.id}`}>
-          <div className="flex-1 min-w-0">
-            <div className="truncate text-sm font-medium">
-              {d.title || "Untitled draft"} {d.id === currentId && <span className="text-[10px] font-mono-tech tracking-[0.16em] uppercase text-[color:var(--accent)] ml-2">editing</span>}
+      {drafts.map((d) => {
+        const isActive = d.id === currentId && !editingPublishedSlug;
+        return (
+          <li key={d.id} className={`py-2.5 flex items-center gap-3 ${isActive ? "bg-[color:var(--accent)]/6 -mx-2 px-2 rounded-md" : ""}`} data-testid={`lib-draft-${d.id}`}>
+            <div className="flex-1 min-w-0">
+              <div className="truncate text-sm font-medium">
+                {d.title || "Untitled draft"} {isActive && <span className="text-[10px] font-mono-tech tracking-[0.16em] uppercase text-[color:var(--accent)] ml-2">editing</span>}
+              </div>
+              <div className="text-[11px] text-[color:var(--ink-2)] truncate">
+                {d.slug || "no-slug"} · updated {relativeTime(d.updatedAt)}
+              </div>
             </div>
-            <div className="text-[11px] text-[color:var(--ink-2)] truncate">
-              {d.slug || "no-slug"} · updated {relativeTime(d.updatedAt)}
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={() => onLoad(d)}
-            disabled={d.id === currentId}
-            className="text-xs inline-flex items-center gap-1 px-2 py-1 rounded-md border border-[color:var(--line-strong)] hover:text-[color:var(--accent)] disabled:opacity-40 disabled:cursor-not-allowed"
-            data-testid={`lib-load-${d.id}`}
-            title="Open this draft in the editor"
-          >
-            <Pencil size={12}/> {d.id === currentId ? "Editing" : "Load"}
-          </button>
-          <button
-            type="button"
-            onClick={() => onDelete(d)}
-            className="text-xs inline-flex items-center gap-1 px-2 py-1 rounded-md border border-[color:var(--line-strong)] hover:text-rose-500"
-            data-testid={`lib-del-draft-${d.id}`}
-            title="Delete draft"
-          >
-            <Trash2 size={12}/>
-          </button>
-        </li>
-      ))}
+            <button
+              type="button"
+              onClick={() => onLoad(d)}
+              disabled={isActive}
+              className="text-xs inline-flex items-center gap-1 px-2 py-1 rounded-md border border-[color:var(--line-strong)] hover:text-[color:var(--accent)] disabled:opacity-40 disabled:cursor-not-allowed"
+              data-testid={`lib-load-${d.id}`}
+              title="Open this draft in the editor"
+            >
+              <Pencil size={12}/> {isActive ? "Editing" : "Load"}
+            </button>
+            <button
+              type="button"
+              onClick={() => onDelete(d)}
+              className="text-xs inline-flex items-center gap-1 px-2 py-1 rounded-md border border-[color:var(--line-strong)] hover:text-rose-500"
+              data-testid={`lib-del-draft-${d.id}`}
+              title="Delete draft"
+            >
+              <Trash2 size={12}/>
+            </button>
+          </li>
+        );
+      })}
     </ul>
   );
 }

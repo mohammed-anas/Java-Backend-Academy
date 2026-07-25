@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import {
   Plus, ArrowUp, ArrowDown, Copy as CopyIcon, Trash2, GripVertical,
   Save, Upload, Download, FileJson, FileType2, Eye, Pencil, Home as HomeIcon,
+  Send, Undo2, CheckCircle2,
 } from "lucide-react";
 import Nav from "@/site/Nav";
 import Footer from "@/site/Footer";
@@ -15,7 +16,12 @@ import {
 } from "@/blog-editor/schema";
 import { postToMarkdown, markdownToPost } from "@/blog-editor/markdown";
 import PostsLibrary from "@/blog-editor/PostsLibrary";
-import { loadDrafts, saveDrafts, upsertDraft, deleteDraft as removeDraftFromList, newDraftId, ensureBlocks } from "@/blog-editor/library";
+import {
+  loadDrafts, saveDrafts, upsertDraft, deleteDraft as removeDraftFromList,
+  newDraftId, ensureBlocks,
+  upsertPublishedOverride, deletePublishedOverride, hasPublishedOverride,
+  isPublishedSlug,
+} from "@/blog-editor/library";
 
 function downloadFile(name, content, mime = "application/octet-stream") {
   const blob = new Blob([content], { type: mime });
@@ -41,6 +47,13 @@ export default function AdminEditor() {
     const first = list[0];
     return first?.post || makeEmptyPost();
   });
+
+  // Edit-published mode: when true, we are editing an already-published post
+  // by its slug. We do NOT create a draft entry — changes are staged locally
+  // and applied to the site via "Publish update" (localStorage override).
+  const [editingPublishedSlug, setEditingPublishedSlug] = useState(null);
+  const [publishedDirty, setPublishedDirty] = useState(false);
+
   const [pickerFor, setPickerFor] = useState(null); // insert index or null
   const [preview, setPreview] = useState(false);
   const containerRef = useRef(null);
@@ -49,8 +62,12 @@ export default function AdminEditor() {
     document.title = "Article Editor · Java Hub Academy";
   }, []);
 
-  // Autosave the current post into the drafts list
+  // Autosave: only for real drafts (not while editing a published post).
   useEffect(() => {
+    if (editingPublishedSlug) {
+      setPublishedDirty(true);
+      return;
+    }
     setDrafts((prev) => {
       const next = upsertDraft(prev, {
         id: currentDraftId,
@@ -62,7 +79,7 @@ export default function AdminEditor() {
       saveDrafts(next);
       return next;
     });
-  }, [post, currentDraftId]);
+  }, [post, currentDraftId, editingPublishedSlug]);
 
   const setBlocks = (blocks) => setPost((p) => ({ ...p, blocks }));
   const setBlock = (idx, patch) => setBlocks(updateBlock(post.blocks, idx, patch));
@@ -132,6 +149,8 @@ export default function AdminEditor() {
 
   const handleNewDraft = () => {
     const id = newDraftId();
+    setEditingPublishedSlug(null);
+    setPublishedDirty(false);
     setCurrentDraftId(id);
     setPost(makeEmptyPost());
     toast.success("New draft started");
@@ -139,6 +158,8 @@ export default function AdminEditor() {
 
   const handleLoadDraft = (draft) => {
     if (!draft) return;
+    setEditingPublishedSlug(null);
+    setPublishedDirty(false);
     setCurrentDraftId(draft.id);
     setPost(ensureBlocks(draft.post || makeEmptyPost()));
     toast.success(`Loaded: ${draft.title || "Untitled"}`);
@@ -149,7 +170,7 @@ export default function AdminEditor() {
       const next = removeDraftFromList(prev, id);
       saveDrafts(next);
       // If we deleted the current draft, either load the next or spin up a fresh one
-      if (id === currentDraftId) {
+      if (id === currentDraftId && !editingPublishedSlug) {
         if (next.length) {
           setCurrentDraftId(next[0].id);
           setPost(ensureBlocks(next[0].post || makeEmptyPost()));
@@ -163,12 +184,64 @@ export default function AdminEditor() {
     });
   };
 
+  /**
+   * Open a published post directly in the editor for in-place editing.
+   * Does NOT create a draft entry. On save, we write to the published
+   * override store so the site reflects the change immediately.
+   */
+  const handleEditPublished = (postFromLibrary) => {
+    const slug = postFromLibrary?.slug;
+    if (!slug) return;
+    setEditingPublishedSlug(slug);
+    setPublishedDirty(false);
+    setPost(ensureBlocks(JSON.parse(JSON.stringify(postFromLibrary))));
+    // Scroll editor into view
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    toast.success(`Editing published: ${postFromLibrary.title || slug}`);
+  };
+
+  /** Load a published post as a NEW DRAFT copy (kept for backward compat / duplication) */
   const handleLoadBundled = (postFromLibrary) => {
-    // Load a published post as a NEW draft (so we don't overwrite an existing one)
     const id = newDraftId();
+    setEditingPublishedSlug(null);
+    setPublishedDirty(false);
     setCurrentDraftId(id);
     setPost(postFromLibrary);
-    toast.success(`Loaded "${postFromLibrary.title || postFromLibrary.slug}" as new draft`);
+    toast.success(`Duplicated "${postFromLibrary.title || postFromLibrary.slug}" as new draft`);
+  };
+
+  const publishUpdate = () => {
+    if (!editingPublishedSlug) return;
+    if (!isPublishedSlug(editingPublishedSlug)) {
+      toast.error("This slug is not a published post.");
+      return;
+    }
+    upsertPublishedOverride(editingPublishedSlug, post);
+    setPublishedDirty(false);
+    toast.success("Published update saved — live on the site now");
+  };
+
+  const revertPublished = () => {
+    if (!editingPublishedSlug) return;
+    deletePublishedOverride(editingPublishedSlug);
+    setPublishedDirty(false);
+    toast.success("Reverted to original — reload the article to see it");
+  };
+
+  const exitPublishedMode = () => {
+    setEditingPublishedSlug(null);
+    setPublishedDirty(false);
+    // Load the currently active draft (or a fresh one)
+    const list = loadDrafts();
+    if (list.length) {
+      const target = list.find((d) => d.id === currentDraftId) || list[0];
+      setCurrentDraftId(target.id);
+      setPost(ensureBlocks(target.post || makeEmptyPost()));
+    } else {
+      const nid = newDraftId();
+      setCurrentDraftId(nid);
+      setPost(makeEmptyPost());
+    }
   };
 
   return (
@@ -188,9 +261,48 @@ export default function AdminEditor() {
           <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
             <div>
               <h1 className="font-serif-editorial text-3xl sm:text-4xl leading-tight">Article editor</h1>
-              <p className="text-sm text-[color:var(--ink-2)]">Write here → export JSON / Markdown → paste JSON into <code className="px-1 py-0.5 rounded border border-[color:var(--line-strong)] font-mono-tech text-[12px]">content.js</code> to publish.</p>
+              <p className="text-sm text-[color:var(--ink-2)]">
+                {editingPublishedSlug
+                  ? <>Editing a published post — changes will update it live via <code className="px-1 py-0.5 rounded border border-[color:var(--line-strong)] font-mono-tech text-[12px]">Publish update</code>.</>
+                  : <>Write here → export JSON / Markdown → paste JSON into <code className="px-1 py-0.5 rounded border border-[color:var(--line-strong)] font-mono-tech text-[12px]">content.js</code> to publish.</>
+                }
+              </p>
             </div>
             <div className="flex flex-wrap gap-2">
+              {editingPublishedSlug && (
+                <>
+                  <button
+                    type="button"
+                    onClick={publishUpdate}
+                    disabled={!publishedDirty}
+                    data-testid="btn-publish-update"
+                    className="btn-crisp gloss text-xs inline-flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                    title={publishedDirty ? "Save your changes to the live article" : "No changes to publish"}
+                  >
+                    <Send size={12}/> Publish update
+                  </button>
+                  {hasPublishedOverride(editingPublishedSlug) && (
+                    <button
+                      type="button"
+                      onClick={revertPublished}
+                      data-testid="btn-revert-published"
+                      className="btn-ghost text-xs inline-flex items-center gap-1.5"
+                      title="Revert this article to the bundled original"
+                    >
+                      <Undo2 size={12}/> Revert
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={exitPublishedMode}
+                    data-testid="btn-exit-edit-mode"
+                    className="btn-ghost text-xs inline-flex items-center gap-1.5"
+                    title="Stop editing this published post"
+                  >
+                    Close edit
+                  </button>
+                </>
+              )}
               <button
                 type="button"
                 onClick={() => setPreview((v) => !v)}
@@ -209,14 +321,40 @@ export default function AdminEditor() {
             </div>
           </div>
 
+          {/* Edit-published mode banner */}
+          {editingPublishedSlug && (
+            <div
+              data-testid="edit-published-banner"
+              className="mt-4 flex flex-wrap items-center gap-3 rounded-xl border border-[color:var(--accent)]/50 bg-[color:var(--accent)]/8 px-4 py-3"
+            >
+              <span className="inline-flex items-center gap-2 text-[color:var(--accent)] font-mono-tech text-[11px] tracking-[0.24em] uppercase">
+                <CheckCircle2 size={13}/> Editing published
+              </span>
+              <span className="text-sm min-w-0 truncate">
+                <span className="font-medium">{post.title || "(no title)"}</span>
+                <span className="text-[color:var(--ink-2)]"> · /{editingPublishedSlug}</span>
+              </span>
+              <span className="ml-auto text-[11px] text-[color:var(--ink-2)] font-mono-tech tracking-[0.16em] uppercase">
+                {publishedDirty ? "Unsaved changes" : "Up to date"}
+              </span>
+            </div>
+          )}
+
           {/* Posts library — manage published & drafts */}
           <PostsLibrary
             drafts={drafts}
             currentDraftId={currentDraftId}
+            editingPublishedSlug={editingPublishedSlug}
             onNewDraft={handleNewDraft}
             onLoadDraft={handleLoadDraft}
             onDeleteDraft={handleDeleteDraft}
             onLoadBundled={handleLoadBundled}
+            onEditPublished={handleEditPublished}
+            onRevertPublished={(slug) => {
+              deletePublishedOverride(slug);
+              if (slug === editingPublishedSlug) setPublishedDirty(false);
+              toast.success("Reverted to original");
+            }}
           />
 
           {/* Meta panel */}
@@ -236,7 +374,13 @@ export default function AdminEditor() {
             <span aria-hidden>·</span>
             <span>{stats.words} words</span>
             <span aria-hidden>·</span>
-            <span className="inline-flex items-center gap-1"><Save size={11}/> autosaved locally</span>
+            {editingPublishedSlug ? (
+              <span className="inline-flex items-center gap-1 text-[color:var(--accent)]">
+                <Send size={11}/> {publishedDirty ? "unpublished changes" : "in sync"}
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1"><Save size={11}/> autosaved locally</span>
+            )}
           </div>
 
           {/* Editor / Preview canvas */}

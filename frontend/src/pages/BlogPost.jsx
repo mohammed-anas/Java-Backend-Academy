@@ -5,15 +5,18 @@ import { ChevronLeft, ChevronRight, Home as HomeIcon } from "lucide-react";
 import Nav from "@/site/Nav";
 import Footer from "@/site/Footer";
 import BackToTop from "@/site/BackToTop";
-import { BLOG_POSTS, BRAND, buildWhatsAppMessage } from "@/site/content";
+import { BRAND, buildWhatsAppMessage } from "@/site/content";
 import BlocksRenderer from "@/blog-editor/BlocksRenderer";
+import PostActions from "@/blog-editor/PostActions";
+import { getPublishedPosts } from "@/blog-editor/library";
 
 export default function BlogPost() {
   const { slug } = useParams();
-  const idx = BLOG_POSTS.findIndex((p) => p.slug === slug);
-  const post = idx >= 0 ? BLOG_POSTS[idx] : null;
-  const prev = idx > 0 ? BLOG_POSTS[idx - 1] : null;
-  const next = idx >= 0 && idx < BLOG_POSTS.length - 1 ? BLOG_POSTS[idx + 1] : null;
+  const posts = useMemo(() => getPublishedPosts(), []);
+  const idx = posts.findIndex((p) => p.slug === slug);
+  const post = idx >= 0 ? posts[idx] : null;
+  const prev = idx > 0 ? posts[idx - 1] : null;
+  const next = idx >= 0 && idx < posts.length - 1 ? posts[idx + 1] : null;
 
   useEffect(() => {
     if (post) {
@@ -66,6 +69,14 @@ export default function BlogPost() {
             ) : (
               (post.body || []).map((para, i) => <p key={i}>{para}</p>)
             )}
+          </div>
+
+          {/* Like + Share row */}
+          <div className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-[color:var(--line)] pt-6">
+            <div className="text-[11px] font-mono-tech tracking-[0.24em] uppercase text-[color:var(--ink-2)]">
+              Enjoyed this? Show some love.
+            </div>
+            <PostActions slug={post.slug} title={post.title} />
           </div>
 
           <div className="mt-10 p-6 sm:p-7 themed-card gloss">

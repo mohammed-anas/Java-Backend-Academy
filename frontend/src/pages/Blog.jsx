@@ -9,7 +9,8 @@ import {
 import Nav from "@/site/Nav";
 import Footer from "@/site/Footer";
 import BackToTop from "@/site/BackToTop";
-import { BLOG_POSTS } from "@/site/content";
+import PostActions from "@/blog-editor/PostActions";
+import { getPublishedPosts } from "@/blog-editor/library";
 
 function Crumb() {
   return (
@@ -30,6 +31,7 @@ const VIEWS = [
 ];
 
 export default function Blog() {
+  const posts = useMemo(() => getPublishedPosts(), []);
   const [view, setView] = useState(() => {
     try { return localStorage.getItem("jha-blog-view") || "grid"; } catch (_) { return "grid"; }
   });
@@ -81,18 +83,18 @@ export default function Blog() {
               ))}
             </div>
             <div className="text-[11px] font-mono-tech tracking-[0.24em] uppercase text-[color:var(--ink-2)]">
-              {BLOG_POSTS.length} {BLOG_POSTS.length === 1 ? "article" : "articles"}
+              {posts.length} {posts.length === 1 ? "article" : "articles"}
             </div>
           </div>
 
-          {BLOG_POSTS.length === 0 ? (
+          {posts.length === 0 ? (
             <EmptyState />
           ) : view === "grid" ? (
-            <GridView />
+            <GridView posts={posts} />
           ) : view === "table" ? (
-            <TableView />
+            <TableView posts={posts} />
           ) : (
-            <CalendarView />
+            <CalendarView posts={posts} />
           )}
 
           <div className="section-nav-strip mt-16 max-w-[720px] mx-auto">
@@ -130,10 +132,10 @@ function EmptyState() {
   );
 }
 
-function GridView() {
+function GridView({ posts }) {
   return (
     <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-      {BLOG_POSTS.map((p, i) => (
+      {posts.map((p, i) => (
         <motion.article
           key={p.slug}
           initial={{ opacity: 0, y: 20 }}
@@ -153,20 +155,23 @@ function GridView() {
             {p.title}
           </h2>
           <p className="mt-3 text-[color:var(--ink)]/80 text-[15px] leading-relaxed">{p.excerpt}</p>
-          <Link
-            to={`/blog/${p.slug}`}
-            data-testid={`blog-read-${p.slug}`}
-            className="mt-5 inline-flex items-center gap-2 font-mono-tech text-[11px] tracking-[0.24em] uppercase text-[color:var(--accent)] hover:gap-3 transition-all"
-          >
-            Read the post <ArrowRight size={14} />
-          </Link>
+          <div className="mt-5 flex items-center justify-between gap-3 flex-wrap">
+            <Link
+              to={`/blog/${p.slug}`}
+              data-testid={`blog-read-${p.slug}`}
+              className="inline-flex items-center gap-2 font-mono-tech text-[11px] tracking-[0.24em] uppercase text-[color:var(--accent)] hover:gap-3 transition-all"
+            >
+              Read the post <ArrowRight size={14} />
+            </Link>
+            <PostActions slug={p.slug} title={p.title} compact />
+          </div>
         </motion.article>
       ))}
     </div>
   );
 }
 
-function TableView() {
+function TableView({ posts }) {
   return (
     <div className="mt-8 overflow-x-auto themed-card p-2 sm:p-3">
       <table className="min-w-full text-sm" data-testid="blog-table">
@@ -180,7 +185,7 @@ function TableView() {
           </tr>
         </thead>
         <tbody>
-          {BLOG_POSTS.map((p) => (
+          {posts.map((p) => (
             <tr
               key={p.slug}
               className="border-t border-[color:var(--line)] hover:bg-black/[0.02] dark:hover:bg-white/[0.03] transition-colors"
@@ -210,10 +215,10 @@ function TableView() {
   );
 }
 
-function CalendarView() {
+function CalendarView({ posts }) {
   const [cursor, setCursor] = useState(() => {
     // Anchor on newest post's month, else today
-    const iso = BLOG_POSTS[0]?.date;
+    const iso = posts[0]?.date;
     const d = iso ? new Date(iso) : new Date();
     return { y: d.getFullYear(), m: d.getMonth() };
   });
@@ -231,13 +236,13 @@ function CalendarView() {
 
   const postsByDate = useMemo(() => {
     const map = {};
-    BLOG_POSTS.forEach((p) => {
+    posts.forEach((p) => {
       if (!p.date) return;
       map[p.date] = map[p.date] || [];
       map[p.date].push(p);
     });
     return map;
-  }, []);
+  }, [posts]);
 
   const monthLabel = new Date(cursor.y, cursor.m, 1).toLocaleString(undefined, { month: "long", year: "numeric" });
   const prev = () => setCursor(({ y, m }) => (m === 0 ? { y: y - 1, m: 11 } : { y, m: m - 1 }));
