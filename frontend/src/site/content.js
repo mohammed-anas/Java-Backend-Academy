@@ -681,6 +681,82 @@ export const BLOG_POSTS = [
     }
   ]
 },
+{
+  "slug": "learn-java-encapsulation-for-beginners",
+  "title": "Learn Java Encapsulation",
+  "excerpt": "Master Java encapsulation by learning how private fields, getters, and setters protect object data and improve code design.",
+  "tag": "Java",
+  "date": "2026-07-25",
+  "read": "5 min read",
+  "cover": "",
+  "blocks": [
+    {
+      "id": "b_ms0penvs_1",
+      "type": "heading",
+      "props": {
+        "level": 2,
+        "align": "left"
+      },
+      "content": "<span style=\"font-size: 39.1579px;\">Encapsulation</span>"
+    },
+    {
+      "id": "b_ms0penvs_2",
+      "type": "paragraph",
+      "props": {
+        "align": "left"
+      },
+      "content": "<div data-blocksuite-snapshot=\"N4Iglgtghg5gpgegA4DsYgFwhAGhAIQBkB5AYQGkBlAVQEkAVAUQUoDkBBABUoAlj7MIYAB0QAZxRQkYgBYB7AC6iMIkAoCeSOMtFiANmADG23KIDucgE4BrMUijHaAEx0gAnADMAzHEPGA7AC0AExwAEZhgQAsAAxQkWEArGEeIYkAbIYAjHD+bl5eMSY4ovbwzq6klGYAagBu5GFZZjGiJSCGcigKcN3KANqqGlquYXpyhtZtomAumKLTIB56UHVyAK6WrlAeHmAocBgoisWllnLSysAAvu2GMmB6Tpa9A0OaJhiiYxNTpuBzL7iHjUADqpBiTmIUQgi2Wqw2W3mIB2ewOGHsllgWKQMkWdTgljEYC6yiy7SQ50umHeI2RPQAHkp-ozmSpRAASH6TMTrMA9DD7HqWSR6DCsjnKBSWdZwdpOOB6BRQN4zFBiQls0SMFCGKS8lYKEkoRZQBTSsBhdY9MRXb5yJ5SmVwa63VT7DWWLUgAAEYDEPoUMjgPspDiNxh9cg8PqtKCcBjQPqcZqgPoAFHUoJYwPE9HAxABKH1QeOB4M+iBwINyJwBoNmkuGBRRlDlxsp5V+7pyEs+4lofM+9YofkZtOGFZiIs4H1mB5D0RutWe70PJz7GDlkNCwmi5PVqCPW3-M0Wq02u0gMIOwHS2WunDu9Wa1w+jznCDbqPW4kKudWE8AB0S4ALq3KInR6Cs0hwICHhQHoGrtFWyoYIYLxmnB7Bslk-gABwFOkwQxF4+HpG4bgoYe6GYT0Tj4OoriJIk5FZG4MRRIEhgplxUSJFkqQODEiSBG4ET+B4-H4cEYTpHM1FoesSCdthuEEURJFkRRVGiKhUAYMpqkMUxyIsWxHFcTxUB8QJQmGCJYkSVJrGyfJS53AuzyvJg-TgU+ojDJ83zjJMiyzK4CgAOKcDw-jUGYxAAPo1HCKxrJs2y7PshyYtiUh4v8BJEsaZIUlSJ7smoHyRXATKLKyV5cqFth8gKu4ioh4p1QokqYPecqiAqSoqr5z6rq49APCg1hRjGY5QAGaaUiczZgAS-YPIqThAT6tAtpScAEt0AY9XuiE+p0-4fnIX4bi8zZ6OogYbPcm4+uoiLdsK+6dlAs4eFYhjvUGcBfgovYdeG5bnOsMAyH2Yg7HKobrGMRjfYSCGRum8DmoSS1lhq+NEsWHo9FAO1gRBHQOjBGrwYhyF6TRGFwFhTg4WSGleMRpHkZRikGWzHOMcxrHpOxnHcbx0R2YEwmieJYSSdJbkKSzSkqRzXOYHhhG81pAu6SA+mGdr9Fi2ZEtS1Zsv8YJCsOUrzlq3Jcw029TwvCavngf7NM-GElU3NcuBqD1CBJccRpdIErKBCtTjrGtXSCKo3LWPQNX0j1ixwfym4DP0oisIoxo+vQPV+gGMf9spSBWPRL2xiGdWN16cHvp+Pr4C1lBtcUfmgeBIDXEAA\"><div class=\"affine-paragraph-block-container\"><p><strong>Encapsulation</strong> is the practice of bundling data (variables) and the methods that act on that data into a single unit (a class), while <strong>hiding the internal details</strong> from the outside world.</p><div class=\"affine-block-children-container\" style=\"padding-left: 26px;\"></div></div><div class=\"affine-paragraph-block-container\"><p>Think of it as a protective shield. It prevents external code from directly touching your internal data, forcing them to interact through a safe, public interface (getters and setters) instead.</p><div class=\"affine-block-children-container\" style=\"padding-left: 26px;\"></div></div></div>"
+    },
+    {
+      "id": "b_ms0pgveu_3",
+      "type": "code",
+      "props": {
+        "lang": "java"
+      },
+      "content": "Without Encapsulation\n\npublic class VendingMachine {\n    public double revenue = 0.0; // ❌ Public: Anyone can change this!\n    public int inventoryCount = 50; \n}"
+    },
+    {
+      "id": "b_ms0phfws_4",
+      "type": "code",
+      "props": {
+        "lang": "java"
+      },
+      "content": "How it can be exploited?\n\nVendingMachine machine = new VendingMachine();\nmachine.inventoryCount = 10; // Steals 40 sodas without paying!\nmachine.revenue = -500.0;    // Drains the cash register!"
+    },
+    {
+      "id": "b_ms0phvnq_5",
+      "type": "code",
+      "props": {
+        "lang": "java"
+      },
+      "content": "With Encapsulation\n\npublic class VendingMachine {\n    // 🔒 Internal Data: Completely hidden\n    private double revenue = 0.0;\n    private int inventoryCount = 50;\n\n    // 🌐 Public Contract: The only way to interact\n    public void buySoda(double moneyInserted) {\n        // 1. Validation Logic\n        if (moneyInserted < 1.50) {\n            Io.println(\"Insert more money!\");\n            return;\n        }\n        if (inventoryCount <= 0) {\n            IO.println(\"Out of stock!\");\n            return;\n        }\n\n        // 2. Controlled Internal Changes\n        this.revenue += 1.50;\n        this.inventoryCount--;\n        IO.println(\"Soda dispensed! Enjoy.\");\n    }\n\n    // 🌐 Public Getter: Lets clients read data without touching it\n    public int getInventoryCount() {\n        return this.inventoryCount;\n    }\n}"
+    },
+    {
+      "id": "b_ms0pi7pf_6",
+      "type": "paragraph",
+      "props": {
+        "align": "left"
+      },
+      "content": "<div data-blocksuite-snapshot=\"N4Iglgtghg5gpgegA4DsYgFwhAGhAIQBkB5AYQGkBlAVQEkAVAUQUoDkBBABUoAlj7MIYAB0QAZxRQkYgBYB7AC6iMIkAoCeSOMtFiANmADG23KIDucgE4BrMUijHaAEx0gAnADMAzHEPGA7AC0AExwAEZhgQAsAAxQkWEArGEeIYkAbIYAjHD+bl5eMSY4ovbwzq6klGYAagBu5GFZZjGiJSCGcigKcN3KANqqGlquYXpyhtZtomAumKLTIB56UHVyAK6WrlAeHmAocBgoisWllnLSysAAvu2GMmB6Tpa9A0OaJhiiYxNTpuBzL4gABKhBgAA0ogARABawIUPEWy1WGy28xAOz2Bww9kssDxSBkizqcEsYjAXWUWXaSHOl0w7xG6J6AA8lP9WeyVKIACQ-SZidZgHoYfY9SySPQYTk85QKSzrODtJxwPQKKBvGYoMSkrmiVgnIHtKAKeVgMLrHpiK7fORPOUKuDXW6qfY6yx6kAAAgA4nBTaSxF6oCgnF6dQGycHDApg0GoF7Ot08TGvWZhTIvQoZHAvRsFOSVWmrE8AHRegCaG0TIcTMhD8CzOa9YtJkq94xgRi9HisXvkZi9ThNCbAQbECiscDDfZeZrgJLDZgeelz1jgcCQ+xgTdzSHWY27rcsHgcuYAFNnc0n5Q4FABKL3rFD3BvT0uia4AXVuok6ehWaRp2UU89B1doIH9KAMEMF4TWndguSyfwAA4CnSYIYi8FD-BiGIIKgmC4J6Jx8HUVxEkSFD0iyNwYiiQJDGHBiokSLJUgcGJEkCNwIn8DxWJQ4IwnSOYCPVDB1iQYcSMQqlUPQzDsNw-DREgiSpJk6cyIoqiaLohimKgFi2I4wwuJ4viBKo4TRM-O4V2eV5MH6H8cEZT5vnGSZFlmVxvD0CBanwOpCHIJEVjWTZtl2fZDlxfEpCJf4STJCkUCpGk6WtBlRGGTy1DgNlFk5G0QD5bzbCFEVj0laUioUWVMHlRVlVVdVNXAbVdVcWgPF3IcRyzD4836hM9lVMNXzQOAgz7K8ezASaWyDF4IDkRccETAxeljToi2zE1o2MMQdSDYUhzAF4Yz0dQvWgO6wjg6wtrqCkVgUbcvV6QwpEFD70vLMjvpZJA5HJNBBvVJtznWGBM3gSN41DcN-XFc7tR6KAZ36pwrt8WMJqeY7ZrELb1GrX6UHuuQ8Y8O6FtqqA9BbCAkFXSDuhNdK0xXPcXndN7IYWoqx0+yGbxTBQtuZ8Z0wlnbukTWnc0nZXun2RVixsL702zfM6zfMQPxAb9fw6O1AJ1QFQPAtTCNguB4KcOTMGQtCvAwrCcLw8ToMd52dPRSjqNo+jGOY6JTMCTjuN4sJ+ME2yxPtjTpOd12MHdxTvZUv3JPTkig6BEP9PDoyTPYmPzLjqyk5EuZzfuR4nIylyfw782fjCHKVGdXBCrZBAAH1jk+rpAk5QJaVp9YY3SwRVH5ax6A+VxSv+adhW3AZ+n1RQefoBqVq9MfwyksGPWnLM5C9MJcyKy+SJ7c4IC9fBKsoarilcr8f1NoAA\"><div class=\"affine-paragraph-block-container\"><p><strong>Note:</strong> Getters and setters act as a contract with the outside world. You can change the internal logic for how data is stored or retrieved while keeping the public interface (the contract) unchanged.</p><p><br></p><div class=\"affine-block-children-container\" style=\"padding-left: 26px;\"></div></div><div class=\"affine-paragraph-block-container\"><p>If the data type of a field changes or the field is removed, client code that accesses it directly may break, violating encapsulation. By exposing data through getters and setters instead of direct field access, you can modify the internal implementation while preserving the existing contract, allowing client code to continue working without changes.</p><div class=\"affine-block-children-container\" style=\"padding-left: 26px;\"></div></div></div>"
+    },
+    {
+      "id": "b_ms0pin2x_7",
+      "type": "code",
+      "props": {
+        "lang": "java"
+      },
+      "content": "package backend;\npublic class UserAccount {\n    private long phoneNumber; // 🔒 Hidden from day one\n\n    // 🌐 Public method contract\n    public void setPhoneNumber(long number) {\n        this.phoneNumber = number;\n    }\n}"
+    },
+    {
+      "id": "b_ms0pj85g_8",
+      "type": "code",
+      "props": {
+        "lang": "java"
+      },
+      "content": "package backend;\npublic class UserAccount {\n    private String phoneNumber; // 🔒 Internal type changed to String\n\n    // 🌐 OLD METHOD STAYS ALIVE: Client code doesn't break!\n    public void setPhoneNumber(long number) {\n        // We convert their number to a String automatically behind the scenes!\n        this.phoneNumber = String.valueOf(number); \n    }\n\n    // 🌐 NEW METHOD: Allows new clients to use text\n    public void setPhoneNumber(String number) {\n        this.phoneNumber = number;\n    }\n}"
+    }
+  ]
+},
 ];
 
 /**
