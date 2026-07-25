@@ -11,7 +11,6 @@ const SECTIONS = [
   { id: "reviews",       label: "Reviews",    crumb: "Reviews" },
   { id: "free-resources",label: "Free PDFs",  crumb: "Free PDFs" },
   { id: "faq",           label: "FAQ",        crumb: "FAQ" },
-  { id: "location",      label: "Location",   crumb: "Location" },
   { id: "contact",       label: "Contact",    crumb: "Contact" },
 ];
 

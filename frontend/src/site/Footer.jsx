@@ -38,7 +38,7 @@ export default function Footer() {
               Academy
             </div>
             <ul className="space-y-3 text-sm">
-              {["courses", "projects", "batches", "reviews", "free-resources", "about", "location", "contact"].map((id) => (
+              {["courses", "projects", "batches", "reviews", "free-resources", "about", "contact"].map((id) => (
                 <li key={id}>
                   <button
                     data-testid={`footer-link-${id}`}
@@ -94,9 +94,6 @@ export default function Footer() {
                 >
                   WhatsApp
                 </a>
-              </li>
-              <li className="text-white/70 leading-relaxed max-w-[30ch]">
-                {BRAND.address}
               </li>
             </ul>
           </div>

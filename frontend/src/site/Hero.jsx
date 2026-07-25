@@ -90,7 +90,7 @@ export default function Hero() {
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass-card border-[color:var(--glass-border)]">
           <span className="pulse-dot" />
           <span className="font-mono-tech text-[10.5px] sm:text-[11px] tracking-[0.24em] uppercase text-[color:var(--ink-2)]">
-            Next batch open · Aligarh · Online across India
+            Next batch open · Live online across India
           </span>
         </div>
       </motion.div>
@@ -144,7 +144,7 @@ export default function Hero() {
               We teach you Java, databases, system design and more — the exact
               skills companies hire for. Learn live from senior engineers,
               build real projects, and walk into interviews ready to get hired.
-              Studio and online cohorts for learners across India and worldwide.
+              Live online cohorts for learners across India and worldwide.
             </p>
 
             <ul

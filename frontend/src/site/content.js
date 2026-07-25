@@ -8,18 +8,7 @@ export const BRAND = {
   whatsapp: "+91 70606 49647",
   whatsappHref:
     "https://wa.me/917060649647?text=Hi%20Java%20Backend%20Academy%2C%20I'd%20like%20to%20know%20about%20the%20next%20cohort.",
-  // NAP must stay identical everywhere (schema, footer, Location, GMB).
-  city: "Aligarh",
-  region: "Uttar Pradesh",
-  country: "India",
-  postalCode: "202001",
-  address:
-    "Near Masjid Aman, Kela Nagar, Aligarh, Uttar Pradesh 202001",
   hours: "Mon–Sat · 19:00 – 20:00 IST",
-  mapEmbed:
-    "https://www.google.com/maps?q=Java+Hub+Academy,+Masjid+Aaman,+Kela+Nagar,+Aligarh,+Uttar+Pradesh+202001&output=embed",
-  mapLink:
-    "https://www.google.com/maps/dir/?api=1&destination=Masjid+Aaman,+Kela+Nagar,+Aligarh,+Uttar+Pradesh+202001",
   socials: [
     { label: "LinkedIn", href: "https://www.linkedin.com/" },
     { label: "YouTube", href: "https://www.youtube.com/" },
@@ -248,7 +237,7 @@ export const COMBO_BUNDLES = [
 /**
  * Blog articles — evergreen, enquiry-driven posts.
  * Content strategy: answer the questions a student actually types into Google
- * BEFORE they enrol ("Should I learn Java", "Java course in Aligarh fees",
+ * BEFORE they enrol ("Should I learn Java", "Java course fees",
  * "How to become a Java developer"), NOT dry technical explainers.
  * Rendered at /blog and /blog/:slug. Also linkable from Google Business
  * Profile "Learn More" buttons.

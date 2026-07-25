@@ -132,14 +132,14 @@ export default function About() {
                   src={`${IMAGES.office}&w=500&q=75`}
                   srcSet={`${IMAGES.office}&w=400&q=75 400w, ${IMAGES.office}&w=500&q=80 500w`}
                   sizes="(max-width: 768px) 50vw, 35vw"
-                  alt="Java Hub Academy training studio"
+                  alt="Java Hub Academy live class session"
                   className="w-full h-full object-cover"
                   style={{ filter: "grayscale(100%) contrast(1.05)" }}
                   loading="lazy"
                   decoding="async"
                 />
                 <div className="absolute bottom-4 left-4 font-mono-tech text-[10px] tracking-[0.24em] uppercase text-white bg-black/50 px-2 py-1">
-                  Fig. 03 · Studio
+                  Fig. 03 · Workspace
                 </div>
               </motion.div>
             </div>

@@ -12,7 +12,6 @@ const Compare     = lazy(() => import("@/site/Compare"));
 const Reviews     = lazy(() => import("@/site/Reviews"));
 const LeadMagnet  = lazy(() => import("@/site/LeadMagnet"));
 const FAQ         = lazy(() => import("@/site/FAQ"));
-const Location    = lazy(() => import("@/site/Location"));
 const Contact     = lazy(() => import("@/site/Contact"));
 const Footer      = lazy(() => import("@/site/Footer"));
 const ContactFab  = lazy(() => import("@/site/ContactFab"));
@@ -38,7 +37,6 @@ export default function Home() {
       <LazySection><Reviews /></LazySection>
       <LazySection><LeadMagnet /></LazySection>
       <LazySection><FAQ /></LazySection>
-      <LazySection><Location /></LazySection>
       <LazySection><Contact /></LazySection>
       <LazySection><Footer /></LazySection>
       <LazySection><ContactFab /></LazySection>

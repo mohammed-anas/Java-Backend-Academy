@@ -101,12 +101,6 @@ export default function Contact() {
                   </a>
                 </dd>
               </div>
-              <div className="flex justify-between border-t border-[color:var(--line)] pt-4">
-                <dt className="text-[color:var(--ink-2)]">Studio</dt>
-                <dd className="text-right max-w-[26ch] normal-case tracking-normal text-[color:var(--ink)]">
-                  {BRAND.address}
-                </dd>
-              </div>
               <div className="flex justify-between border-t border-b border-[color:var(--line)] py-4">
                 <dt className="text-[color:var(--ink-2)]">Hours</dt>
                 <dd className="text-[color:var(--ink)]">{BRAND.hours}</dd>

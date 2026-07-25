@@ -13,8 +13,8 @@ const FAQS = [
     a: "Unlike mass coaching centres, every batch is capped at 10 students, mentors are working senior engineers, and every assignment gets written feedback within 24 hours. We measure job-ready skills, not lecture hours.",
   },
   {
-    q: "Where is your studio, and can I join online?",
-    a: "Our studio is at Near Masjid Aman, Kela Nagar, Aligarh, Uttar Pradesh 202001 (Mon–Sat, 7–8 PM IST). Live online seats are open to learners across India and worldwide — same mentors, projects and feedback.",
+    q: "Where can I join classes — is it online only?",
+    a: "Java Hub Academy runs 100% live online cohorts (Mon–Sat, 7–8 PM IST). Learners join from anywhere in India and worldwide — same mentors, projects and feedback.",
   },
   {
     q: "What is the fee for the Java course?",
