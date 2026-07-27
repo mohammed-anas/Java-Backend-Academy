@@ -55,13 +55,13 @@ export const COURSES = [
   // ═══════════════════════════════════════════════════════════════════════════
   {
     n: "01",
-    title: "Core Java",
-    kicker: "Foundation · Start Here",
+    title: "Modern Java",
+    kicker: "Industry Foundation · Java 21+",
     duration: "10 weeks",
     mode: "Live · Weekend",
     track: "foundation",
-    order: "Start here — prerequisite for all other courses",
-    body: "OOP from first principles to virtual threads. Collections, generics, streams, memory model, GC tuning and JVM profiling — the way senior engineers actually write Java.",
+    order: "Start here — prerequisite for all backend tracks",
+    body: "Master modern Java the way it's used in today's tech companies—not outdated Java 8 tutorials. Learn object-oriented design, collections, generics, streams, multithreading, virtual threads, concurrency, JVM internals, memory management, debugging, profiling, and clean coding through real-world problems. Every concept is taught with current Java features, industry best practices, interview expectations, and coding standards so you're prepared for internships, placements, or a backend engineering career.",
   },
   {
     n: "02",
