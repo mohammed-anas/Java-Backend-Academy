@@ -66,12 +66,12 @@ export const COURSES = [
   {
     n: "02",
     title: "Data Structures & Algorithms",
-    kicker: "Patterns · Complexity",
+    kicker: "Problem Solving · Interview Ready",
     duration: "12 weeks",
     mode: "Live + Assignments",
     track: "foundation",
-    order: "Take alongside Core Java or after",
-    body: "Twelve pattern families. 200+ graded problems with editorial reviews until the intuition becomes muscle memory.",
+    order: "Take alongside Modern Java or after",
+    body: "Learn to think like a software engineer—not just solve LeetCode. Instead of memorizing hundreds of solutions, you'll build a framework for identifying patterns, choosing the right data structure, analyzing trade-offs, and optimizing code. Through guided problem solving, code reviews, and interview-focused practice, you'll gain the confidence to crack coding rounds while writing clean, efficient, and production-quality solutions."
   },
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -79,33 +79,33 @@ export const COURSES = [
   // ═══════════════════════════════════════════════════════════════════════════
   {
     n: "03",
-    title: "Databases",
-    kicker: "SQL · NoSQL · Internals",
+    title: "Databases & Data Engineering Fundamentals",
+    kicker: "SQL · NoSQL · Production Systems",
     duration: "6 weeks",
     mode: "Live · Weekend",
     track: "backend",
-    order: "After Core Java",
-    body: "Schema design, indexing, query plans, transactions, replication. Deep dives into Postgres, MySQL, MongoDB and Redis — picked by problem, not by hype.",
+    order: "After Modern Java",
+    body: "Move beyond writing basic SQL queries and learn how real applications design and manage data. Master schema design, relationships, indexing strategies, query optimization, transactions, concurrency, caching, replication, and database trade-offs. Work with PostgreSQL, MySQL, MongoDB, and Redis by understanding when and why each technology is used in production—not because it's trending. Learn the database decisions backend engineers make every day when building scalable systems."
   },
   {
     n: "04",
-    title: "REST API Design",
-    kicker: "Spring Boot · API Development",
+    title: "REST API Engineering",
+    kicker: "Spring Boot · Production Backend",
     duration: "4 weeks",
     mode: "Project-Based Learning",
     track: "backend",
-    order: "After Core Java + Databases",
-    body: "Design scalable, secure, and maintainable REST APIs using Spring Boot. Work with CRUD operations, JWT authentication, Swagger/OpenAPI, pagination, validation, exception handling, and database integration.",
+    order: "After Modern Java + Databases",
+    body: "Learn how professional backend engineers design APIs used by real applications. Build production-ready REST services with Spring Boot covering API architecture, clean layering, authentication, authorization, JWT security, validation, exception handling, documentation with OpenAPI, pagination, database integration, and performance considerations. Go beyond making endpoints work—learn how to design APIs that are secure, maintainable, scalable, and ready for real-world deployment."
   },
   {
     n: "05",
-    title: "System Design",
-    kicker: "Scale · Trade-offs",
+    title: "System Design & Architecture",
+    kicker: "Scalability · Trade-offs · Engineering Decisions",
     duration: "8 weeks",
     mode: "Live · Weekend",
     track: "backend",
-    order: "After Databases + REST APIs",
-    body: "Design real systems — feeds, ledgers, chat, ride-hailing. Every choice defended with numbers: latency, throughput, cost and consistency.",
+    order: "After Databases + REST API Engineering",
+    body: "Learn how senior engineers design systems that handle millions of users, requests, and data points. Design real-world systems like feeds, payment ledgers, chat platforms, and ride-hailing applications while understanding the reasoning behind every decision. Master scalability patterns, caching, databases, messaging, load balancing, consistency, availability, latency, throughput, and cost trade-offs. Move beyond drawing architecture diagrams—learn how to make and defend engineering decisions used in production systems."
   },
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -113,23 +113,23 @@ export const COURSES = [
   // ═══════════════════════════════════════════════════════════════════════════
   {
     n: "06",
-    title: "AWS Cloud",
-    kicker: "Deploy · Operate · Optimise",
+    title: "AWS Cloud & DevOps Engineering",
+    kicker: "Deploy · Scale · Operate",
     duration: "6 weeks",
     mode: "Live · Weekend",
     track: "devops",
-    order: "After Core Java — can parallel with Backend track",
-    body: "VPC, IAM, EC2, ECS, Lambda, RDS, S3, CloudFront. Terraform from day one. Ship, monitor and cost-optimise like an SRE.",
+    order: "After Modern Java — can run parallel with Backend track",
+    body: "Learn how modern backend applications move from local development to production cloud environments. Deploy, secure, monitor, and optimize real applications using AWS services including VPC, IAM, EC2, ECS, Lambda, RDS, S3, and CloudFront. Automate infrastructure with Terraform, understand CI/CD workflows, logging, monitoring, scaling strategies, and cloud cost optimization. Build the operational mindset of a backend engineer who can confidently ship and maintain production systems."
   },
   {
     n: "07",
-    title: "CI / CD",
-    kicker: "Ship every day",
+    title: "CI/CD & Software Delivery",
+    kicker: "Automate · Release · Deploy",
     duration: "3 weeks",
     mode: "Workshop",
     track: "devops",
-    order: "After Core Java — can take anytime",
-    body: "GitHub Actions, Docker, container registries, blue-green and canary deploys. Build reliable pipelines you'd trust with a Friday release.",
+    order: "After Modern Java — can take anytime",
+    body: "Learn how professional engineering teams deliver software reliably and repeatedly. Build automated pipelines using GitHub Actions, Docker, container registries, and deployment strategies like blue-green and canary releases. Understand testing automation, build processes, environment management, rollback strategies, and release workflows so you can confidently take an application from code commit to production deployment."
   },
 
   // ═══════════════════════════════════════════════════════════════════════════
